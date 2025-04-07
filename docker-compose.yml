@@ -2,35 +2,27 @@ version: '3'
 
 services:
   recipes-app:
-    build: .
+    build:
+      context: .
+      args:
+        - API_URL=${API_URL:-http://192.168.85.50:9000}
     container_name: recipes-app
     restart: unless-stopped
     ports:
-      - "8081:80"
-    volumes:
-      - recipes-data:/app/data
+      - "${PORT:-8081}:80"
     environment:
+      - API_URL=${API_URL:-http://192.168.85.50:9000}
       - NODE_ENV=production
     networks:
       - recipes-network
-
-  # Si vous avez besoin d'une base de données (optionnel)
-  # db:
-  #   image: postgres:14-alpine
-  #   container_name: recipes-db
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=recipes
-  #     - POSTGRES_PASSWORD=yourpassword
-  #     - POSTGRES_DB=recipes
-  #   volumes:
-  #     - recipes-db-data:/var/lib/postgresql/data
-  #   networks:
-  #     - recipes-network
-
-volumes:
-  recipes-data:
-  # recipes-db-data:
+    # Options spécifiques à Synology
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    # Labels pour une meilleure intégration à l'interface Synology
+    labels:
+      - "com.synology.dsm.docker.container.desc=Application de recettes"
+      - "com.synology.dsm.docker.container.cat=productivity"
+      - "com.synology.dsm.docker.container.privileges=full"
 
 networks:
   recipes-network:

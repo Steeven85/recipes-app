@@ -114,13 +114,10 @@ export const recipeService = {
         // userId: null
       };
       
-      console.log('Payload pour ajout au plan de repas:', mealData);
       
       // IMPORTANT : Utiliser POST si création, PUT si mise à jour
       const response = await axiosInstance.post('/households/mealplans', mealData);
-      
-      console.log('Réponse de l\'API pour ajout au plan:', response);
-      
+            
       return response;
     } catch (error) {
       console.error('Erreur détaillée lors de l\'ajout au plan de repas', {
@@ -176,9 +173,7 @@ export const recipeService = {
       
       // Préparation du payload pour l'API Mealie
       const preparedPayload = this.prepareRecipePayload(payload);
-      
-      console.log(`Mise à jour de la recette avec slug: ${slug}`);
-      console.log('Payload préparé:', JSON.stringify(preparedPayload, null, 2));
+
       
       return await axiosInstance.patch(`/recipes/${slug}`, preparedPayload);
     } catch (error) {
@@ -187,7 +182,6 @@ export const recipeService = {
       // Essai avec une autre approche si la première échoue
       if (error.response && error.response.status === 500) {
         try {
-          console.log("Tentative avec une approche alternative...");
           
           // Récupération de la recette actuelle
           const currentRecipe = await this.getBySlug(id);
@@ -224,9 +218,7 @@ export const recipeService = {
           const cleanPayload = Object.fromEntries(
             Object.entries(mergedPayload).filter(([_, value]) => value !== undefined)
           );
-          
-          console.log('Payload alternatif:', JSON.stringify(cleanPayload, null, 2));
-          
+                    
           // Essai avec une approche PUT complète au lieu de PATCH
           return await axiosInstance.put(`/recipes/${id}`, cleanPayload);
         } catch (alternativeError) {
@@ -323,7 +315,6 @@ export const recipeService = {
     }
     
     try {
-      console.log(`Suppression de la recette avec ID/slug: ${id}`);
       return await axiosInstance.delete(`/recipes/${id}`);
     } catch (error) {
       console.error('Erreur lors de la suppression de la recette', error);
@@ -372,12 +363,9 @@ export const recipeService = {
       const payload = {
         url: url
       };
-      
-      console.log("Tentative d'importation de recette depuis URL:", url);
-      
+            
       // Utiliser l'endpoint exact pour l'importation
       const response = await axiosInstance.post('/recipes/create/url', payload);
-      console.log("Réponse d'importation:", response);
       return response;
     } catch (error) {
       console.error('Erreur lors de l\'importation de la recette', error);
@@ -522,9 +510,7 @@ export const shoppingService = {
         recipeId: recipeRef.recipeId,
         recipeScale: recipeRef.recipeScale || 1
       };
-      
-      console.log(`Ajout de la recette ${payload.recipeId} à la liste ${listId}`);
-      
+            
       return await axiosInstance.post(`/households/shopping/lists/${listId}/recipe`, payload);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la recette à la liste', error);
