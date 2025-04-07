@@ -1,0 +1,10 @@
+.git
+.github
+.vscode
+node_modules
+tests
+*.log
+*.md
+.DS_Store
+.env.local
+.env.*.local

@@ -1,11 +1,15 @@
 import axios from 'axios';
 
+// URL de l'API depuis les variables d'environnement ou valeur par défaut
+const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_TOKEN = import.meta.env.VITE_API_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb25nX3Rva2VuIjp0cnVlLCJpZCI6IjA5MGZmMTQ0LTcxNmItNDUyOS05M2RhLTYzOTFiNWE5OTRhOSIsIm5hbWUiOiJBUFBMSVMiLCJpbnRlZ3JhdGlvbl9pZCI6ImdlbmVyaWMiLCJleHAiOjE5MDEzNjQ2NTd9.rnymUqY_UfEmwY8AqOQ-9bK5Rn2PIFTLea3mODCVBRo';
+
 // Configuration de base
 const axiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
   timeout: 30000,
   headers: {
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJsb25nX3Rva2VuIjp0cnVlLCJpZCI6IjA5MGZmMTQ0LTcxNmItNDUyOS05M2RhLTYzOTFiNWE5OTRhOSIsIm5hbWUiOiJBUFBMSVMiLCJpbnRlZ3JhdGlvbl9pZCI6ImdlbmVyaWMiLCJleHAiOjE5MDEzNjQ2NTd9.rnymUqY_UfEmwY8AqOQ-9bK5Rn2PIFTLea3mODCVBRo`,
+    Authorization: `Bearer ${API_TOKEN}`,
     'Content-Type': 'application/json',
     'X-Requested-With': 'XMLHttpRequest'
   }
