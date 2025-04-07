@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  recipes-app:
+    build: .
+    container_name: recipes-app
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - recipes-data:/app/data
+    environment:
+      - NODE_ENV=production
+    networks:
+      - recipes-network
+
+  # Si vous avez besoin d'une base de données (optionnel)
+  # db:
+  #   image: postgres:14-alpine
+  #   container_name: recipes-db
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=recipes
+  #     - POSTGRES_PASSWORD=yourpassword
+  #     - POSTGRES_DB=recipes
+  #   volumes:
+  #     - recipes-db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - recipes-network
+
+volumes:
+  recipes-data:
+  # recipes-db-data:
+
+networks:
+  recipes-network:
+    driver: bridge
