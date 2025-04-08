@@ -82,7 +82,6 @@
 <script>
 import { computed } from 'vue';
 import { useRecipeStore } from '../stores/recipeStore';
-import { recipeService } from '../services/api';
 
 export default {
   props: {
@@ -98,7 +97,7 @@ export default {
     const isFavorite = computed(() => {
       return recipeStore.isFavorite(props.recipe.id);
     });
-    const imageCache = new Map();
+
     const toggleFavorite = () => {
       recipeStore.toggleFavorite(props.recipe.id);
       
@@ -132,20 +131,9 @@ export default {
         return '/default-recipe.png';
       }
       
-      // Utiliser le cache si disponible
-      if (imageCache && imageCache.has(recipe.id)) {
-        return imageCache.get(recipe.id);
-      }
-      
-      // Utiliser le service pour obtenir l'URL
-      const imageUrl = recipeService.getRecipeImageUrl (recipe);
-      
-      // Mettre en cache si nécessaire
-      if (imageCache) {
-        imageCache.set(recipe.id, imageUrl);
-      }
-      
-      return imageUrl;
+      const baseUrl = 'http://192.168.85.50:9000';
+      const size = 'min-original.webp';
+      return `${baseUrl}/api/media/recipes/${recipe.id}/images/${size}`;
     };
 
     const handleImageError = (e) => {

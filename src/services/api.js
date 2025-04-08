@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance';
 import axios from 'axios';
 
+const imageUrlCache = new Map(); 
 /**
  * Service pour les opérations liées aux recettes
  */
@@ -145,16 +146,49 @@ export const recipeService = {
    * @param {String} size - Taille de l'image (default, min-original.webp, original.webp, etc.)
    * @returns {String} URL de l'image
    */
-  getRecipeImageUrl(recipeId, size = 'original.webp') {
+
+  /**
+   * Récupère l'URL de l'image d'une recette avec gestion du cache
+   * @param {Object|String} recipe - Objet recette ou ID de la recette
+   * @param {String} size - Taille de l'image (min-original.webp, original.webp, etc.)
+   * @param {String} defaultImage - Image par défaut si la recette n'a pas d'image
+   * @param {Boolean} useCache - Utiliser le cache pour les URL
+   * @returns {String} URL de l'image
+   */
+  getRecipeImageUrl(recipe, size = 'min-original.webp', defaultImage = '/default-recipe.png', useCache = true) {
+    // Vérifier si la recette est valide
+    if (!recipe) {
+      return defaultImage;
+    }
+    
+    // Extraire l'ID, que recipe soit un objet ou directement un ID
+    const recipeId = typeof recipe === 'object' ? recipe.id : recipe;
+    
     if (!recipeId) {
-      throw new Error('ID de recette requis pour récupérer l\'image');
+      return defaultImage;
+    }
+    
+    // Vérifier le cache si activé
+    if (useCache) {
+      const cacheKey = `${recipeId}_${size}`;
+      if (imageUrlCache.has(cacheKey)) {
+        return imageUrlCache.get(cacheKey);
+      }
     }
     
     // Construction du chemin relatif pour l'image
     const imagePath = `/media/recipes/${recipeId}/images/${size}`;
     
     // Utilisation du baseURL d'axiosInstance pour construire l'URL complète
-    return `${axiosInstance.defaults.baseURL}${imagePath}`;
+    const imageUrl = `${axiosInstance.defaults.baseURL}${imagePath}`;
+    
+    // Mettre en cache si activé
+    if (useCache) {
+      const cacheKey = `${recipeId}_${size}`;
+      imageUrlCache.set(cacheKey, imageUrl);
+    }
+    
+    return imageUrl;
   },
 
 
