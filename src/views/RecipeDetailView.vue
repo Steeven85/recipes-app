@@ -1281,7 +1281,7 @@ export default {
     const getRecipeImage = (id) => {
       // Utiliser une image plus petite sur mobile pour optimiser le chargement
       const size = windowWidth.value < 768 ? 'min-original.webp' : 'original.webp';
-      return `http://192.168.85.50:9000/api/media/recipes/${id}/images/${size}`;
+      return recipeService.getRecipeImageUrl(id, size);
     };
 
     const nutritionLabels = {

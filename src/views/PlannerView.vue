@@ -493,24 +493,11 @@ export default {
     };
 
     const getRecipeImage = (recipe) => {
-      if (!recipe || !recipe.id) return '/assets/images/default-recipe.png';
-      
-      // Vérifier le cache
-      if (imageCache.has(recipe.id)) {
-        return imageCache.get(recipe.id);
-      }
-      
-      // Construire et mettre en cache l'URL
-      const baseUrl = 'http://192.168.85.50:9000';
-      const size = 'min-original.webp';
-      const imageUrl = `${baseUrl}/api/media/recipes/${recipe.id}/images/${size}`;
-      
-      imageCache.set(recipe.id, imageUrl);
-      return imageUrl;
+      return recipeService.getRecipeImageUrl(recipe, 'min-original.webp', '/default-recipe.png', true);
     };
 
     const handleImageError = (e) => {
-      e.target.src = '/assets/images/default-recipe.png';
+      e.target.src = '/default-recipe.png';
     };
 
     const loadRecipes = async () => {
