@@ -140,6 +140,25 @@ export const recipeService = {
   },
   
   /**
+   * Récupère l'URL de l'image d'une recette avec adaptation selon la taille de l'écran
+   * @param {String} recipeId - ID de la recette
+   * @param {String} size - Taille de l'image (default, min-original.webp, original.webp, etc.)
+   * @returns {String} URL de l'image
+   */
+  getRecipeImageUrl(recipeId, size = 'original.webp') {
+    if (!recipeId) {
+      throw new Error('ID de recette requis pour récupérer l\'image');
+    }
+    
+    // Construction du chemin relatif pour l'image
+    const imagePath = `/media/recipes/${recipeId}/images/${size}`;
+    
+    // Utilisation du baseURL d'axiosInstance pour construire l'URL complète
+    return `${axiosInstance.defaults.baseURL}${imagePath}`;
+  },
+
+
+  /**
    * Supprime un repas du plan
    * @param {String} id - ID du repas
    * @returns {Promise<void>}

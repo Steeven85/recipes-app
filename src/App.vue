@@ -3,12 +3,14 @@
     <header class="bg-white shadow-sm">
       <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <div class="flex items-center space-x-3">
-          <!-- Logo à gauche, pas doublé -->
-          <router-link to="/">
-            <img src="/logoFP.png" alt="Logo" class="h-8 w-8 object-contain" />
+          <!-- Logo toujours visible -->
+          <router-link to="/" class="block">
+            <img src="/logoFP.png" alt="Logo" class="h-16 w-16 object-contain sm:h-24 sm:w-24" />
           </router-link>
-          <!-- Titre en orange -->
-          <h1 class="text-2xl font-semibold text-orange-500">Mealie</h1>
+          <!-- Titre visible uniquement sur grand écran -->
+          <router-link to="/" class="block">
+            <h1 class="hidden sm:block text-2xl font-semibold">Recette</h1>
+          </router-link>
         </div>
         <nav class="flex space-x-4">
           <router-link 
