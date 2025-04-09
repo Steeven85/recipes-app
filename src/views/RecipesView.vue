@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl font-bold">Mes Recettes</h1>
       <button 
-        @click="showAddRecipeModal = true"
+        @click="openRecipeCreateWizard"
         class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -566,6 +566,12 @@
         </div>
       </div>
     </div>
+    <!-- Wizard de création de recette -->
+    <RecipeCreateWizard 
+      v-if="showRecipeCreateWizard" 
+      @close="showRecipeCreateWizard = false"
+      @recipe-created="handleRecipeCreated"
+    />
   </div>
 </template>
 
@@ -576,6 +582,7 @@ import { recipeService, shoppingService } from '../services/api';
 import { useRecipeStore } from '../stores/recipeStore';
 import Spinner from '../components/Spinner.vue';
 import RecipeCard from '../components/RecipeCard.vue';
+import RecipeCreateWizard from '../components/RecipeCreateWizard.vue';
 
 // Créer une fonction de debounce réutilisable
 const useDebounce = (fn, delay = 300) => {
@@ -589,7 +596,8 @@ const useDebounce = (fn, delay = 300) => {
 export default {
   components: {
     Spinner,
-    RecipeCard
+    RecipeCard,
+    RecipeCreateWizard
   },
   setup() {
     const recipeStore = useRecipeStore();
@@ -1222,6 +1230,35 @@ export default {
       newRecipe.value.recipeIngredient.push('');
     };
     
+
+    // État pour le wizard de création de recette
+    const showRecipeCreateWizard = ref(false);
+    
+    // Gestionnaire pour ouvrir le wizard au lieu du modal existant
+    const openRecipeCreateWizard = () => {
+      showRecipeCreateWizard.value = true;
+      showAddRecipeModal.value = false; // Fermer l'ancien modal si ouvert
+    };
+    
+    // Gestionnaire pour la création réussie d'une recette
+    const handleRecipeCreated = (recipeId) => {
+      // Rafraîchir la liste des recettes
+      recipeStore.setLoading(true);
+      recipeService.getAll().then(response => {
+        if (response.data && response.data.items) {
+          recipeStore.refreshBasicRecipes(response.data.items);
+        }
+        recipeStore.setLoading(false);
+      }).catch(err => {
+        console.error("Erreur lors du rechargement des recettes:", err);
+        recipeStore.setLoading(false);
+      });
+      
+      // Fermer le wizard
+      showRecipeCreateWizard.value = false;
+  };
+
+
     const removeIngredient = (index) => {
       newRecipe.value.recipeIngredient.splice(index, 1);
       // Toujours garder au moins un ingrédient
@@ -1381,7 +1418,10 @@ export default {
       addCategoryStatus,
       addCategoryError,
       createCategory,
-      toggleRecipeCategory
+      toggleRecipeCategory,
+      showRecipeCreateWizard,
+      openRecipeCreateWizard,
+      handleRecipeCreated
     };
   }
 };
