@@ -8,197 +8,220 @@
     </div>
 
     <div v-else>
-      <h1 class="text-2xl font-bold mb-6">Modifier la recette</h1>
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">Modifier la recette</h1>
+        
+        <!-- Bouton pour basculer vers le wizard d'édition -->
+        <button 
+          @click="toggleEditMode" 
+          class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+        >
+          <span v-if="useWizard">Mode Simplifié</span>
+          <span v-else>Mode Avancé (Wizard)</span>
+        </button>
+      </div>
 
-      <form @submit.prevent="handleSubmit">
-        <!-- Nom -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-          <input
-            v-model="form.name"
-            type="text"
-            disabled
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
-
-        <!-- Description -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea
-            v-model="form.description"
-            rows="3"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
-          ></textarea>
-        </div>
-
-        <!-- Mode d'édition -->
-        <div class="mb-6">
-          <div class="flex items-center space-x-2">
-            <span class="text-sm font-medium text-gray-700">Mode d'édition :</span>
-            <button
-              type="button"
-              @click="editMode = 'simple'"
-              :class="[
-                'px-3 py-1 text-sm rounded',
-                editMode === 'simple' 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              ]"
-            >
-              Simplifié
-            </button>
-            <button
-              type="button"
-              @click="editMode = 'advanced'"
-              :class="[
-                'px-3 py-1 text-sm rounded',
-                editMode === 'advanced' 
-                  ? 'bg-indigo-600 text-white' 
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              ]"
-            >
-              Avancé
-            </button>
-          </div>
-        </div>
-
-        <!-- Mode Simplifié pour recettes importées -->
-        <div v-if="editMode === 'simple'">
-          <!-- Ingrédients Simples (texte brut) -->
+      <!-- Mode d'édition de base (formulaire existant) -->
+      <div v-if="!useWizard">
+        <form @submit.prevent="handleSubmit">
+          <!-- Nom -->
           <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-4">Ingrédients</h2>
-            <div 
-              v-for="(ingredient, index) in simpleIngredients"
-              :key="`simple-ing-${index}`"
-              class="mb-3 flex items-center"
-            >
-              <input
-                v-model="simpleIngredients[index]"
-                type="text"
-                placeholder="Par exemple: 100g de farine"
-                class="flex-grow border rounded-lg px-4 py-2"
-              />
-              <button
-                type="button"
-                @click="removeSimpleIngredient(index)"
-                class="ml-2 text-red-500 hover:text-red-700"
-              >
-                ×
-              </button>
-            </div>
-            <button
-              @click="addSimpleIngredient"
-              type="button"
-              class="mt-2 text-indigo-600 hover:text-indigo-800"
-            >
-              + Ajouter un ingrédient
-            </button>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+            <input
+              v-model="form.name"
+              type="text"
+              disabled
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+            />
           </div>
-        </div>
 
-        <!-- Mode Avancé -->
-        <div v-else>
-          <!-- Ingrédients Éditables (structurés) -->
+          <!-- Description -->
           <div class="mb-6">
-            <h2 class="text-xl font-semibold mb-4">Ingrédients</h2>
-            <div 
-              v-for="(ingredient, index) in form.recipeIngredient"
-              :key="`adv-ing-${index}`"
-              class="mb-3 p-3 bg-gray-50 rounded-lg"
-            >
-              <div class="grid grid-cols-12 gap-3">
-                <!-- Quantité -->
-                <input
-                  v-model="ingredient.quantity"
-                  type="number"
-                  placeholder="Qty"
-                  class="col-span-2 border rounded p-2"
-                />
-                <!-- Unité -->
-                <input
-                  :value="getUnitName(ingredient)"
-                  @input="updateUnitName(index, $event.target.value)"
-                  placeholder="Unité"
-                  class="col-span-3 border rounded p-2"
-                />
-                <!-- Nom de l'ingrédient -->
-                <input
-                  :value="getFoodName(ingredient)"
-                  @input="updateFoodName(index, $event.target.value)"
-                  placeholder="Ingrédient"
-                  class="col-span-5 border rounded p-2"
-                />
-                <!-- Supprimer -->
-                <button
-                  type="button"
-                  @click="removeIngredient(index)"
-                  class="col-span-2 text-red-500 hover:text-red-700"
-                >
-                  × Supprimer
-                </button>
-              </div>
-            </div>
-            <button
-              @click="addIngredient"
-              type="button"
-              class="mt-2 text-indigo-600 hover:text-indigo-800"
-            >
-              + Ajouter un ingrédient
-            </button>
-          </div>
-        </div>
-
-        <!-- Instructions Éditables -->
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold mb-4">Instructions</h2>
-          <div
-            v-for="(instruction, index) in form.recipeInstructions"
-            :key="index"
-            class="mb-3"
-          >
-            <div class="flex items-center gap-2">
-              <span class="font-medium">Étape {{ index + 1 }}</span>
-              <button
-                type="button"
-                @click="removeInstruction(index)"
-                class="text-red-500 hover:text-red-700"
-              >
-                ×
-              </button>
-            </div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
             <textarea
-              v-model="instruction.text"
-              class="w-full border rounded-lg p-2 mt-1"
-              rows="2"
+              v-model="form.description"
+              rows="3"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
             ></textarea>
           </div>
-          <button
-            @click="addInstruction"
-            type="button"
-            class="mt-2 text-indigo-600 hover:text-indigo-800"
-          >
-            + Ajouter une étape
-          </button>
-        </div>
 
-        <!-- Boutons de formulaire -->
-        <div class="flex space-x-4">
-          <button
-            type="button"
-            @click="cancelEdit"
-            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
-          >
-            Annuler
-          </button>
-          <button
-            type="submit"
-            class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Sauvegarder
-          </button>
-        </div>
-      </form>
+          <!-- Mode d'édition -->
+          <div class="mb-6">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm font-medium text-gray-700">Mode d'édition :</span>
+              <button
+                type="button"
+                @click="editMode = 'simple'"
+                :class="[
+                  'px-3 py-1 text-sm rounded',
+                  editMode === 'simple' 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ]"
+              >
+                Simplifié
+              </button>
+              <button
+                type="button"
+                @click="editMode = 'advanced'"
+                :class="[
+                  'px-3 py-1 text-sm rounded',
+                  editMode === 'advanced' 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ]"
+              >
+                Avancé
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Simplifié pour recettes importées -->
+          <div v-if="editMode === 'simple'">
+            <!-- Ingrédients Simples (texte brut) -->
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-4">Ingrédients</h2>
+              <div 
+                v-for="(ingredient, index) in simpleIngredients"
+                :key="`simple-ing-${index}`"
+                class="mb-3 flex items-center"
+              >
+                <input
+                  v-model="simpleIngredients[index]"
+                  type="text"
+                  placeholder="Par exemple: 100g de farine"
+                  class="flex-grow border rounded-lg px-4 py-2"
+                />
+                <button
+                  type="button"
+                  @click="removeSimpleIngredient(index)"
+                  class="ml-2 text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </div>
+              <button
+                @click="addSimpleIngredient"
+                type="button"
+                class="mt-2 text-indigo-600 hover:text-indigo-800"
+              >
+                + Ajouter un ingrédient
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Avancé -->
+          <div v-else>
+            <!-- Ingrédients Éditables (structurés) -->
+            <div class="mb-6">
+              <h2 class="text-xl font-semibold mb-4">Ingrédients</h2>
+              <div 
+                v-for="(ingredient, index) in form.recipeIngredient"
+                :key="`adv-ing-${index}`"
+                class="mb-3 p-3 bg-gray-50 rounded-lg"
+              >
+                <div class="grid grid-cols-12 gap-3">
+                  <!-- Quantité -->
+                  <input
+                    v-model="ingredient.quantity"
+                    type="number"
+                    placeholder="Qty"
+                    class="col-span-2 border rounded p-2"
+                  />
+                  <!-- Unité -->
+                  <input
+                    :value="getUnitName(ingredient)"
+                    @input="updateUnitName(index, $event.target.value)"
+                    placeholder="Unité"
+                    class="col-span-3 border rounded p-2"
+                  />
+                  <!-- Nom de l'ingrédient -->
+                  <input
+                    :value="getFoodName(ingredient)"
+                    @input="updateFoodName(index, $event.target.value)"
+                    placeholder="Ingrédient"
+                    class="col-span-5 border rounded p-2"
+                  />
+                  <!-- Supprimer -->
+                  <button
+                    type="button"
+                    @click="removeIngredient(index)"
+                    class="col-span-2 text-red-500 hover:text-red-700"
+                  >
+                    × Supprimer
+                  </button>
+                </div>
+              </div>
+              <button
+                @click="addIngredient"
+                type="button"
+                class="mt-2 text-indigo-600 hover:text-indigo-800"
+              >
+                + Ajouter un ingrédient
+              </button>
+            </div>
+          </div>
+
+          <!-- Instructions Éditables -->
+          <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">Instructions</h2>
+            <div
+              v-for="(instruction, index) in form.recipeInstructions"
+              :key="index"
+              class="mb-3"
+            >
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Étape {{ index + 1 }}</span>
+                <button
+                  type="button"
+                  @click="removeInstruction(index)"
+                  class="text-red-500 hover:text-red-700"
+                >
+                  ×
+                </button>
+              </div>
+              <textarea
+                v-model="instruction.text"
+                class="w-full border rounded-lg p-2 mt-1"
+                rows="2"
+              ></textarea>
+            </div>
+            <button
+              @click="addInstruction"
+              type="button"
+              class="mt-2 text-indigo-600 hover:text-indigo-800"
+            >
+              + Ajouter une étape
+            </button>
+          </div>
+
+          <!-- Boutons de formulaire -->
+          <div class="flex space-x-4">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Sauvegarder
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Mode Wizard (basé sur RecipeCreateWizard) -->
+      <div v-else>
+        <RecipeEditWizardComponent
+          :recipe-data="form"
+          @save="saveRecipeFromWizard"
+          @cancel="cancelEdit"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -209,6 +232,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { recipeService } from '../services/api';
 
 export default {
+  components: {
+    RecipeEditWizardComponent
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -216,6 +242,10 @@ export default {
     const editMode = ref('simple'); // 'simple' ou 'advanced'
     const simpleIngredients = ref([]);
     const isImportedRecipe = ref(false);
+    const originalRecipe = ref(null);
+    
+    // Nouvelle option pour utiliser le wizard
+    const useWizard = ref(false);
     
     const form = ref({
       name: '',
@@ -241,6 +271,9 @@ export default {
 
     // Normalize recipe data - ensure all required objects and arrays exist
     const normalizeRecipeData = (data) => {
+      // Sauvegarder les données originales pour référence
+      originalRecipe.value = { ...data };
+      
       // Vérifier si la recette semble être importée
       if (data.orgURL) {
         isImportedRecipe.value = true;
@@ -348,6 +381,11 @@ export default {
       }
     });
 
+    // Basculer entre les modes d'édition (standard et wizard)
+    const toggleEditMode = () => {
+      useWizard.value = !useWizard.value;
+    };
+
     // Gestion des ingrédients en mode simple
     const addSimpleIngredient = () => {
       simpleIngredients.value.push('');
@@ -401,7 +439,7 @@ export default {
 
     // Préparer les données pour la soumission
     const prepareSubmissionData = () => {
-      // Récupère une référence à la recette originale (à ajouter dans le composant)
+      // Récupère une référence à la recette originale
       const originalName = originalRecipe.value?.name || '';
       
       const submissionData = { ...form.value };
@@ -410,6 +448,7 @@ export default {
       if (form.value.name !== originalName) {
         submissionData.name = originalName; // Restaurer le nom original
       }
+      
       // Si en mode simplifié, utiliser les ingrédients textuels
       if (editMode.value === 'simple') {
         submissionData.recipeIngredient = simpleIngredients.value.filter(ing => ing.trim() !== '');
@@ -441,7 +480,7 @@ export default {
       router.push(`/recipes/${route.params.slug}`);
     };
 
-    // Soumission du formulaire
+    // Soumission du formulaire standard
     const handleSubmit = async () => {
       try {
         const dataToSubmit = prepareSubmissionData();
@@ -454,13 +493,33 @@ export default {
         alert("Échec de la mise à jour. Veuillez réessayer ou vérifier les données saisies.");
       }
     };
+    
+    // Soumission du formulaire via wizard
+    const saveRecipeFromWizard = async (updatedRecipe) => {
+      try {
+        console.log("Données reçues du wizard:", updatedRecipe);
+        
+        // Garantir que l'ID et le slug sont conservés
+        updatedRecipe.id = form.value.id;
+        updatedRecipe.slug = form.value.slug;
+        
+        await recipeService.updateRecipe(updatedRecipe.id, updatedRecipe);
+        router.push(`/recipes/${route.params.slug}`);
+      } catch (error) {
+        console.error('Erreur lors de la mise à jour via wizard', error);
+        alert("Échec de la mise à jour. Veuillez réessayer.");
+      }
+    };
 
     return {
       loading,
       form,
       editMode,
+      useWizard,
+      toggleEditMode,
       simpleIngredients,
       isImportedRecipe,
+      originalRecipe,
       getUnitName,
       getFoodName,
       addIngredient,
@@ -472,7 +531,8 @@ export default {
       addInstruction,
       removeInstruction,
       cancelEdit,
-      handleSubmit
+      handleSubmit,
+      saveRecipeFromWizard
     };
   }
 };

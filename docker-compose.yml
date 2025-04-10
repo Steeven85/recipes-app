@@ -4,25 +4,15 @@ services:
   recipes-app:
     build:
       context: .
-      args:
-        - API_URL=${API_URL:-http://192.168.85.50:9000}
+      dockerfile: Dockerfile
     container_name: recipes-app
     restart: unless-stopped
     ports:
-      - "${PORT:-8081}:80"
+      - "8081:80"
     environment:
-      - API_URL=${API_URL:-http://192.168.85.50:9000}
-      - NODE_ENV=production
+      - API_URL=http://192.168.85.50:9000
     networks:
       - recipes-network
-    # Options spécifiques à Synology
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-    # Labels pour une meilleure intégration à l'interface Synology
-    labels:
-      - "com.synology.dsm.docker.container.desc=Application de recettes"
-      - "com.synology.dsm.docker.container.cat=productivity"
-      - "com.synology.dsm.docker.container.privileges=full"
 
 networks:
   recipes-network:
