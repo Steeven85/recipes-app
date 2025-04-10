@@ -73,12 +73,9 @@
       <div class="md:hidden space-y-2">
         <!-- Vue par catégorie / recette (boutons plus grands) -->
         <div class="border rounded-lg overflow-hidden w-full">
-          <button 
-            @click="viewMode = 'category'"
-            :class="[
-              'px-4 py-3 w-1/2 font-medium',
-              viewMode === 'category' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700'
-            ]"
+          <ViewToggleButton 
+            @click="viewMode = 'category'" 
+            :isActive="viewMode === 'category'"
           >
             <span class="flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,13 +83,10 @@
               </svg>
               Catégories
             </span>
-          </button>
-          <button 
-            @click="viewMode = 'recipe'"
-            :class="[
-              'px-4 py-3 w-1/2 font-medium',
-              viewMode === 'recipe' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700'
-            ]"
+          </ViewToggleButton>
+          <ViewToggleButton 
+            @click="viewMode = 'recipe'" 
+            :isActive="viewMode === 'recipe'"
           >
             <span class="flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -100,7 +94,7 @@
               </svg>
               Recettes
             </span>
-          </button>
+          </ViewToggleButton>
         </div>
         
         <!-- Barre d'actions (flex horizontal) -->
@@ -133,24 +127,18 @@
       <div class="hidden md:flex md:space-x-2">
         <!-- Vue par catégorie / recette -->
         <div class="border rounded-lg overflow-hidden">
-          <button 
-            @click="viewMode = 'category'"
-            :class="[
-              'px-4 py-2 border-r',
-              viewMode === 'category' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-            ]"
+          <ViewToggleButton 
+            @click="viewMode = 'category'" 
+            :isActive="viewMode === 'category'"
           >
             Par catégorie
-          </button>
-          <button 
-            @click="viewMode = 'recipe'"
-            :class="[
-              'px-4 py-2',
-              viewMode === 'recipe' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-            ]"
+          </ViewToggleButton>
+          <ViewToggleButton 
+            @click="viewMode = 'recipe'" 
+            :isActive="viewMode === 'recipe'"
           >
             Par recette
-          </button>
+          </ViewToggleButton>
         </div>
         <button 
           @click="toggleCompletedItems"
@@ -565,8 +553,12 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { shoppingService, recipeService } from '../services/api';
+import ViewToggleButton from './ViewToggleButton.vue';
 
 export default {
+  components: {
+    ViewToggleButton
+  },
   setup() {
     const router = useRouter();
     const items = ref([]);
