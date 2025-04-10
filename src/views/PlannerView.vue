@@ -793,44 +793,20 @@ export default {
       }
     };
 
-    const mealTypeOrder = {
-      breakfast: 0, // Petit-déj
-      lunch: 1,     // Déjeuner
-      snack: 2,     // Collation
-      dinner: 3     // Dîner
-    };
-
-    // Fonction de normalisation des types de repas
-    const normalizeType = (type) => {
-      if (!type) return 'dinner';
-      
-      const lowerType = type.toLowerCase();
-      
-      if (lowerType.includes('petit') || lowerType.includes('breakfast') || lowerType === 'b') {
-        return 'breakfast';
-      } else if (lowerType.includes('déj') || lowerType.includes('dej') || lowerType.includes('lunch') || lowerType === 'l') {
-        return 'lunch';
-      } else if (lowerType.includes('dîn') || lowerType.includes('din') || lowerType.includes('dinner') || lowerType === 'd') {
-        return 'dinner';
-      } else if (lowerType.includes('coll') || lowerType.includes('snack') || lowerType === 's') {
-        return 'snack';
-      }
-      
-      return 'dinner';
-    };
-
     const getRecipeImage = (recipe) => {
-      // Vérifier si l'image est dans le cache
+      if (!recipe || !recipe.id) return '/assets/images/default-recipe.png';
+      
+      // Vérifier le cache
       if (imageCache.has(recipe.id)) {
         return imageCache.get(recipe.id);
       }
       
-      // Utiliser le service pour récupérer l'URL de l'image
-      const imageUrl = recipeService.getRecipeImageUrl(recipe, 'min-original.webp', '/default-recipe.png', true);
+      // Construire et mettre en cache l'URL
+      const baseUrl = 'http://192.168.85.50:9000';
+      const size = 'min-original.webp';
+      const imageUrl = `${baseUrl}/api/media/recipes/${recipe.id}/images/${size}`;
       
-      // Mettre en cache l'URL de l'image
       imageCache.set(recipe.id, imageUrl);
-      
       return imageUrl;
     };
 
