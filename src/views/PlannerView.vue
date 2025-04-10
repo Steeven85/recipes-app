@@ -77,6 +77,16 @@
         </button>
       </div>
       
+      <!-- Bouton pour cocher/décocher tous les articles -->
+      <div class="flex justify-end mb-4">
+        <button 
+          @click="toggleAllItems"
+          class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+        >
+          {{ allChecked ? 'Tout décocher' : 'Tout cocher' }}
+        </button>
+      </div>
+
       <!-- Affichage mobile : Format horizontal avec défilement (Vue originale) -->
       <div class="block md:hidden">
         <!-- Navigation entre les jours (pour mobile) -->
@@ -554,6 +564,7 @@ export default {
       timeout: null
     });
     const generatingList = ref(false);
+    const allChecked = ref(false);
     
     // Controller pour annuler les requêtes en cours
     let abortController = new AbortController();
@@ -793,20 +804,44 @@ export default {
       }
     };
 
-    const getRecipeImage = (recipe) => {
-      if (!recipe || !recipe.id) return '/assets/images/default-recipe.png';
+    const mealTypeOrder = {
+      breakfast: 0, // Petit-déj
+      lunch: 1,     // Déjeuner
+      snack: 2,     // Collation
+      dinner: 3     // Dîner
+    };
+
+    // Fonction de normalisation des types de repas
+    const normalizeType = (type) => {
+      if (!type) return 'dinner';
       
-      // Vérifier le cache
+      const lowerType = type.toLowerCase();
+      
+      if (lowerType.includes('petit') || lowerType.includes('breakfast') || lowerType === 'b') {
+        return 'breakfast';
+      } else if (lowerType.includes('déj') || lowerType.includes('dej') || lowerType.includes('lunch') || lowerType === 'l') {
+        return 'lunch';
+      } else if (lowerType.includes('dîn') || lowerType.includes('din') || lowerType.includes('dinner') || lowerType === 'd') {
+        return 'dinner';
+      } else if (lowerType.includes('coll') || lowerType.includes('snack') || lowerType === 's') {
+        return 'snack';
+      }
+      
+      return 'dinner';
+    };
+
+    const getRecipeImage = (recipe) => {
+      // Vérifier si l'image est dans le cache
       if (imageCache.has(recipe.id)) {
         return imageCache.get(recipe.id);
       }
       
-      // Construire et mettre en cache l'URL
-      const baseUrl = 'http://192.168.85.50:9000';
-      const size = 'min-original.webp';
-      const imageUrl = `${baseUrl}/api/media/recipes/${recipe.id}/images/${size}`;
+      // Utiliser le service pour récupérer l'URL de l'image
+      const imageUrl = recipeService.getRecipeImageUrl(recipe, 'min-original.webp', '/default-recipe.png', true);
       
+      // Mettre en cache l'URL de l'image
       imageCache.set(recipe.id, imageUrl);
+      
       return imageUrl;
     };
 
@@ -1048,6 +1083,15 @@ export default {
       }
     };
     
+    const toggleAllItems = () => {
+      allChecked.value = !allChecked.value;
+      weekDays.value.forEach(day => {
+        day.meals.forEach(meal => {
+          meal.checked = allChecked.value;
+        });
+      });
+    };
+
     const showToast = (message, type = 'success') => {
       // Effacer le timeout précédent s'il existe
       if (toast.value.timeout) {
@@ -1113,7 +1157,9 @@ export default {
       getMealTypeBackgroundClassSober,
       currentDayIndex,
       previousDay,
-      nextDay
+      nextDay,
+      toggleAllItems,
+      allChecked
     };
   }
 };
