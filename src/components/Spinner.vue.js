@@ -10,7 +10,7 @@ export default (await import('vue')).defineComponent({
         },
         color: {
             type: String,
-            default: 'indigo'
+            default: 'emerald'
         },
         strokeWidth: {
             type: Number,
@@ -36,7 +36,7 @@ export default (await import('vue')).defineComponent({
         };
         // Map des couleurs
         const colorClasses = {
-            'indigo': 'text-indigo-600',
+            'emerald': 'text-emerald-600',
             'blue': 'text-blue-600',
             'green': 'text-green-600',
             'red': 'text-red-600',
@@ -50,7 +50,7 @@ export default (await import('vue')).defineComponent({
             // Ajouter la classe de taille
             classes.push(sizeClasses[props.size] || sizeClasses.md);
             // Ajouter la classe de couleur
-            classes.push(colorClasses[props.color] || colorClasses.indigo);
+            classes.push(colorClasses[props.color] || colorClasses.emerald);
             // Ajouter mx-auto si centré
             if (props.centered) {
                 classes.push('mx-auto');

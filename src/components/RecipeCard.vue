@@ -33,7 +33,7 @@
         <span 
           v-for="category in recipe.recipeCategory" 
           :key="category.id"
-          class="inline-block bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full"
+          class="inline-block bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full"
         >
           {{ category.name }}
         </span>
@@ -45,7 +45,7 @@
           <button 
             @click.stop="toggleFavorite"
             class="p-2 rounded-full hover:bg-red-100 transition-colors"
-            :class="isFavorite ? 'bg-red-100 text-red-500' : 'bg-indigo-50 text-gray-500'"
+            :class="isFavorite ? 'bg-red-100 text-red-500' : 'bg-emerald-50 text-gray-500'"
             :title="isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -56,7 +56,7 @@
           
           <button 
             @click.stop="$emit('plan', recipe)"
-            class="p-2 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600"
+            class="p-2 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-600"
             title="Ajouter au planning"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

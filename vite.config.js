@@ -2,6 +2,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
+import path from 'path'; // Ajoutez cette importation
+
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd());
     return {
@@ -12,6 +14,11 @@ export default defineConfig(({ mode }) => {
                 entry: './src/index.css'
             })
         ],
+        resolve: {
+            alias: {
+                '@': path.resolve(__dirname, './src') // Ajoutez cette configuration d'alias
+            }
+        },
         define: {
             // Assurez-vous que les variables d'environnement sont disponibles
             'import.meta.env.API_URL': JSON.stringify(env.VITE_API_URL || 'http://192.168.85.50:9000')

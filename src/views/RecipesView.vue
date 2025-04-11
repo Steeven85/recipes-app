@@ -1,10 +1,10 @@
 <template>
   <div class="p-6">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold">Mes Recettes</h1>
+      <h1 class="text-2xl font-bold text-gray-900">Mes Recettes</h1>
       <button 
         @click="openRecipeCreateWizard"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+        class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -19,7 +19,7 @@
         v-model="searchQuery"
         type="text"
         placeholder="Rechercher une recette..."
-        class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
         @input="debouncedSearch"
       />
     </div>
@@ -29,7 +29,7 @@
       <button 
         @click="activeView = 'all'"
         class="px-4 py-2 rounded-lg mr-2"
-        :class="activeView === 'all' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
+        :class="activeView === 'all' ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'"
       >
         Toutes les recettes
       </button>
@@ -53,7 +53,7 @@
       <div class="flex justify-between items-center mb-2">
         <button 
           @click="showCategoriesFilter = !showCategoriesFilter"
-          class="flex items-center text-indigo-600 font-medium"
+          class="flex items-center text-emerald-600 font-medium"
         >
           <span>Filtrer par catégorie</span>
           <svg 
@@ -71,7 +71,7 @@
         <div v-if="selectedCategory" class="flex items-center">
           <span class="text-sm text-gray-600 mr-2">
             Catégorie : 
-            <span class="font-medium text-indigo-600">
+            <span class="font-medium text-emerald-600">
               {{ (categories.find(c => c && c.id === selectedCategory)?.name) || 'Catégorie inconnue' }}
             </span>
           </span>
@@ -107,7 +107,7 @@
             @click="category && category.id && selectCategory(category.id)"
             class="px-3 py-2 rounded-full text-sm text-center transition-colors truncate"
             :class="selectedCategory === (category?.id || '') 
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-emerald-600 text-white'
               : 'bg-gray-100 text-gray-800 hover:bg-gray-200'"
           >
             {{ category?.name || 'Catégorie sans nom' }}
@@ -139,7 +139,7 @@
         <p class="text-sm text-gray-500 mb-3">Cliquez sur l'icône de cœur pour ajouter des recettes à vos favoris</p>
         <button 
           @click="activeView = 'all'"
-          class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+          class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200"
         >
           Voir toutes les recettes
         </button>
@@ -147,7 +147,7 @@
       <div v-else-if="selectedCategory" class="mt-4">
         <button 
           @click="clearCategoryFilter"
-          class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200"
+          class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg hover:bg-emerald-200"
         >
           Voir toutes les recettes
         </button>
@@ -171,7 +171,7 @@
     <button 
       v-if="showScrollToTop"
       @click="scrollToTop"
-      class="fixed bottom-16 right-4 bg-indigo-600 text-white p-3 rounded-full shadow-lg hover:bg-indigo-700 transition-colors"
+      class="fixed bottom-16 right-4 bg-emerald-600 text-white p-3 rounded-full shadow-lg hover:bg-emerald-700 transition-colors"
       aria-label="Retourner en haut de la page"
     >
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,7 +184,7 @@
       <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Ajouter une recette</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Ajouter une recette</h2>
             <button @click="showAddRecipeModal = false" class="text-gray-500 hover:text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -198,7 +198,7 @@
                 @click="showUrlImport = true; showAddRecipeModal = false"
                 class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                 </svg>
                 <span class="font-medium">Importer depuis une URL</span>
@@ -208,7 +208,7 @@
                 @click="showManualCreate = true; showAddRecipeModal = false"
                 class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 <span class="font-medium">Créer manuellement</span>
@@ -224,7 +224,7 @@
       <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Importer depuis une URL</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Importer depuis une URL</h2>
             <button @click="showUrlImport = false" class="text-gray-500 hover:text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -248,7 +248,7 @@
                 v-model="recipeUrl"
                 type="url"
                 placeholder="https://exemple.com/recette"
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 required
               />
               <p class="mt-1 text-sm text-gray-500">Collez l'URL d'une recette en ligne</p>
@@ -265,7 +265,7 @@
               </button>
               <button
                 type="submit"
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+                class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
                 :disabled="urlImportStatus === 'loading'"
               >
                 <span v-if="urlImportStatus === 'loading'">
@@ -288,7 +288,7 @@
       <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Créer une recette</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Créer une recette</h2>
             <button @click="showManualCreate = false" class="text-gray-500 hover:text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -316,7 +316,7 @@
                     v-model="newRecipe.name"
                     type="text"
                     placeholder="Nom de la recette"
-                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     required
                   />
                 </div>
@@ -326,7 +326,7 @@
                     id="recipe-description"
                     v-model="newRecipe.description"
                     placeholder="Description (optionnelle)"
-                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     rows="2"
                   ></textarea>
                 </div>
@@ -343,7 +343,7 @@
                     @click="category && toggleRecipeCategory(category)"
                     class="px-3 py-1 rounded-full text-sm transition-colors border"
                     :class="category && newRecipe.recipeCategory.some(cat => cat && cat.id === category.id)
-                      ? 'bg-indigo-100 border-indigo-300 text-indigo-800'
+                      ? 'bg-emerald-100 border-emerald-300 text-emerald-800'
                       : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'"
                   >
                     {{ category?.name || 'Sans nom' }}
@@ -376,7 +376,7 @@
                     type="number"
                     min="0"
                     placeholder="20"
-                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -387,7 +387,7 @@
                     type="number"
                     min="0"
                     placeholder="30"
-                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -398,7 +398,7 @@
                     type="number"
                     min="1"
                     placeholder="4"
-                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -424,7 +424,7 @@
                   v-model="newRecipe.recipeIngredient[index]"
                   type="text"
                   placeholder="200g de farine"
-                  class="flex-grow border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  class="flex-grow border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
                 <button
                   type="button"
@@ -454,14 +454,14 @@
                 </button>
               </div>
               <div v-for="(instruction, index) in newRecipe.recipeInstructions" :key="`ins-${index}`" class="flex items-start mb-2">
-                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold mr-2 mt-1">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold mr-2 mt-1">
                   {{ index + 1 }}
                 </div>
                 <textarea
                   v-model="newRecipe.recipeInstructions[index].text"
                   rows="2"
                   placeholder="Décrivez cette étape"
-                  class="flex-grow border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  class="flex-grow border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 ></textarea>
                 <button
                   type="button"
@@ -486,7 +486,7 @@
               </button>
               <button
                 type="submit"
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+                class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
                 :disabled="manualCreateStatus === 'loading'"
               >
                 <span v-if="manualCreateStatus === 'loading'">
@@ -509,7 +509,7 @@
       <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">Nouvelle catégorie</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Nouvelle catégorie</h2>
             <button @click="showAddCategoryModal = false" class="text-gray-500 hover:text-gray-700">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -533,7 +533,7 @@
                 v-model="newCategoryName"
                 type="text"
                 placeholder="Ex: Desserts, Entrées, Plats principaux..."
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 required
               />
             </div>
@@ -549,7 +549,7 @@
               </button>
               <button
                 type="submit"
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+                class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
                 :disabled="addCategoryStatus === 'loading'"
               >
                 <span v-if="addCategoryStatus === 'loading'">
@@ -1091,12 +1091,13 @@ export default {
     });
 
     const planRecipe = (recipe) => {
-      // Naviguez vers le planificateur et passez la recette
+      // Naviguez vers le planificateur en transmettant seulement les infos de la recette
       router.push({
         name: 'planner', 
         query: { 
           recipeId: recipe.id, 
-          recipeName: recipe.name 
+          recipeName: recipe.name,
+          showDateSelector: 'true' // Ajout d'un flag pour ouvrir le sélecteur de date
         }
       });
     };
@@ -1117,113 +1118,61 @@ export default {
 
     // Méthode importFromUrl avec route correcte pour votre application
     const importFromUrl = async () => {
-      if (!recipeUrl.value) return;
+  if (!recipeUrl.value.trim()) return;
+  
+  loading.value = true;
+  error.value = false;
+  errorMessage.value = '';
+  
+  try {
+    const response = await recipeService.importRecipeFromUrl(recipeUrl.value);
+    
+    if (response && response.data) {
+      success.value = true;
       
-      urlImportStatus.value = 'loading';
-      urlImportError.value = '';
+      let recipeId = null;
+      let recipeSlug = null;
       
-      try {
-        // Appel à l'API Mealie pour importer depuis une URL
-        const response = await recipeService.importRecipeFromUrl(recipeUrl.value);
-        
-        console.log("Réponse d'importation complète:", response);
-        
-        if (response && response.data) {
-          // Succès de l'importation
-          urlImportStatus.value = 'success';
-          
-          // Analyse complète de la réponse pour trouver l'ID ou le slug
-          const responseData = response.data;
-          
-          // Essayer de localiser l'ID ou le slug dans différentes structures possibles
-          let recipeId = null;
-          let slug = null;
-          
-          // Tentative 1: Slug direct (préféré pour la route edit)
-          if (responseData.slug) {
-            slug = responseData.slug;
-            recipeId = responseData.id || responseData.slug;
-          } 
-          // Tentative 2: ID direct
-          else if (responseData.id) {
-            recipeId = responseData.id;
-            // Si pas de slug mais ID, on peut parfois utiliser l'ID comme slug
-            slug = responseData.id;
-          }
-          // Tentative 3: Objet recipe imbriqué
-          else if (responseData.recipe) {
-            if (responseData.recipe.slug) {
-              slug = responseData.recipe.slug;
-              recipeId = responseData.recipe.id || responseData.recipe.slug;
-            } else if (responseData.recipe.id) {
-              recipeId = responseData.recipe.id;
-              slug = responseData.recipe.id;
-            }
-          }
-          // Tentative 4: Vérifier si la réponse est une chaîne (parfois l'ID est directement retourné)
-          else if (typeof responseData === 'string' && responseData.trim() !== '') {
-            recipeId = responseData;
-            slug = responseData;
-          }
-          
-          if (slug || recipeId) {
-            // Utiliser le slug si disponible, sinon l'ID
-            const routeParam = slug || recipeId;
-            console.log("Paramètre de route identifié:", routeParam);
-            
-            // Réinitialiser le formulaire
-            setTimeout(() => {
-              recipeUrl.value = '';
-              urlImportStatus.value = 'idle';
-              showUrlImport.value = false;
-              
-              // Utiliser la route nommée 'recipe-edit' qui attend un paramètre 'slug'
-              router.push({
-                name: 'recipe-edit',
-                params: { slug: routeParam }
-              });
-            }, 1500);
-          } else {
-            console.error("Impossible de déterminer l'identifiant de la recette importée:", responseData);
-            
-            // Même sans identifiant, on peut considérer que l'importation a réussi
-            setTimeout(() => {
-              recipeUrl.value = '';
-              urlImportStatus.value = 'idle';
-              showUrlImport.value = false;
-              
-              // Rediriger vers la liste des recettes (route principale)
-              router.push({ name: 'recipes' });
-              
-              // Et rafraîchir les données
-              recipeStore.setLoading(true);
-              recipeService.getAll().then(response => {
-                if (response.data && response.data.items) {
-                  recipeStore.setBasicRecipes(response.data.items);
-                }
-                recipeStore.setLoading(false);
-              }).catch(err => {
-                console.error("Erreur lors du rechargement des recettes:", err);
-                recipeStore.setLoading(false);
-              });
-            }, 1500);
-          }
-        } else {
-          // Réponse vide ou invalide
-          throw new Error('Réponse invalide de l\'API lors de l\'importation');
-        }
-      } catch (error) {
-        console.error('Erreur lors de l\'importation de la recette', error);
-        urlImportStatus.value = 'error';
-        
-        if (error.response && error.response.data) {
-          // Récupération du message d'erreur de l'API
-          urlImportError.value = error.response.data.detail || 'Impossible d\'importer cette recette. Vérifiez l\'URL.';
-        } else {
-          urlImportError.value = 'Erreur lors de l\'importation. Vérifiez l\'URL et réessayez.';
-        }
+      if (typeof response.data === 'object') {
+        recipeId = response.data.id;
+        recipeSlug = response.data.slug;
+      } else if (typeof response.data === 'string') {
+        recipeId = response.data;
       }
-    };
+      
+      // Redirection après un délai
+      setTimeout(async () => {
+        if (recipeId) {
+          // Mettre à jour le store (optionnel) et émettre l'événement
+          try {
+            const detailResponse = await recipeService.getById(recipeId);
+            if (detailResponse && detailResponse.data) {
+              recipeStore.addRecipe(detailResponse.data);
+              // Appel pour récupérer l'image automatiquement
+              await recipeService.scrapeRecipeImage(recipeSlug, recipeUrl.value);
+            }
+          } catch (err) {
+            console.warn('Erreur lors du chargement des détails de la recette', err);
+          }
+          emit('recipe-created', recipeId);
+          router.push(`/recipes/${recipeId}`);
+        } else {
+          emit('recipe-created');
+          router.push('/recipes');
+        }
+      }, 1500);
+    } else {
+      throw new Error("Réponse invalide de l'API");
+    }
+  } catch (err) {
+    console.error("Erreur lors de l'importation depuis URL", err);
+    error.value = true;
+    errorMessage.value = err.message || "Impossible d'importer depuis cette URL. Vérifiez l'URL et réessayez.";
+  } finally {
+    loading.value = false;
+  }
+};
+
     
     // Méthodes pour la création manuelle de recettes
     const addIngredient = () => {

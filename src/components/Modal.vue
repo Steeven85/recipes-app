@@ -9,7 +9,7 @@
             <!-- Modal panel -->
             <div 
               :class="[size, roundedClass]"
-              class="relative bg-white dark:bg-gray-800 overflow-hidden shadow-xl transform transition-all max-w-full"
+              class="relative bg-white dark:bg-emerald-600 overflow-hidden shadow-xl transform transition-all max-w-full"
               :style="contentStyle"
               @click.stop
             >

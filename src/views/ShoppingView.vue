@@ -37,7 +37,7 @@
                       id="keep-checked-items" 
                       type="checkbox" 
                       v-model="keepCheckedItemsOnClear"
-                      class="h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                      class="h-4 w-4 text-emerald-600 border-gray-300 rounded"
                     />
                     <label for="keep-checked-items" class="ml-2 block text-sm text-gray-700">
                       Conserver les articles déjà cochés
@@ -56,7 +56,7 @@
             </button>
             <button 
               @click="showClearConfirmation = false"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             >
               Annuler
             </button>
@@ -67,7 +67,7 @@
 
     <!-- En-tête avec contrôles adaptés au mobile -->
     <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
-      <h1 class="text-2xl font-bold mb-4 md:mb-0">Liste de Courses</h1>
+      <h1 class="text-2xl font-bold text-gray-900">Liste de Courses</h1>
       
       <!-- Contrôles version mobile (empilés verticalement) -->
       <div class="md:hidden space-y-2">
@@ -77,7 +77,7 @@
             @click="viewMode = 'category'"
             :class="[
               'px-4 py-3 w-1/2 font-medium',
-              viewMode === 'category' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700'
+              viewMode === 'category' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
             ]"
           >
             <span class="flex items-center justify-center">
@@ -91,7 +91,7 @@
             @click="viewMode = 'recipe'"
             :class="[
               'px-4 py-3 w-1/2 font-medium',
-              viewMode === 'recipe' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700'
+              viewMode === 'recipe' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
             ]"
           >
             <span class="flex items-center justify-center">
@@ -137,7 +137,7 @@
             @click="viewMode = 'category'"
             :class="[
               'px-4 py-2 border-r',
-              viewMode === 'category' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+              viewMode === 'category' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
             ]"
           >
             Par catégorie
@@ -146,7 +146,7 @@
             @click="viewMode = 'recipe'"
             :class="[
               'px-4 py-2',
-              viewMode === 'recipe' ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+              viewMode === 'recipe' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
             ]"
           >
             Par recette
@@ -177,7 +177,7 @@
     <div class="bg-white rounded-lg shadow p-4 md:p-6">
       <!-- État de chargement -->
       <div v-if="loading" class="flex justify-center py-12">
-        <svg class="animate-spin h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-10 w-10 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -194,7 +194,7 @@
         <p class="text-gray-500 mb-4">{{ errorMessage }}</p>
         <button 
           @click="loadShoppingList"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
         >
           Réessayer
         </button>
@@ -208,7 +208,7 @@
           <div class="flex flex-col items-center gap-2 mt-4">
             <button 
               @click="generateFromMealPlan"
-              class="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 w-full md:w-auto"
+              class="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 w-full md:w-auto"
             >
               Générer depuis le planning
             </button>
@@ -235,7 +235,7 @@
                     type="checkbox" 
                     :checked="item.checked"
                     @change="toggleItem(item)"
-                    class="h-6 w-6 text-indigo-600 rounded"
+                    class="h-6 w-6 text-emerald-600 rounded"
                   />
                 </div>
                 
@@ -271,7 +271,7 @@
                   type="checkbox" 
                   :checked="item.checked"
                   @change="toggleItem(item)"
-                  class="h-5 w-5 text-indigo-600 rounded"
+                  class="h-5 w-5 text-emerald-600 rounded"
                 />
                 
                 <div class="ml-3 flex-grow">
@@ -342,7 +342,7 @@
                     type="checkbox" 
                     :checked="item.checked"
                     @change="toggleItem(item)"
-                    class="h-6 w-6 text-indigo-600 rounded"
+                    class="h-6 w-6 text-emerald-600 rounded"
                   />
                 </div>
                 
@@ -371,7 +371,7 @@
                   type="checkbox" 
                   :checked="item.checked"
                   @change="toggleItem(item)"
-                  class="h-5 w-5 text-indigo-600 rounded"
+                  class="h-5 w-5 text-emerald-600 rounded"
                 />
                 
                 <div class="ml-3 flex-grow">
@@ -397,7 +397,7 @@
             <h3 class="font-medium text-lg mb-2 text-gray-700 border-b pb-1 flex flex-col md:flex-row md:items-center">
               <span>{{ getRecipeName(recipeId) }}</span>
               <!-- Badge pour indiquer le nombre d'items -->
-              <span class="mt-1 md:mt-0 md:ml-2 px-2 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full inline-block">
+              <span class="mt-1 md:mt-0 md:ml-2 px-2 py-1 text-xs bg-emerald-100 text-emerald-800 rounded-full inline-block">
                 {{ filterItemsByRecipe(recipeId).length }} ingrédient(s)
               </span>
             </h3>
@@ -410,7 +410,7 @@
                     type="checkbox" 
                     :checked="item.checked"
                     @change="toggleItem(item)"
-                    class="h-6 w-6 text-indigo-600 rounded"
+                    class="h-6 w-6 text-emerald-600 rounded"
                   />
                 </div>
                 
@@ -439,7 +439,7 @@
                   type="checkbox" 
                   :checked="item.checked"
                   @change="toggleItem(item)"
-                  class="h-5 w-5 text-indigo-600 rounded"
+                  class="h-5 w-5 text-emerald-600 rounded"
                   />
                 
                 <div class="ml-3 flex-grow">
@@ -507,7 +507,7 @@
             
             <button 
               type="submit"
-              class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 text-base font-medium"
+              class="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 text-base font-medium"
             >
               Ajouter
             </button>
@@ -550,7 +550,7 @@
             </select>
             <button 
               type="submit"
-              class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
             >
               Ajouter
             </button>
@@ -565,6 +565,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { shoppingService, recipeService } from '../services/api';
+import axiosInstance from '../services/axiosInstance';
 
 export default {
   setup() {
@@ -884,6 +885,27 @@ export default {
       console.log('Utilisation de données de test avec recettes');
     };
     
+    const toast = ref({
+      show: false,
+      message: '',
+      type: 'success',
+      timeout: null
+    });
+
+    const showToast = (message, type = 'success') => {
+      if (toast.value.timeout) {
+        clearTimeout(toast.value.timeout);
+      }
+      toast.value = {
+        show: true,
+        message,
+        type,
+        timeout: setTimeout(() => {
+          toast.value.show = false;
+        }, 3000)
+      };
+    };
+
     // Fonction pour forcer l'utilisation des données de test (pour le débogage)
     const useTestDataForDebug = () => {
       useMockData(true);
@@ -1155,38 +1177,67 @@ export default {
       try {
         console.log('Génération de la liste de courses depuis le planning...');
         
-        // Récupérer d'abord le planning des repas pour diagnostic
+        // Définir la plage de dates (par exemple, aujourd’hui et une semaine plus tard)
         const today = new Date();
         const startDate = formatDate(today);
-        
         const endDate = new Date(today);
         endDate.setDate(today.getDate() + 7);
         const formattedEndDate = formatDate(endDate);
         
-        try {
-          const mealPlanResponse = await recipeService.getMealPlan(startDate, formattedEndDate);
-          console.log('Planning de repas récupéré:', mealPlanResponse.data);
-          console.log('Nombre de repas dans le planning:', 
-            Array.isArray(mealPlanResponse.data) ? mealPlanResponse.data.length : 
-            (mealPlanResponse.data.items ? mealPlanResponse.data.items.length : 'Inconnu'));
-        } catch (mealPlanError) {
-          console.error('Erreur lors de la récupération du planning:', mealPlanError);
+        // Récupérer le planning de repas
+        const mealPlanResponse = await recipeService.getMealPlan(startDate, formattedEndDate);
+        console.log('Planning de repas récupéré:', mealPlanResponse.data);
+        
+        // Extraire les identifiants des recettes planifiées
+        const recipeIds = new Set();
+        if (mealPlanResponse.data.items) {
+          mealPlanResponse.data.items.forEach(meal => {
+            if (meal.recipe && meal.recipe.id) {
+              recipeIds.add(meal.recipe.id);
+            }
+          });
         }
         
-        // Générer la liste de courses
-        const generateResponse = await shoppingService.generateShoppingListFromMealPlan(startDate, formattedEndDate);
-        console.log('Réponse de la génération:', generateResponse.data);
+        if (recipeIds.size === 0) {
+          throw new Error('Aucune recette trouvée dans le planning pour générer la liste.');
+        }
         
-        // Charger la liste mise à jour
+        // Récupérer la liste principale de courses
+        const listResponse = await shoppingService.getMainShoppingList();
+        const mainList = listResponse.data.items?.[0];
+        if (!mainList || !mainList.id) {
+          throw new Error('Aucune liste de courses valide trouvée');
+        }
+        
+        // Pour chaque recette, ajouter ses ingrédients dans la liste de courses
+        for (const id of recipeIds) {
+          const recipeResponse = await recipeService.getById(id);
+          if (!recipeResponse.data) continue;
+          const recipe = recipeResponse.data;
+          // Préparer le payload attendu par l’API
+          const payload = [{
+            recipeId: recipe.id,
+            recipeIncrementQuantity: 1,
+            recipeIngredients: recipe.recipeIngredient || []
+          }];
+          // Envoi de la requête POST vers le même endpoint utilisé dans le planning
+          await axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, payload);
+        }
+        
+        showToast('Liste de courses générée avec succès');
+        // Recharger la liste mise à jour
         await loadShoppingList();
+        
       } catch (error) {
         console.error('Erreur lors de la génération de la liste de courses', error);
         error.value = true;
         errorMessage.value = error.message || 'Impossible de générer la liste de courses.';
+        showToast(errorMessage.value, 'error');
       } finally {
         loading.value = false;
       }
     };
+
 
     // Utilitaire pour formater la date en YYYY-MM-DD
     const formatDate = (date) => {

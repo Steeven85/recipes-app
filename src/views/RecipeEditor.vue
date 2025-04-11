@@ -65,7 +65,7 @@
             v-model="recipe.name"
             type="text"
             placeholder="Nom de votre recette"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             required
           />
         </div>
@@ -78,7 +78,7 @@
             v-model="recipe.description"
             rows="3"
             placeholder="Décrivez votre recette"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
           ></textarea>
         </div>
   
@@ -92,7 +92,7 @@
               type="number"
               min="0"
               placeholder="20"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
           <div>
@@ -103,7 +103,7 @@
               type="number"
               min="0"
               placeholder="30"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
           <div>
@@ -114,7 +114,7 @@
               type="number"
               min="0"
               placeholder="50"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
           <div>
@@ -125,7 +125,7 @@
               type="number"
               min="1"
               placeholder="4"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             />
           </div>
         </div>
@@ -137,7 +137,7 @@
             <button
               type="button"
               @click="addNewIngredient"
-              class="px-2 py-1 bg-indigo-100 rounded-md hover:bg-indigo-200 text-indigo-700 text-sm flex items-center"
+              class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -147,7 +147,7 @@
           </div>
           
           <div v-if="loadingIngredients" class="text-center py-4">
-            <svg class="animate-spin h-6 w-6 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin h-6 w-6 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -247,7 +247,7 @@
                         :class="[
                           'p-2 cursor-pointer',
                           food.isNewFood 
-                            ? 'text-indigo-600 font-medium bg-indigo-50 hover:bg-indigo-100 flex items-center' 
+                            ? 'text-emerald-600 font-medium bg-emerald-50 hover:bg-emerald-100 flex items-center' 
                             : food.isLoadMoreIndicator
                               ? 'text-gray-600 bg-gray-100 font-medium text-center'
                               : 'hover:bg-gray-100'
@@ -310,7 +310,7 @@
                 <button
                 type="button"
                 @click="addNewInstruction"
-                class="px-2 py-1 bg-indigo-100 rounded-md hover:bg-indigo-200 text-indigo-700 text-sm flex items-center"
+                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
                 >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -320,9 +320,9 @@
             </div>
           
             <div v-for="(instruction, index) in recipe.recipeInstructions" :key="`ins-${index}`" class="mb-3">
-                <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+                <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
                 <div class="flex justify-between items-center mb-2">
-                    <div class="font-semibold text-indigo-600">
+                    <div class="font-semibold text-emerald-600">
                     Étape {{ index + 1 }}
                     </div>
                     <!-- Boutons réordonner/supprimer -->
@@ -365,14 +365,14 @@
                 <input 
                     v-if="instruction.summary !== undefined"
                     v-model="instruction.summary" 
-                    class="w-full mb-2 border border-indigo-200 rounded p-2 text-gray-700"
+                    class="w-full mb-2 border border-emerald-500 rounded p-2 text-gray-700"
                     placeholder="Résumé de l'étape (optionnel)"
                 />
                 
                 <!-- Champ pour le texte de l'instruction (toujours présent) -->
                 <textarea 
                     v-model="instruction.text" 
-                    class="w-full border border-indigo-200 rounded p-2 text-gray-700"
+                    class="w-full border border-emerald-500 rounded p-2 text-gray-700"
                     placeholder="Décrivez cette étape de préparation..."
                     rows="3"
                 ></textarea>
@@ -498,7 +498,7 @@
               :class="[
                 'px-3 py-1 rounded-full text-sm cursor-pointer',
                 isSelectedCategory(category) 
-                  ? 'bg-indigo-100 border-indigo-300 text-indigo-800 border' 
+                  ? 'bg-emerald-100 border-emerald-300 text-emerald-800 border' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-transparent'
               ]"
             >
@@ -527,7 +527,7 @@
             />
             <button 
               @click="addNewCategory" 
-              class="bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700"
+              class="bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700"
               :disabled="!newCategoryName.trim()"
             >
               Ajouter
@@ -555,7 +555,7 @@
         </button>
         <button
           @click="saveRecipe"
-          class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+          class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
           :disabled="loading"
         >
           <span v-if="loading">
@@ -741,19 +741,21 @@
           // Charger les unités
           const unitsResponse = await referenceService.getUnits();
           if (unitsResponse.data && Array.isArray(unitsResponse.data.items)) {
-            units.value = unitsResponse.data.items;
+            units.value = unitsResponse.data.items.sort((a, b) =>
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+            );
           } else {
             units.value = [];
           }
           
-          // Réinitialiser les variables de pagination
+          // Réinitialiser la pagination pour les ingrédients
           currentFoodsPage.value = 1;
           hasMoreFoods.value = true;
           
-          // Charger la première page d'ingrédients
-          await loadNextPageOfFoods();
+          // Charger TOUS les ingrédients en une fois
+          await loadAllFoods('');
           
-          // Charger les catégories
+          // Charger les catégories (pour le reste de la recette)
           const categoriesResponse = await recipeService.getCategories();
           if (categoriesResponse.data && Array.isArray(categoriesResponse.data.items)) {
             availableCategories.value = categoriesResponse.data.items;
@@ -768,6 +770,7 @@
           loadingIngredients.value = false;
         }
       };
+
   
       // Gestion d'erreur pour l'image
       const handleImageError = (e) => {
@@ -855,6 +858,34 @@
         }
       };
   
+
+      const loadAllFoods = async (query = '') => {
+        isLoadingMoreFoods.value = true;
+        try {
+          const perPage = 1000; // On charge jusqu’à 1000 ingrédients d’un coup
+          const response = await referenceService.getFoods({
+            page: 1,
+            perPage: perPage,
+            query: query,
+            orderBy: 'name',
+            orderDirection: 'asc'
+          });
+          
+          if (response.data && Array.isArray(response.data.items)) {
+            // On trie par ordre alphabétique (insensible à la casse)
+            foods.value = response.data.items.sort((a, b) => 
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+            );
+            hasMoreFoods.value = false; // Plus de pagination nécessaire
+          }
+        } catch (err) {
+          console.error("Erreur lors du chargement complet des ingrédients", err);
+        } finally {
+          isLoadingMoreFoods.value = false;
+        }
+      };
+
+
       // Recherche d'ingrédients
       const searchFoods = async (query) => {
         // Réinitialiser la pagination
@@ -993,22 +1024,18 @@
   
       // Gestion des dropdowns d'aliments
       const openFoodDropdown = (index) => {
+        // Affiche le dropdown pour cet ingrédient
         recipe.value.recipeIngredient[index].showFoodDropdown = true;
         
-        // Si nous avons une requête de recherche, effectuer une recherche
-        if (recipe.value.recipeIngredient[index].foodInput) {
-          // Stocker le terme de recherche pour la pagination future
-          const searchQuery = recipe.value.recipeIngredient[index].foodInput;
-          searchFoods(searchQuery);
-        } else {
-          // Si pas de recherche, juste charger la première page d'ingrédients
-          if (foods.value.length === 0 || currentFoodsPage.value === 1) {
-            // Réinitialiser et charger la première page
-            currentFoodsPage.value = 1;
-            loadNextPageOfFoods('');
-          }
+        // Si la liste n’a pas encore été chargée, charger tous les ingrédients
+        if (foods.value.length === 0) {
+          loadAllFoods(recipe.value.recipeIngredient[index].foodInput || '');
+        } else if (recipe.value.recipeIngredient[index].foodInput) {
+          // Si un terme de recherche existe, vous pouvez également filtrer en rechargeant (optionnel)
+          loadAllFoods(recipe.value.recipeIngredient[index].foodInput);
         }
       };
+
   
       const closeFoodDropdown = (index, event) => {
         // Fermer avec délai pour permettre la sélection
@@ -1506,6 +1533,7 @@
         closeUnitDropdown,
         filteredUnits,
         selectUnit,
+        handleUnitSelection,
         openFoodDropdown,
         closeFoodDropdown,
         filteredFoods,
@@ -1523,6 +1551,7 @@
         isSelectedCategory,
         toggleCategory,
         addNewCategory
+        
       };
     }
   };

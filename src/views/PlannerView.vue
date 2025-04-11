@@ -9,7 +9,7 @@
       </h1>
       <button 
         @click="generateShoppingList"
-        class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 flex items-center"
+        class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center"
         :disabled="!hasMeals || generatingList"
         :class="{'opacity-50 cursor-not-allowed': !hasMeals || generatingList}"
       >
@@ -71,7 +71,7 @@
         <p class="text-lg font-medium">{{ errorMessage || 'Erreur lors du chargement du planning' }}</p>
         <button 
           @click="loadMealPlan" 
-          class="mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"
+          class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
         >
           Réessayer
         </button>
@@ -104,7 +104,7 @@
             </button>
             <div class="text-center">
               <p class="text-lg font-semibold" :class="{'text-gray-700 font-bold': isToday(weekDays[currentDayIndex].date)}">
-                {{ formatDay(weekDays[currentDayIndex].date) }} {{ formatDate(weekDays[currentDayIndex].date) }}
+                {{ weekDays[currentDayIndex] ? formatDay(weekDays[currentDayIndex].date) : '' }} {{ formatDate(weekDays[currentDayIndex].date) }}
               </p>
               <p class="text-sm text-gray-500">{{ formatFullDate(weekDays[currentDayIndex].date) }}</p>
             </div>
@@ -153,7 +153,7 @@
             </h3>
             <button 
               @click="openRecipeSelector(weekDays[currentDayIndex].date)"
-              class="px-2 py-1 bg-gray-800 text-white rounded-lg hover:bg-gray-900 text-xs flex items-center"
+              class="px-2 py-1 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-xs flex items-center"
             >
               <span class="mr-1">+</span> Ajouter
             </button>
@@ -263,7 +263,7 @@
             </h3>
             <button 
               @click="openRecipeSelector(weekDays[currentDayIndex].date)"
-              class="px-3 py-1.5 bg-gray-800 text-white rounded-lg hover:bg-gray-900 text-sm flex items-center"
+              class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm flex items-center"
             >
               <span class="mr-1">+</span> Ajouter un repas
             </button>
@@ -352,36 +352,65 @@
         </svg>
         Résumé de la semaine
       </h3>
-
+      <!-- Légende des icônes de catégorie de repas -->
+      <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+        <div class="flex items-center">
+          <!-- Icon pour petit-déj -->
+          <span v-html="getMealTypeIcon('breakfast')" class="w-4 h-4 mr-1"></span>
+          <span>Petit-déj</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour déjeuner -->
+          <span v-html="getMealTypeIcon('lunch')" class="w-4 h-4 mr-1"></span>
+          <span>Déjeuner</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour dîner -->
+          <span v-html="getMealTypeIcon('dinner')" class="w-4 h-4 mr-1"></span>
+          <span>Dîner</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour collation -->
+          <span v-html="getMealTypeIcon('snack')" class="w-4 h-4 mr-1"></span>
+          <span>Collation</span>
+        </div>
+      </div>
       <!-- Conteneur défilable horizontalement si nécessaire -->
-      <div class="overflow-x-auto">
-        <!-- Utilisation de "w-max" afin que la largeur du contenu s'adapte au nombre de jours -->
-        <div class="w-max space-y-3 md:space-y-3">
-          <div v-for="day in weekDays" :key="day.date" class="flex items-center space-x-4 py-2 border-b last:border-b-0">
-            <!-- Affichage de la date -->
-            <div class="min-w-[80px] text-sm font-medium" :class="{'text-gray-700 font-bold': isToday(day.date)}">
-              {{ formatDay(day.date) }} {{ formatDate(day.date) }}
+      <!-- Grille responsive : 7 cartes = 7 jours -->
+      <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <div 
+          v-for="day in weekDays" 
+          :key="day.date"
+          class="bg-gray-50 border border-gray-200 rounded-lg p-3 relative"
+          :class="{'bg-emerald-50': isToday(day.date)}"
+        >
+          <!-- Titre du jour -->
+          <div class="mb-2 font-medium text-gray-700">
+            <span class="block text-xs uppercase tracking-wider">
+              {{ formatDay(day.date) }}
+            </span>
+            <span class="text-lg font-semibold">
+              {{ formatDate(day.date) }}
+            </span>
+          </div>
+
+          <!-- Repas -->
+          <div v-if="day.meals.length > 0" class="space-y-1">
+            <div 
+              v-for="meal in day.meals"
+              :key="meal.id"
+              class="flex items-center text-xs px-2 py-1 bg-white rounded shadow-sm hover:bg-gray-100 transition-colors cursor-pointer"
+              @click="currentDayIndex = weekDays.findIndex(d => d.date === day.date)"
+            >
+              <span 
+                v-html="getMealTypeIcon(meal.type)" 
+                class="w-4 h-4 mr-1 text-emerald-600"
+              ></span>
+              <span class="font-medium">{{ meal.recipe.name }}</span>
             </div>
-            <!-- Liste des repas pour la journée -->
-            <div class="flex-1 flex flex-wrap gap-2">
-              <template v-if="day.meals.length > 0">
-                <div 
-                  v-for="meal in day.meals" 
-                  :key="meal.id"
-                  :class="[
-                    'text-xs px-2 py-1 rounded-full flex items-center cursor-pointer',
-                    getMealTypeBackgroundClassSober(meal.type)
-                  ]"
-                  @click="currentDayIndex = weekDays.findIndex(d => d.date === day.date)"
-                >
-                  <span v-html="getMealTypeIcon(meal.type)" class="w-3 h-3 mr-1"></span>
-                  <span class="truncate max-w-[150px]">{{ meal.recipe.name }}</span>
-                </div>
-              </template>
-              <div v-else class="text-xs text-gray-500 italic">
-                Aucun repas planifié
-              </div>
-            </div>
+          </div>
+          <div v-else class="text-xs text-gray-500 italic">
+            Aucun repas planifié
           </div>
         </div>
       </div>
@@ -444,7 +473,7 @@
             <p>{{ recipesError }}</p>
             <button 
               @click="loadRecipes" 
-              class="mt-4 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900"
+              class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
             >
               Réessayer
             </button>
@@ -495,6 +524,67 @@
       </div>
     </Teleport>
     
+    <!-- Modal pour sélectionner une date -->
+    <Teleport to="body">
+      <div v-if="showDateSelectorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-4 md:p-6 max-w-md w-full" @click.stop>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">
+              Ajouter "{{ pendingRecipeForDate?.name }}" au planning
+            </h3>
+            <button @click="showDateSelectorModal = false" class="text-gray-500 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-4">
+            <label for="recipe-date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input
+              id="recipe-date"
+              v-model="selectedDateForRecipe"
+              type="date"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              :min="dayjs().format('YYYY-MM-DD')"
+              required
+            />
+          </div>
+          
+          <div class="mb-4">
+            <label for="meal-type" class="block text-sm font-medium text-gray-700 mb-1">Type de repas</label>
+            <select 
+              id="meal-type"
+              v-model="selectedMealType" 
+              class="w-full border rounded-lg px-3 py-2"
+            >
+              <option value="breakfast">Petit-déjeuner</option>
+              <option value="lunch">Déjeuner</option>
+              <option value="dinner">Dîner</option>
+              <option value="snack">Collation</option>
+            </select>
+          </div>
+          
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              @click="showDateSelectorModal = false"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              @click="confirmDateSelection"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+            >
+              Ajouter au planning
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- Toast pour les notifications -->
     <div 
       v-if="toast.show" 
@@ -541,8 +631,17 @@ export default {
     const recipeStore = useRecipeStore();
     const startDate = ref(dayjs().startOf('week').format('YYYY-MM-DD'));
     const endDate = ref(dayjs().endOf('week').format('YYYY-MM-DD'));
-    const weekDays = ref([]);
+    const weekDays = ref(Array.from({ length: 7 }, (_, i) => {
+      const date = dayjs().startOf('week').add(i, 'day').format('YYYY-MM-DD');
+      return {
+        date,
+        meals: []
+      };
+    }));
     const selectedRecipe = ref(null);
+    const showDateSelectorModal = ref(false);
+    const pendingRecipeForDate = ref(null);
+    const selectedDateForRecipe = ref(dayjs().format('YYYY-MM-DD'));
     const loading = ref(true);
     const error = ref(false);
     const errorMessage = ref('');
@@ -581,6 +680,14 @@ export default {
         currentDayIndex.value += 1;
       }
     };
+
+    const currentDay = computed(() => {
+      if (weekDays.value && weekDays.value.length > 0 && 
+          currentDayIndex.value >= 0 && currentDayIndex.value < weekDays.value.length) {
+        return weekDays.value[currentDayIndex.value];
+      }
+      return { date: dayjs().format('YYYY-MM-DD'), meals: [] };
+    });
 
     const openDateSelector = (recipe) => {
       pendingRecipe.value = recipe;
@@ -656,7 +763,18 @@ export default {
 
     // Nouvelle fonction pour obtenir uniquement les classes de fond
     const getMealTypeBackgroundClassSober = (type) => {
-      return 'bg-gray-100 text-gray-700';
+      switch (type) {
+        case 'breakfast':
+          return 'bg-blue-500 text-white';
+        case 'lunch':
+          return 'bg-yellow-500 text-white';
+        case 'snack':
+          return 'bg-purple-500 text-white';
+        case 'dinner':
+          return 'bg-orange-500 text-white';
+        default:
+          return 'bg-gray-300 text-gray-700';
+      }
     };
 
     const getMealTypeIcon = (type) => {
@@ -705,20 +823,6 @@ export default {
         default: return 'Repas';
       }
     };
-
-    // Surveiller les changements de route pour le paramètre recipeId
-    watch(() => route.query, (query) => {
-      if (query.recipeId) {
-        // Récupérez les détails de la recette
-        const recipe = {
-          id: query.recipeId,
-          name: query.recipeName
-        };
-        
-        // Ouvrir le sélecteur de date pour cette recette
-        openDateSelector(recipe);
-      }
-    }, { immediate: true });
 
     // Lifecycle hooks
     onMounted(async () => {
@@ -1083,6 +1187,50 @@ export default {
       }
     };
     
+    const handleRecipeFromRoute = (query) => {
+      if (query.recipeId) {
+        // Stocker les infos de la recette
+        pendingRecipeForDate.value = {
+          id: query.recipeId,
+          name: query.recipeName || 'Recette'
+        };
+        
+        // Si le flag est présent, ouvrir le modal de sélection de date
+        if (query.showDateSelector === 'true') {
+          // Par défaut, utiliser la date du jour
+          selectedDateForRecipe.value = dayjs().format('YYYY-MM-DD');
+          showDateSelectorModal.value = true;
+        } else if (query.date) {
+          // Si une date est spécifiée directement, utiliser cette date
+          const dateToUse = query.date;
+          addRecipeToDay(pendingRecipeForDate.value, dateToUse);
+          
+          // Définir le jour actif pour afficher la recette ajoutée
+          const dayIndex = weekDays.value.findIndex(day => day.date === dateToUse);
+          if (dayIndex !== -1) {
+            currentDayIndex.value = dayIndex;
+          }
+        }
+      }
+    };
+
+
+    const confirmDateSelection = () => {
+      if (pendingRecipeForDate.value && selectedDateForRecipe.value) {
+        addRecipeToDay(pendingRecipeForDate.value, selectedDateForRecipe.value);
+        
+        // Définir le jour actif pour afficher la recette ajoutée
+        const dayIndex = weekDays.value.findIndex(day => day.date === selectedDateForRecipe.value);
+        if (dayIndex !== -1) {
+          currentDayIndex.value = dayIndex;
+        }
+        
+        // Fermer le modal et réinitialiser
+        showDateSelectorModal.value = false;
+        pendingRecipeForDate.value = null;
+      }
+    };
+
     const toggleAllItems = () => {
       allChecked.value = !allChecked.value;
       weekDays.value.forEach(day => {
@@ -1108,6 +1256,8 @@ export default {
         }, 3000)
       };
     };
+
+    watch(() => route.query, handleRecipeFromRoute, { immediate: true });
 
     return {
       startDate,
@@ -1159,7 +1309,12 @@ export default {
       previousDay,
       nextDay,
       toggleAllItems,
-      allChecked
+      allChecked,
+      showDateSelectorModal,
+      pendingRecipeForDate,
+      selectedDateForRecipe,
+      confirmDateSelection,
+      dayjs
     };
   }
 };

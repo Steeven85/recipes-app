@@ -191,6 +191,22 @@ export const recipeService = {
     return imageUrl;
   },
 
+  async scrapeRecipeImage(slug, recipeUrl) {
+    if (!slug || !recipeUrl) {
+      throw new Error("Le slug et l'URL de la recette sont requis");
+    }
+    try {
+      const payload = {
+        includeTags: true,
+        url: recipeUrl
+      };
+      // On suppose que l'endpoint est '/recipes/{slug}/image'
+      return await axiosInstance.post(`/recipes/${slug}/image`, payload);
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'image via scraping", error);
+      throw error;
+    }
+  },
 
   /**
    * Supprime un repas du plan
@@ -1002,6 +1018,99 @@ export const referenceService = {
     }
   },
   
+  // Récupère toutes les unités disponibles
+  async getUnits() {
+    try {
+      return await axiosInstance.get('/units');
+    } catch (error) {
+      console.error('Erreur lors de la récupération des unités', error);
+      throw new Error('Impossible de récupérer les unités');
+    }
+  },
+
+  /**
+   * Crée une nouvelle unité.
+   * On envoie toutes les informations pertinentes :
+   * - name, pluralName, description, extras,
+   * - fraction, abbreviation, pluralAbbreviation, useAbbreviation,
+   * - et éventuellement aliases.
+   * @param {Object} unitData - Données de l'unité à créer
+   * @returns {Promise<Object>} La nouvelle unité créée
+   */
+  async createUnit(unitData) {
+    if (!unitData || !unitData.name) {
+      throw new Error("Le nom de l'unité est requis");
+    }
+
+    const payload = {
+      name: unitData.name,
+      pluralName: unitData.pluralName || null,
+      description: unitData.description || "",
+      extras: unitData.extras || {},
+      fraction: unitData.fraction !== undefined ? unitData.fraction : false,
+      abbreviation: unitData.abbreviation || "",
+      pluralAbbreviation: unitData.pluralAbbreviation || "",
+      useAbbreviation: unitData.useAbbreviation !== undefined ? unitData.useAbbreviation : false,
+      aliases: unitData.aliases || []
+    };
+
+    try {
+      return await axiosInstance.post('/units', payload);
+    } catch (error) {
+      console.error("Erreur lors de la création de l'unité", error);
+      throw new Error("Impossible de créer l'unité");
+    }
+  },
+
+  /**
+   * Met à jour une unité existante.
+   * @param {String} id - ID de l'unité à mettre à jour
+   * @param {Object} unitData - Données à mettre à jour
+   * @returns {Promise<Object>} La réponse de l'API
+   */
+  async updateUnit(id, unitData) {
+    if (!id) {
+      throw new Error("ID de l'unité manquant");
+    }
+    // Pour la mise à jour, on envoie un payload avec toutes les infos nécessaires
+    const payload = {
+      name: unitData.name,
+      pluralName: unitData.pluralName || null,
+      description: unitData.description || "",
+      extras: unitData.extras || {},
+      fraction: unitData.fraction !== undefined ? unitData.fraction : false,
+      abbreviation: unitData.abbreviation || "",
+      pluralAbbreviation: unitData.pluralAbbreviation || "",
+      useAbbreviation: unitData.useAbbreviation !== undefined ? unitData.useAbbreviation : false,
+      aliases: unitData.aliases || []
+    };
+
+    try {
+      // Ici on utilise PUT, en supposant que l'API met à jour l'unité via PUT sur /units/{id}
+      return await axiosInstance.put(`/units/${id}`, payload);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'unité", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Supprime une unité à partir de son ID
+   * @param {String} id - ID de l'unité à supprimer
+   * @returns {Promise<Object>} Résultat de la suppression
+   */
+  async deleteUnit(id) {
+    if (!id) {
+      throw new Error("ID de l'unité manquant");
+    }
+    try {
+      return await axiosInstance.delete(`/units/${id}`);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'unité", error);
+      throw error;
+    }
+  },
+
   /**
    * Récupère tous les aliments disponibles avec support amélioré de pagination
    * @param {Object} options - Options de pagination et filtrage
@@ -1148,5 +1257,58 @@ export const referenceService = {
       console.error('Erreur lors de la récupération des tags', error);
       throw new Error('Impossible de récupérer les tags');
     }
-  }
+  },
+
+  /**
+   * Supprime un aliment (ingrédient) à partir de son ID
+   * @param {String} id - ID de l'aliment à supprimer
+   * @returns {Promise<Object>} Résultat de la suppression
+   */
+  async deleteFood(id) {
+    if (!id) {
+      throw new Error("ID de l'aliment manquant");
+    }
+    try {
+      return await axiosInstance.delete(`/foods/${id}`);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'aliment", error);
+      throw error;
+    }
+  },
+  /**
+   * Supprime une unité à partir de son ID
+   * @param {String} id - ID de l'unité à supprimer
+   * @returns {Promise<Object>} Résultat de la suppression
+   */
+  async deleteUnit(id) {
+    if (!id) {
+      throw new Error("ID de l'unité manquant");
+    }
+    try {
+      return await axiosInstance.delete(`/units/${id}`);
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'unité", error);
+      throw error;
+    }
+  },
+  /**
+   * Met à jour un aliment (ingrédient) en envoyant une requête PUT à l'API
+   * @param {String} id - L'ID de l'aliment à mettre à jour
+   * @param {Object} foodData - Les données modifiées de l'aliment
+   * @returns {Promise<Object>} - La réponse de l'API
+   */
+  async updateFood(id, foodData) {
+    if (!id) {
+      throw new Error("ID de l'aliment manquant");
+    }
+    try {
+      // Ici, j'utilise PUT. Si ton API préfère PATCH, adapte la méthode et l'URL en conséquence.
+      return await axiosInstance.put(`/foods/${id}`, foodData);
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de l'aliment", error);
+      throw error;
+    }
+  },
+
+
 };
