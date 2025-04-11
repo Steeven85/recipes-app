@@ -4,7 +4,7 @@
       <!-- Étape 0: Choix du mode de création -->
       <div v-if="currentStep === 0" class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Ajouter une recette</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Ajouter une recette</h2>
           <button @click="close" class="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -18,7 +18,7 @@
               @click="chooseImportMethod('url')"
               class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
               <span class="font-medium">Importer depuis une URL</span>
@@ -28,7 +28,7 @@
               @click="chooseImportMethod('manual')"
               class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               <span class="font-medium">Créer manuellement</span>
@@ -40,7 +40,7 @@
       <!-- Étape URL: Importation depuis URL -->
       <div v-if="currentStep === 'url'" class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Importer depuis une URL</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Importer depuis une URL</h2>
           <button @click="close" class="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -64,7 +64,7 @@
               v-model="recipeUrl"
               type="url"
               placeholder="https://exemple.com/recette"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               required
             />
             <p class="mt-1 text-sm text-gray-500">Collez l'URL d'une recette en ligne</p>
@@ -81,7 +81,7 @@
             </button>
             <button
               type="submit"
-              class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
               :disabled="loading"
             >
               <span v-if="loading">
@@ -100,7 +100,7 @@
       <!-- Étape 1: Création initiale de la recette -->
       <div v-if="currentStep === 1" class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Créer une nouvelle recette</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Créer une nouvelle recette</h2>
           <button @click="close" class="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -120,7 +120,7 @@
               v-model="recipe.name"
               type="text"
               placeholder="Nom de votre nouvelle recette"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               required
               ref="recipeNameInput"
             />
@@ -137,7 +137,7 @@
             </button>
             <button
               type="submit"
-              class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
               :disabled="loading"
             >
               <span v-if="loading">
@@ -156,7 +156,7 @@
       <!-- Étape 2: Édition complète de la recette -->
       <div v-if="currentStep === 2" class="p-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">Modifier "{{ recipe.name }}"</h2>
+          <h2 class="text-xl font-semibold text-gray-800">Modifier "{{ recipe.name }}"</h2>
           <button @click="close" class="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -176,30 +176,48 @@
           <!-- Image de la recette -->
           <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
-            <div class="flex items-center">
-              <div class="relative h-32 w-32 bg-gray-100 rounded-lg overflow-hidden">
-                <img 
-                  v-if="imagePreview" 
-                  :src="imagePreview" 
-                  alt="Aperçu de l'image" 
-                  class="h-full w-full object-cover"
-                />
-                <div v-else class="flex items-center justify-center h-full text-gray-400">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                  @change="handleImageUpload"
-                />
-              </div>
-              <div class="ml-4 text-sm text-gray-500">
-                <p>Cliquez pour ajouter une image</p>
-                <p v-if="imageFile">{{ imageFile.name }}</p>
-              </div>
+            <!-- Zone de drop, paste et clic -->
+            <div 
+              class="relative border-dashed border-2 p-4 text-center rounded cursor-pointer"
+              @dragover.prevent
+              @drop.prevent="handleDrop"
+              @paste.prevent="handlePaste"
+              @click="triggerFileInput"
+            >
+              <template v-if="!imagePreview">
+                <p class="text-gray-400">Glissez-déposez une image ici,<br>ou cliquez pour sélectionner un fichier</p>
+              </template>
+              <template v-else>
+                <img :src="imagePreview" alt="Aperçu de l'image" class="mx-auto h-32 w-32 object-cover rounded" />
+              </template>
+              <input 
+                type="file" 
+                accept="image/*" 
+                class="absolute inset-0 opacity-0"
+                ref="fileInput"
+                @change="handleImageUpload"
+              />
+            </div>
+        
+            <!-- Option pour importer via URL -->
+            <div class="mt-4">
+              <input 
+                v-model="manualImageUrl" 
+                type="text" 
+                placeholder="Saisissez l'URL de l'image" 
+                class="border p-2 rounded w-full"
+              />
+              <button 
+                type="button"
+                @click="loadImageFromUrl"
+                class="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Charger l'image depuis l'URL
+              </button>
+            </div>
+        
+            <div class="mt-1 text-sm text-gray-500" v-if="imageFile">
+              Fichier sélectionné : {{ imageFile.name }}
             </div>
           </div>
 
@@ -211,7 +229,7 @@
               v-model="recipe.description"
               rows="3"
               placeholder="Décrivez votre recette"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
             ></textarea>
           </div>
 
@@ -225,7 +243,7 @@
                 type="number"
                 min="0"
                 placeholder="20"
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
             <div>
@@ -236,7 +254,7 @@
                 type="number"
                 min="0"
                 placeholder="30"
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
             <div>
@@ -247,7 +265,7 @@
                 type="number"
                 min="0"
                 placeholder="50"
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
             <div>
@@ -258,7 +276,7 @@
                 type="number"
                 min="1"
                 placeholder="4"
-                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           </div>
@@ -270,7 +288,7 @@
               <button
                 type="button"
                 @click="addNewIngredient"
-                class="px-2 py-1 bg-indigo-100 rounded-md hover:bg-indigo-200 text-indigo-700 text-sm flex items-center"
+                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -280,7 +298,7 @@
             </div>
             
             <div v-if="loadingIngredients" class="text-center py-4">
-              <svg class="animate-spin h-6 w-6 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin h-6 w-6 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
@@ -336,63 +354,23 @@
                         v-model="ingredient.foodInput"
                         @input="ingredient.food = null"
                         @focus="openFoodDropdown(index)" 
-                        @blur="closeFoodDropdown(index, $event)"
-                        @keydown.enter.prevent="handleFoodInputEnter(index, ingredient.foodInput)"
                         placeholder="Ingrédient"
                         class="w-full border border-gray-300 rounded p-2"
                       />
                       <div 
                         v-if="ingredient.showFoodDropdown" 
                         class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                        @scroll="handleFoodDropdownScroll($event, index)"
                       >
-                        <!-- Message si aucun ingrédient trouvé -->
-                        <div v-if="filteredFoods(ingredient.foodInput).length === 0" class="p-3 text-gray-500 text-center">
-                          Aucun ingrédient trouvé
-                        </div>
-                        
-                        <!-- Liste d'ingrédients -->
                         <div 
                           v-for="food in filteredFoods(ingredient.foodInput)" 
                           :key="food.id" 
                           @mousedown.prevent="selectFood(index, food)"
-                          :class="[
-                            'p-2 cursor-pointer',
-                            food.isNewFood 
-                              ? 'text-indigo-600 font-medium bg-indigo-50 hover:bg-indigo-100 flex items-center' 
-                              : food.isLoadMoreIndicator
-                                ? 'text-gray-600 bg-gray-100 font-medium text-center'
-                                : 'hover:bg-gray-100'
-                          ]"
+                          class="p-2 hover:bg-gray-100 cursor-pointer"
                         >
-                          <!-- Icône plus pour nouvel ingrédient -->
-                          <svg v-if="food.isNewFood" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                          
-                          <!-- Indicateur de chargement pour "Charger plus" -->
-                          <div v-if="food.isLoadMoreIndicator && isLoadingMoreFoods" class="flex justify-center items-center">
-                            <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                          </div>
-                          
                           {{ food.name }}
                         </div>
-                        
-                        <!-- Indicateur de chargement en cours -->
-                        <div v-if="isLoadingMoreFoods && !filteredFoods(ingredient.foodInput).some(f => f.isLoadMoreIndicator)" class="p-2 text-center text-gray-500 bg-gray-50">
-                          <svg class="animate-spin h-4 w-4 mx-auto mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Chargement des ingrédients...
-                        </div>
-                        
-                        <!-- Pied de liste avec info -->
-                        <div v-if="filteredFoods(ingredient.foodInput).length > 0 && !filteredFoods(ingredient.foodInput).some(f => f.isNewFood)" class="p-2 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
-                          Tapez le nom complet et appuyez sur Entrée pour créer un nouvel ingrédient
+                        <div v-if="filteredFoods(ingredient.foodInput).length === 0" class="p-3 text-gray-500 text-center">
+                          Aucun ingrédient trouvé
                         </div>
                       </div>
                     </div>
@@ -436,7 +414,7 @@
               <button
                 type="button"
                 @click="addNewInstruction"
-                class="px-2 py-1 bg-indigo-100 rounded-md hover:bg-indigo-200 text-indigo-700 text-sm flex items-center"
+                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -446,9 +424,9 @@
             </div>
             
             <div v-for="(instruction, index) in recipe.recipeInstructions" :key="`ins-${index}`" class="mb-3">
-              <div class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500">
+              <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
                 <div class="flex justify-between items-center mb-2">
-                  <div class="font-semibold text-indigo-600">
+                  <div class="font-semibold text-emerald-600">
                     Étape {{ index + 1 }}
                   </div>
                   <!-- Boutons réordonner/supprimer -->
@@ -487,10 +465,17 @@
                   </div>
                 </div>
                 
-                <!-- Texte de l'instruction -->
+                <!-- Champ pour le résumé de l'étape -->
+                <input 
+                  v-model="instruction.summary" 
+                  class="w-full mb-2 border border-emerald-500 rounded p-2 text-gray-700"
+                  placeholder="Résumé de l'étape (optionnel)"
+                />
+
+                 <!-- Champ pour le texte complet de l'instruction -->
                 <textarea 
                   v-model="instruction.text" 
-                  class="w-full border border-indigo-200 rounded p-2 text-gray-700"
+                  class="w-full border border-emerald-500 rounded p-2 text-gray-700"
                   placeholder="Décrivez cette étape de préparation..."
                   rows="3"
                 ></textarea>
@@ -616,7 +601,7 @@
                 :class="[
                   'px-3 py-1 rounded-full text-sm cursor-pointer',
                   isSelectedCategory(category) 
-                    ? 'bg-indigo-100 border-indigo-300 text-indigo-800 border' 
+                    ? 'bg-emerald-100 border-emerald-300 text-emerald-800 border' 
                     : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-transparent'
                 ]"
               >
@@ -645,7 +630,7 @@
               />
               <button 
                 @click="addNewCategory" 
-                class="bg-indigo-600 text-white px-3 py-2 rounded-lg hover:bg-indigo-700"
+                class="bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700"
                 :disabled="!newCategoryName.trim()"
               >
                 Ajouter
@@ -673,7 +658,7 @@
           </button>
           <button
             @click="saveRecipe"
-            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+            class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
             :disabled="loading"
           >
             <span v-if="loading">
@@ -713,6 +698,8 @@ export default {
     const loadingIngredients = ref(false);
     const recipeNameInput = ref(null);
     const recipeUrl = ref('');
+    const manualImageUrl = ref('');
+    const fileInput = ref(null);
     
     // Variables pour la pagination des ingrédients
     const currentFoodsPage = ref(1);
@@ -779,6 +766,11 @@ export default {
       }
     };
     
+    // Déclenchement de la boîte de dialogue fichier
+    const triggerFileInput = () => {
+      fileInput.value.click();
+    };
+
     // Importation depuis URL
     const importFromUrl = async () => {
       if (!recipeUrl.value.trim()) return;
@@ -862,7 +854,7 @@ export default {
         currentFoodsPage.value = 1;
         hasMoreFoods.value = true;
         
-        // Charger la première page d'ingrédients
+        // Charger la page d'ingrédients
         await loadNextPageOfFoods();
         
         // Charger les catégories
@@ -888,7 +880,7 @@ export default {
       isLoadingMoreFoods.value = true;
       
       try {
-        const perPage = 100; // Nombre d'éléments par page
+        const perPage = 1000; // Nombre d'éléments par page
         
         console.log(`Chargement de la page ${currentFoodsPage.value} d'ingrédients avec requête: "${query}"`);
         
@@ -945,38 +937,27 @@ export default {
       }
     };
 
-    // Gestionnaire de défilement pour le dropdown des ingrédients
-    const handleFoodDropdownScroll = (event, index) => {
-      const dropdown = event.target;
-      
-      // Vérifier si l'utilisateur est proche du bas de la liste
-      if (dropdown.scrollHeight - dropdown.scrollTop <= dropdown.clientHeight + 50) {
-        // Charger la page suivante si on n'est pas déjà en train de charger
-        if (!isLoadingMoreFoods.value && hasMoreFoods.value) {
-          // Important: utiliser la valeur de recherche actuelle de l'ingrédient
-          const searchQuery = recipe.value.recipeIngredient[index]?.foodInput || '';
-          loadNextPageOfFoods(searchQuery);
-        }
-      }
-    };
-
     // Recherche d'ingrédients
     const searchFoods = async (query) => {
-      // Réinitialiser la pagination
+      // Réinitialiser la pagination et la liste des ingrédients
       currentFoodsPage.value = 1;
       hasMoreFoods.value = true;
       foods.value = [];
-      isLoadingMoreFoods.value = true; // Indiquer le chargement
-      
+      isLoadingMoreFoods.value = true; // Indiquer le début du chargement
+
       try {
-        // Charger la première page avec la requête
-        await loadNextPageOfFoods(query);
+        // Boucle tant qu'il y a des pages à charger
+        while (hasMoreFoods.value) {
+          await loadNextPageOfFoods(query);
+        }
       } catch (err) {
-        console.error('Erreur lors de la recherche d\'ingrédients', err);
+        console.error("Erreur lors de la recherche d'ingrédients", err);
       } finally {
         isLoadingMoreFoods.value = false;
       }
     };
+
+
 
     // Étape 1: Création initiale de la recette avec récupération garantie
     const createInitialRecipe = async () => {
@@ -1143,10 +1124,25 @@ export default {
     };
 
     const filteredUnits = (query) => {
-      if (!query) return units.value;
-      const lowerQuery = query.toLowerCase();
-      return units.value.filter(unit => unit.name.toLowerCase().includes(lowerQuery));
+      let filtered;
+      if (!query) {
+        // Si aucune recherche n'est effectuée, retourne une copie triée de la liste complète
+        filtered = [...units.value];
+      } else {
+        const lowerQuery = query.toLowerCase();
+        filtered = units.value.filter(unit =>
+          unit.name.toLowerCase().includes(lowerQuery)
+        );
+      }
+      
+      // Trier en ordre croissant
+      filtered.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
+      );
+      
+      return filtered;
     };
+
 
     const selectUnit = (index, unit) => {
       recipe.value.recipeIngredient[index].unit = unit;
@@ -1181,25 +1177,26 @@ export default {
       loadingIngredients.value = true;
       
       try {
-        // Utiliser une taille de page plus grande
         const response = await referenceService.getFoods({
           page: 1,
-          perPage: 1000,
+          perPage: 1000,  // On charge tous les ingrédients en une seule page
           query: query
         });
         
         if (response.data && Array.isArray(response.data.items)) {
-          // Trier les ingrédients par ordre alphabétique
-          foods.value = response.data.items.sort((a, b) => 
+          // Trie alphabétique des ingrédients
+          foods.value = response.data.items.sort((a, b) =>
             a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })
           );
         }
       } catch (err) {
-        console.error('Erreur lors du chargement des ingrédients', err);
+        console.error("Erreur lors du chargement des ingrédients", err);
       } finally {
         loadingIngredients.value = false;
       }
     };
+
+
 
     // Rafraîchissement de la liste des ingrédients
     const refreshFoodsList = async () => {
@@ -1219,22 +1216,16 @@ export default {
 
     // Gestion des dropdowns d'aliments
     const openFoodDropdown = (index) => {
+      // Affiche le dropdown pour cet ingrédient
       recipe.value.recipeIngredient[index].showFoodDropdown = true;
       
-      // Si nous avons une requête de recherche, effectuer une recherche
-      if (recipe.value.recipeIngredient[index].foodInput) {
-        // Stocker le terme de recherche pour la pagination future
-        const searchQuery = recipe.value.recipeIngredient[index].foodInput;
-        searchFoods(searchQuery);
-      } else {
-        // Si pas de recherche, juste charger la première page d'ingrédients
-        if (foods.value.length === 0 || currentFoodsPage.value === 1) {
-          // Réinitialiser et charger la première page
-          currentFoodsPage.value = 1;
-          loadNextPageOfFoods('');
-        }
-      }
+      // Charger la liste qu'une seule fois (si elle ne l'est pas déjà)
+      loadFoodsOnce();
     };
+
+
+
+
 
     const closeFoodDropdown = (index, event) => {
       // Fermer avec délai pour permettre la sélection
@@ -1252,49 +1243,28 @@ export default {
       // Filtrer les ingrédients selon la requête
       let matches;
       if (!lowerQuery) {
-        // Sans requête, prendre tous les ingrédients chargés
+        // Sans terme, afficher tous les ingrédients chargés
         matches = [...foods.value];
       } else {
-        // Avec requête, filtrer selon les critères
         matches = foods.value.filter(food => {
           const foodName = food.name.toLowerCase();
-          
-          // Recherche exacte (prioritaire)
+          // On accepte une correspondance exacte, début ou inclusion
           if (foodName === lowerQuery) return true;
-          
-          // Commence par la requête
           if (foodName.startsWith(lowerQuery)) return true;
-          
-          // Contient la requête
           if (foodName.includes(lowerQuery)) return true;
-          
-          // Recherche de mots individuels
+          // Autorise la recherche par mots individuels
           const words = lowerQuery.split(/\s+/);
           return words.every(word => foodName.includes(word));
         });
       }
       
-      // Trier les résultats par pertinence
-      matches.sort((a, b) => {
-        const aName = a.name.toLowerCase();
-        const bName = b.name.toLowerCase();
-        
-        // Priorité 1 : Correspondance exacte
-        if (aName === lowerQuery && bName !== lowerQuery) return -1;
-        if (bName === lowerQuery && aName !== lowerQuery) return 1;
-        
-        // Priorité 2 : Commence par la requête
-        if (lowerQuery && aName.startsWith(lowerQuery) && !bName.startsWith(lowerQuery)) return -1;
-        if (lowerQuery && bName.startsWith(lowerQuery) && !aName.startsWith(lowerQuery)) return 1;
-        
-        // Priorité 3 : Ordre alphabétique
-        return aName.localeCompare(bName);
-      });
+      // Trie par ordre alphabétique ou selon la pertinence
+      matches.sort((a, b) => a.name.localeCompare(b.name));
       
-      // Limiter le nombre de résultats pour des raisons de performance UI
-      const limitedMatches = matches.slice(0, 100);
+      // Optionnel : Tu peux limiter le nombre affiché (ex. 100) pour des raisons de performance
+      const limitedMatches = matches.slice(0, 1000);
       
-      // Si aucun résultat exact et qu'une requête est présente, ajouter l'option de création
+      // Si aucun ingrédient ne correspond exactement et qu'un terme est saisi, propose de créer un nouvel ingrédient
       if (lowerQuery && (limitedMatches.length === 0 || 
           !limitedMatches.some(food => food.name.toLowerCase() === lowerQuery))) {
         limitedMatches.push({
@@ -1304,18 +1274,10 @@ export default {
         });
       }
       
-      // Ajouter un indicateur de chargement si plus d'ingrédients sont disponibles
-      if (hasMoreFoods.value && !isLoadingMoreFoods.value) {
-        // On peut ajouter ici un élément visuel qui indique qu'il y a plus à charger
-        limitedMatches.push({
-          id: 'load-more',
-          name: '↓ Charger plus d\'ingrédients ↓',
-          isLoadMoreIndicator: true
-        });
-      }
-      
       return limitedMatches;
     };
+
+
 
     // S'assurer que tous les ingrédients ont un UUID
     const updateIngredientsWithUUID = () => {
@@ -1431,9 +1393,11 @@ export default {
     const addNewInstruction = () => {
       recipe.value.recipeInstructions.push({
         text: '',
+        summary: '',  // Nouveau champ résumé
         position: recipe.value.recipeInstructions.length + 1
       });
     };
+
 
     const removeInstruction = (index) => {
       recipe.value.recipeInstructions.splice(index, 1);
@@ -1553,6 +1517,48 @@ export default {
       };
       reader.readAsDataURL(file);
     };
+
+    // Gérer le drop (glisser-déposer) d'un fichier
+    const handleDrop = (event) => {
+      const file = event.dataTransfer.files[0];
+      if (file) previewFile(file);
+    };
+
+    // Gérer le copier-coller (paste) d'une image
+    const handlePaste = (event) => {
+      const items = event.clipboardData.items;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') === 0) {
+          const file = items[i].getAsFile();
+          if (file) {
+            previewFile(file);
+            break;
+          }
+        }
+      }
+    };
+
+    // Fonction commune pour afficher l'aperçu d'une image sélectionnée
+    const previewFile = (file) => {
+      if (!file.type.match('image.*')) {
+        alert("Le fichier sélectionné n'est pas une image");
+        return;
+      }
+      imageFile.value = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imagePreview.value = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // Charger l'image à partir de l'URL saisie
+    const loadImageFromUrl = () => {
+      if (manualImageUrl.value.trim()) {
+        imagePreview.value = manualImageUrl.value.trim();
+        imageFile.value = null; // Dans ce cas, aucun fichier n'est sélectionné
+      }
+    };    
 
     // Sauvegarde de la recette avec récupération des données et redirection optimisée
     const saveRecipe = async () => {
@@ -1749,8 +1755,13 @@ export default {
       moveInstructionUp,
       moveInstructionDown,
       handleImageUpload,
+      handleDrop,
+      handlePaste,
       imageFile,
       imagePreview,
+      manualImageUrl,
+      fileInput,
+      triggerFileInput,
       loadingIngredients,
       recipeNameInput,
       availableCategories,
@@ -1762,8 +1773,6 @@ export default {
       saveRecipe,
       showNutritionSection,
       toggleNutritionSection,
-      // Il est crucial d'exposer ces fonctions et variables pour éviter les erreurs
-      handleFoodDropdownScroll,
       isLoadingMoreFoods,
       hasMoreFoods,
       currentFoodsPage

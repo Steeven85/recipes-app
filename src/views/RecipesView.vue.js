@@ -1356,7 +1356,7 @@ if (__VLS_ctx.showManualCreate) {
             type: "button",
             ...{ class: "px-3 py-1 rounded-full text-sm transition-colors border" },
             ...{ class: (category && __VLS_ctx.newRecipe.recipeCategory.some(cat => cat && cat.id === category.id)
-                    ? 'bg-indigo-100 border-indigo-300 text-indigo-800'
+                    ? 'bg-indigo-100 border-indigo-300 text-emerald-800'
                     : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50') },
         });
         (category?.name || 'Sans nom');

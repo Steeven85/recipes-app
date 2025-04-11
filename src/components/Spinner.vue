@@ -34,7 +34,7 @@
       },
       color: {
         type: String,
-        default: 'indigo'
+        default: 'emerald'
       },
       strokeWidth: {
         type: Number,
@@ -61,7 +61,7 @@
       
       // Map des couleurs
       const colorClasses = {
-        'indigo': 'text-indigo-600',
+        'emerald': 'text-emerald-600',
         'blue': 'text-blue-600',
         'green': 'text-green-600',
         'red': 'text-red-600',
@@ -78,7 +78,7 @@
         classes.push(sizeClasses[props.size] || sizeClasses.md);
         
         // Ajouter la classe de couleur
-        classes.push(colorClasses[props.color] || colorClasses.indigo);
+        classes.push(colorClasses[props.color] || colorClasses.emerald);
         
         // Ajouter mx-auto si centré
         if (props.centered) {

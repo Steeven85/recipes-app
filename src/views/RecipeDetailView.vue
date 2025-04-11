@@ -2,7 +2,7 @@
   <!-- État de chargement -->
   <div v-if="loading && !recipe" class="text-center py-12">
     <svg
-      class="animate-spin h-12 w-12 text-indigo-600 mx-auto"
+      class="animate-spin h-12 w-12 text-emerald-600 mx-auto"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -45,7 +45,7 @@
         <!-- Bouton Modifier/Visualiser -->
         <button 
           @click="toggleEditMode"
-          class="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow-md transition-all"
+          class="p-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 shadow-md transition-all"
           title="Modifier la recette"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -82,7 +82,7 @@
     <!-- Image principale avec lazy loading et chargement progressif -->
     <div class="mb-8 relative">
       <div v-if="imageLoading" class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-xl">
-        <svg class="animate-spin h-8 w-8 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin h-8 w-8 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
@@ -102,12 +102,12 @@
     <!-- Métadonnées -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <!-- Sélecteur de portions -->
-      <div class="bg-indigo-50 p-4 rounded-lg text-center col-span-2 md:col-span-1">
-        <p class="text-sm font-semibold text-indigo-600 mb-1">Portions</p>
+      <div class="bg-emerald-50 p-4 rounded-lg text-center col-span-2 md:col-span-1">
+        <p class="text-sm font-semibold text-emerald-600 mb-1">Portions</p>
         <div class="flex items-center justify-center">
           <button 
             @click="decreaseServings" 
-            class="bg-indigo-100 text-indigo-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-200 transition-colors"
+            class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors"
             :disabled="servings <= 1"
             :class="{'opacity-50 cursor-not-allowed': servings <= 1}"
           >
@@ -118,7 +118,7 @@
           <span class="mx-3 text-lg font-medium text-gray-900">{{ servings }}</span>
           <button 
             @click="increaseServings" 
-            class="bg-indigo-100 text-indigo-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-indigo-200 transition-colors"
+            class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -128,18 +128,18 @@
       </div>
 
       <!-- Champs Temps de préparation/cuisson -->
-      <div class="bg-indigo-50 p-4 rounded-lg text-center">
-        <p class="text-sm font-semibold text-indigo-600 mb-1">Préparation</p>
+      <div class="bg-emerald-50 p-4 rounded-lg text-center">
+        <p class="text-sm font-semibold text-emerald-600 mb-1">Préparation</p>
         <p class="text-lg text-gray-900">{{ formatTime(recipe.prepTime) }}</p>
       </div>
       
-      <div class="bg-indigo-50 p-4 rounded-lg text-center">
-        <p class="text-sm font-semibold text-indigo-600 mb-1">Cuisson</p>
+      <div class="bg-emerald-50 p-4 rounded-lg text-center">
+        <p class="text-sm font-semibold text-emerald-600 mb-1">Cuisson</p>
         <p class="text-lg text-gray-900">{{ formatTime(recipe.performTime) }}</p>
       </div>
       
-      <div class="bg-indigo-50 p-4 rounded-lg text-center">
-        <p class="text-sm font-semibold text-indigo-600 mb-1">Total</p>
+      <div class="bg-emerald-50 p-4 rounded-lg text-center">
+        <p class="text-sm font-semibold text-emerald-600 mb-1">Total</p>
         <p class="text-lg text-gray-900">{{ formatTime(recipe.totalTime) }}</p>
       </div>
     </div>
@@ -149,20 +149,20 @@
       <div class="flex space-x-2 overflow-x-auto pb-2">
         <button 
           @click="activeTab = 'ingredients'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'ingredients' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-800']"
+          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'ingredients' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
         >
           Ingrédients
         </button>
         <button 
           @click="activeTab = 'instructions'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'instructions' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-800']"
+          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'instructions' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
         >
           Instructions
         </button>
         <button 
           v-if="recipe.nutrition" 
           @click="activeTab = 'nutrition'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'nutrition' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-800']"
+          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'nutrition' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
         >
           Nutrition
         </button>
@@ -179,7 +179,7 @@
           :key="index"
           class="flex items-center bg-gray-50 p-3 rounded-lg"
         >
-          <span class="mr-2 text-indigo-500">•</span>
+          <span class="mr-2 text-emerald-500">•</span>
           <span class="text-gray-700">{{ formatIngredient(ingredient) }}</span>
         </li>
       </ul>
@@ -193,9 +193,9 @@
         <li
           v-for="(step, index) in recipe.recipeInstructions"
           :key="index"
-          class="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-500"
+          class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500"
         >
-          <div class="font-semibold text-indigo-600 mb-2">
+          <div class="font-semibold text-emerald-600 mb-2">
             Étape {{ index + 1 }}
             <span v-if="step.summary" class="ml-2">- {{ step.summary }}</span>
           </div>

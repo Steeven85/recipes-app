@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto px-4 py-8">
     <div v-if="loading" class="text-center py-12">
-      <svg class="animate-spin h-12 w-12 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <svg class="animate-spin h-12 w-12 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
@@ -9,12 +9,12 @@
 
     <div v-else>
       <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Modifier la recette</h1>
+        <h1 class="text-2xl font-bold text-gray-900"> class="text-2xl font-bold">Modifier la recette</h1>
         
         <!-- Bouton pour basculer vers le wizard d'édition -->
         <button 
           @click="toggleEditMode" 
-          class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center"
+          class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
         >
           <span v-if="useWizard">Mode Simplifié</span>
           <span v-else>Mode Avancé (Wizard)</span>
@@ -31,7 +31,7 @@
               v-model="form.name"
               type="text"
               disabled
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
@@ -41,7 +41,7 @@
             <textarea
               v-model="form.description"
               rows="3"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500"
             ></textarea>
           </div>
 
@@ -55,7 +55,7 @@
                 :class="[
                   'px-3 py-1 text-sm rounded',
                   editMode === 'simple' 
-                    ? 'bg-indigo-600 text-white' 
+                    ? 'bg-emerald-600 text-white' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 ]"
               >
@@ -67,7 +67,7 @@
                 :class="[
                   'px-3 py-1 text-sm rounded',
                   editMode === 'advanced' 
-                    ? 'bg-indigo-600 text-white' 
+                    ? 'bg-emerald-600 text-white' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 ]"
               >
@@ -103,7 +103,7 @@
               <button
                 @click="addSimpleIngredient"
                 type="button"
-                class="mt-2 text-indigo-600 hover:text-indigo-800"
+                class="mt-2 text-emerald-600 hover:text-emerald-800"
               >
                 + Ajouter un ingrédient
               </button>
@@ -155,7 +155,7 @@
               <button
                 @click="addIngredient"
                 type="button"
-                class="mt-2 text-indigo-600 hover:text-indigo-800"
+                class="mt-2 text-emerald-600 hover:text-emerald-800"
               >
                 + Ajouter un ingrédient
               </button>
@@ -189,7 +189,7 @@
             <button
               @click="addInstruction"
               type="button"
-              class="mt-2 text-indigo-600 hover:text-indigo-800"
+              class="mt-2 text-emerald-600 hover:text-emerald-800"
             >
               + Ajouter une étape
             </button>
@@ -206,7 +206,7 @@
             </button>
             <button
               type="submit"
-              class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              class="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
             >
               Sauvegarder
             </button>

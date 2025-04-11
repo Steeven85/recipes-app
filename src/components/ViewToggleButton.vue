@@ -4,7 +4,7 @@
       @click="onClick"
       :class="[
         'px-4 py-2 font-medium',
-        isActive ? 'bg-indigo-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+        isActive ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
       ]"
     >
       <slot />

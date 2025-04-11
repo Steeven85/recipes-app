@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import RecipesView from '../views/RecipesView.vue';
 import RecipeDetailView from '../views/RecipeDetailView.vue';
+import AdminData from '../views/AdminData.vue';
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
     path: '/shopping',
     name: 'shopping',
     component: () => import('../views/ShoppingView.vue'),
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminData,
   },
 ];
 
