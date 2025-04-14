@@ -408,7 +408,7 @@ export const recipeService = {
         name: payload.name || currentRecipe.name,
         description: payload.description || currentRecipe.description,
         prepTime: payload.prepTime || currentRecipe.prepTime,
-        cookTime: payload.cookTime || currentRecipe.cookTime,
+        performTime: payload.performTime || currentRecipe.performTime,
         totalTime: payload.totalTime || currentRecipe.totalTime,
         recipeYield: payload.recipeYield || currentRecipe.recipeYield,
         recipeServings: payload.recipeServings || currentRecipe.recipeServings || 4,

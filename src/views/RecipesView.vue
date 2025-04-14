@@ -342,7 +342,7 @@ export default {
       name: '',
       description: '',
       prepTime: null,
-      cookTime: null,
+      performTime: null,
       recipeYield: 4,
       recipeIngredient: ['', ''],
       recipeInstructions: [
@@ -906,8 +906,8 @@ export default {
         
         // Calcul du temps total
         const prepTime = newRecipe.value.prepTime || 0;
-        const cookTime = newRecipe.value.cookTime || 0;
-        const totalTime = prepTime + cookTime;
+        const performTime = newRecipe.value.performTime || 0;
+        const totalTime = prepTime + performTime;
         
         // Création du slug à partir du nom
         const slug = newRecipe.value.name
@@ -920,7 +920,7 @@ export default {
           name: newRecipe.value.name,
           description: newRecipe.value.description || '',
           prepTime: prepTime,
-          cookTime: cookTime,
+          performTime: performTime,
           totalTime: totalTime,
           recipeYield: newRecipe.value.recipeYield || null,
           recipeIngredient: cleanIngredients,
@@ -952,7 +952,7 @@ export default {
               name: '',
               description: '',
               prepTime: null,
-              cookTime: null,
+              performTime: null,
               recipeYield: 4,
               recipeIngredient: ['', ''],
               recipeInstructions: [

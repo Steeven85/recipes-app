@@ -21,11 +21,11 @@
     <div class="p-4">
       <h3 class="text-lg font-semibold mb-2 text-gray-800">{{ recipe.name }}</h3>
       
-      <div class="flex items-center text-sm text-gray-600 mb-3" v-if="recipe.prepTime || recipe.cookTime">
+      <div class="flex items-center text-sm text-gray-600 mb-3" v-if="recipe.prepTime || recipe.performTime">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span>{{ formatCookTime(recipe) }}</span>
+        <span>{{ formatperformTime(recipe) }}</span>
       </div>
       
       <!-- Affichage des catégories -->
@@ -99,7 +99,7 @@ export default {
       });
     };
 
-    const formatCookTime = (recipe) => {
+    const formatperformTime = (recipe) => {
       // Convertir totalTime en nombre, avec une valeur par défaut de 0
       const totalTime = Number(recipe.totalTime || 0);
       
@@ -146,7 +146,7 @@ export default {
     return {
       isFavorite,
       toggleFavorite,
-      formatCookTime,
+      formatperformTime,
       getRecipeImage,
       handleImageError
     };
