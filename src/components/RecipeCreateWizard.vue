@@ -275,7 +275,7 @@
               <label for="cook-time" class="block text-sm font-medium text-gray-700 mb-1">Cuisson (min)</label>
               <input
                 id="cook-time"
-                v-model.number="recipe.cookTime"
+                v-model.number="recipe.performTime"
                 type="number"
                 min="0"
                 placeholder="30"
@@ -744,7 +744,7 @@ export default {
       name: '',
       description: '',
       prepTime: null,
-      cookTime: null,
+      performTime: null,
       totalTime: null,
       recipeYield: 4,
       recipeIngredient: [],
