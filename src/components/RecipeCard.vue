@@ -70,7 +70,8 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
+import { recipeService, referenceService } from '../services/api';
 import { useRecipeStore } from '../stores/recipeStore';
 
 export default {
@@ -116,14 +117,26 @@ export default {
       return 'N/A';
     };
 
-    const getRecipeImage = (recipe) => {
-      if (!recipe || !recipe.id) {
-        return '/default-recipe.png';
-      }
-      
-      const baseUrl = 'http://192.168.85.50:9000';
-      const size = 'min-original.webp';
-      return `${baseUrl}/api/media/recipes/${recipe.id}/images/${size}`;
+    const windowWidth = ref(window.innerWidth);
+
+    // Pour mettre à jour la valeur lors du redimensionnement de la fenêtre
+    const handleResize = () => {
+      windowWidth.value = window.innerWidth;
+    };
+
+    // Optionnel : ajouter un écouteur de redimensionnement
+    window.addEventListener('resize', handleResize);
+
+
+    // État pour les tabs sur mobile
+    const activeTab = ref('ingredients');
+    const isMobile = computed(() => window.innerWidth < 768);
+
+    // Récupération de l'image avec taille adaptative
+    const getRecipeImage = (id) => {
+      // Utiliser une image plus petite sur mobile pour optimiser le chargement
+      const size = windowWidth.value < 768 ? 'min-original.webp' : 'original.webp';
+      return recipeService.getRecipeImageUrl(id, size);
     };
 
     const handleImageError = (e) => {

@@ -191,6 +191,8 @@ export const recipeService = {
     return imageUrl;
   },
 
+
+  
   async scrapeRecipeImage(slug, recipeUrl) {
     if (!slug || !recipeUrl) {
       throw new Error("Le slug et l'URL de la recette sont requis");
