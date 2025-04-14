@@ -15,11 +15,6 @@ const routes = [
     component: RecipeDetailView,
   },
   {
-    path: '/recipes/edit/:slug',
-    name: 'recipe-edit',
-    component: () => import('../views/RecipeEditView.vue'),
-  },
-  {
     path: '/planner',
     name: 'planner',
     component: () => import('../views/PlannerView.vue'),
