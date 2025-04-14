@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+ import axiosInstance from './axiosInstance';
 import axios from 'axios';
 
 const imageUrlCache = new Map(); 
@@ -495,7 +495,7 @@ export const recipeService = {
   
 
   /**
-   * Importe une recette depuis une URL
+   * Importe une recette depuis une URL avec analyse des ingrédients
    * @param {String} url - URL de la recette à importer
    * @returns {Promise<Object>} Données de la recette importée
    */
@@ -509,8 +509,102 @@ export const recipeService = {
       const payload = { url: url };
       
       // Appel à l'API Mealie pour importer depuis une URL
-      // L'endpoint exact peut varier selon votre installation de Mealie
-      return await axiosInstance.post('/recipes/create/url', payload);
+      const importResponse = await axiosInstance.post('/recipes/create/url', payload);
+      
+      // Si l'importation a réussi et renvoie une recette
+      if (importResponse && importResponse.data) {
+        let recipeId = null;
+        let recipeSlug = null;
+        let recipeData = null;
+        
+        // Extraire l'ID et le slug de la recette selon le format de réponse
+        if (typeof importResponse.data === 'object') {
+          recipeId = importResponse.data.id;
+          recipeSlug = importResponse.data.slug;
+          recipeData = importResponse.data;
+        } else if (typeof importResponse.data === 'string') {
+          // Si l'API renvoie un slug ou un ID comme chaîne
+          // Déterminer si c'est un slug ou un ID en cherchant des tirets
+          if (importResponse.data.includes('-')) {
+            recipeSlug = importResponse.data;
+          } else {
+            recipeId = importResponse.data;
+          }
+        }
+        
+        console.log(`Recette importée - ID: ${recipeId}, Slug: ${recipeSlug}`);
+        
+        // Si on n'a pas encore les données complètes de la recette, les récupérer
+        if (!recipeData) {
+          try {
+            // Essayer d'abord avec le slug si disponible
+            if (recipeSlug) {
+              console.log("Récupération des détails de la recette par slug:", recipeSlug);
+              const recipeResponse = await this.getBySlug(recipeSlug);
+              if (recipeResponse && recipeResponse.data) {
+                recipeData = recipeResponse.data;
+                // S'assurer d'avoir l'ID si pas déjà récupéré
+                if (!recipeId && recipeData.id) {
+                  recipeId = recipeData.id;
+                }
+              }
+            }
+            // Si pas de données récupérées avec le slug, essayer avec l'ID
+            else if (recipeId) {
+              console.log("Récupération des détails de la recette par ID:", recipeId);
+              const recipeResponse = await this.getById(recipeId);
+              if (recipeResponse && recipeResponse.data) {
+                recipeData = recipeResponse.data;
+                // S'assurer d'avoir le slug si pas déjà récupéré
+                if (!recipeSlug && recipeData.slug) {
+                  recipeSlug = recipeData.slug;
+                }
+              }
+            }
+          } catch (fetchErr) {
+            console.warn("Impossible de récupérer les détails de la recette après importation:", fetchErr);
+            // Continuer malgré l'erreur - on utilisera la réponse d'importation originale
+          }
+        }
+        
+        // Si on a les données de recette et des ingrédients, les analyser localement
+        let enhancedRecipeData = recipeData;
+        if (recipeData && recipeData.recipeIngredient && recipeData.recipeIngredient.length > 0) {
+          try {
+            console.log("Analyse des ingrédients de la recette importée");
+            // Analyser et restructurer les ingrédients (modifications locales uniquement)
+            enhancedRecipeData = await this.parseAndUpdateRecipeIngredients(recipeData);
+          } catch (parseErr) {
+            console.warn("Erreur lors de l'analyse des ingrédients:", parseErr);
+            // Continuer malgré l'erreur d'analyse, utiliser les données originales
+          }
+        }
+        
+        // Si nous avons analysé les données, créer une réponse enrichie
+        if (enhancedRecipeData) {
+          // Clone la réponse originale
+          const enhancedResponse = { ...importResponse };
+          // Remplacer les données par les données enrichies
+          enhancedResponse.data = enhancedRecipeData;
+          
+          // Stocker les données enrichies dans le store
+          if (window.recipeStore && typeof window.recipeStore.addRecipe === 'function') {
+            try {
+              window.recipeStore.addRecipe(enhancedRecipeData);
+              console.log("Recette enrichie ajoutée au store");
+            } catch (storeErr) {
+              console.warn("Impossible d'ajouter la recette au store:", storeErr);
+            }
+          }
+          
+          return enhancedResponse;
+        }
+        
+        // Sinon, retourner la réponse originale
+        return importResponse;
+      }
+      
+      return importResponse;
     } catch (error) {
       console.error('Erreur lors de l\'importation de la recette', error);
       
@@ -521,6 +615,490 @@ export const recipeService = {
       
       throw error;
     }
+  },
+
+
+  /**
+   * Analyse et optimise les ingrédients d'une recette en utilisant le slug au lieu de l'ID
+   * @param {String} recipeIdOrSlug - ID ou slug de la recette à optimiser
+   * @returns {Promise<Object>} Recette avec ingrédients optimisés
+   */
+  async optimizeRecipeIngredients(recipeIdOrSlug) {
+    if (!recipeIdOrSlug) {
+      throw new Error('Identifiant de recette requis');
+    }
+    
+    try {
+      // Déterminer si l'identifiant est un slug ou un ID
+      const isSlug = recipeIdOrSlug.includes('-') && isNaN(recipeIdOrSlug.charAt(0));
+      console.log(`Optimisation des ingrédients pour ${isSlug ? 'slug' : 'ID'}: ${recipeIdOrSlug}`);
+      
+      // Récupérer les détails de la recette (directement par slug si possible)
+      let recipeResponse;
+      if (isSlug) {
+        recipeResponse = await this.getBySlug(recipeIdOrSlug);
+      } else {
+        recipeResponse = await this.getById(recipeIdOrSlug);
+      }
+      
+      if (!recipeResponse || !recipeResponse.data) {
+        throw new Error('Impossible de récupérer les détails de la recette');
+      }
+      
+      const recipeData = recipeResponse.data;
+      console.log(`Récupération réussie de la recette: ${recipeData.name} (Slug: ${recipeData.slug})`);
+      
+      // Vérifier si la recette a des ingrédients
+      if (!recipeData.recipeIngredient || !Array.isArray(recipeData.recipeIngredient) || recipeData.recipeIngredient.length === 0) {
+        throw new Error('La recette ne contient pas d\'ingrédients à optimiser');
+      }
+      
+      // Extraire les textes d'ingrédients en nettoyant le format "1 [texte réel]"
+      const ingredientTexts = recipeData.recipeIngredient.map(ingredient => {
+        // Utiliser originalText si disponible
+        if (ingredient.originalText && ingredient.originalText.trim()) {
+          // Nettoyer le format "1 [texte réel]" si présent
+          const text = ingredient.originalText.trim();
+          // Si le texte commence par "1 " suivi d'une autre unité ou nombre, supprimer ce "1 "
+          if (text.match(/^1\s+(?:\d+|\d+\/\d+|\d+\.\d+|\d+\s+\w+)/)) {
+            return text.replace(/^1\s+/, '');
+          }
+          return text;
+        }
+        
+        // Sinon, utiliser display
+        if (ingredient.display && ingredient.display.trim()) {
+          const text = ingredient.display.trim();
+          // Nettoyer le même format dans display
+          if (text.match(/^1\s+(?:\d+|\d+\/\d+|\d+\.\d+|\d+\s+\w+)/)) {
+            return text.replace(/^1\s+/, '');
+          }
+          return text;
+        }
+        
+        return '';
+      }).filter(text => text); // Filtrer les textes vides
+      
+      if (ingredientTexts.length === 0) {
+        console.warn("Aucun texte d'ingrédient à analyser");
+        return recipeData;
+      }
+      
+      console.log("Textes d'ingrédients nettoyés à analyser:", ingredientTexts);
+      
+      // Analyser les ingrédients via l'API de parsing
+      const parseResponse = await this.parseIngredients({
+        parser: 'nlp',
+        ingredients: ingredientTexts
+      });
+      
+      if (!parseResponse.data || !Array.isArray(parseResponse.data)) {
+        throw new Error('Réponse invalide du parser d\'ingrédients');
+      }
+      
+      // Récupérer les aliments existants pour la recherche de correspondance
+      const foodsResponse = await referenceService.getFoods({ perPage: 1000 });
+      const existingFoods = (foodsResponse.data && foodsResponse.data.items) ? foodsResponse.data.items : [];
+      
+      // Récupérer les unités existantes
+      const unitsResponse = await referenceService.getUnits();
+      const existingUnits = (unitsResponse.data && unitsResponse.data.items) ? unitsResponse.data.items : [];
+      
+      // Créer une copie profonde de la recette pour les modifications
+      const optimizedRecipe = JSON.parse(JSON.stringify(recipeData));
+      
+      // Mapper les résultats d'analyse aux ingrédients
+      const parsedResults = parseResponse.data;
+      
+      for (let i = 0; i < Math.min(parsedResults.length, optimizedRecipe.recipeIngredient.length); i++) {
+        const originalIngredient = optimizedRecipe.recipeIngredient[i];
+        const parsedResult = parsedResults[i];
+        
+        if (parsedResult && parsedResult.ingredient && parsedResult.confidence.average > 0.7) {
+          const parsedIngredient = parsedResult.ingredient;
+          
+          // Mettre à jour la quantité uniquement si elle semble valide
+          if (parsedIngredient.quantity !== undefined && parsedIngredient.quantity > 0) {
+            originalIngredient.quantity = parsedIngredient.quantity;
+          }
+          
+          // Mettre à jour l'unité avec recherche de correspondance
+          if (parsedIngredient.unit) {
+            // Si l'API a renvoyé une unité avec ID, l'utiliser directement
+            if (parsedIngredient.unit.id) {
+              originalIngredient.unit = parsedIngredient.unit;
+            } 
+            // Sinon, chercher une correspondance
+            else if (parsedIngredient.unit.name) {
+              const unitName = parsedIngredient.unit.name.toLowerCase();
+              const matchingUnit = existingUnits.find(unit => 
+                unit.name.toLowerCase() === unitName || 
+                unit.abbreviation && unit.abbreviation.toLowerCase() === unitName ||
+                unit.pluralName && unit.pluralName.toLowerCase() === unitName
+              );
+              
+              if (matchingUnit) {
+                originalIngredient.unit = matchingUnit;
+                console.log(`Correspondance d'unité trouvée: ${matchingUnit.name}`);
+              } else {
+                originalIngredient.unit = parsedIngredient.unit;
+              }
+            }
+          }
+          
+          // Rechercher une correspondance pour l'aliment
+          if (parsedIngredient.food && parsedIngredient.food.name) {
+            const foodName = parsedIngredient.food.name.toLowerCase();
+            // Rechercher une correspondance exacte ou partielle
+            const matchingFood = existingFoods.find(food => 
+              food.name.toLowerCase() === foodName || 
+              food.name.toLowerCase().includes(foodName) || 
+              foodName.includes(food.name.toLowerCase())
+            );
+            
+            if (matchingFood) {
+              // Utiliser l'aliment existant trouvé
+              originalIngredient.food = matchingFood;
+              console.log(`Correspondance trouvée pour '${parsedIngredient.food.name}': ${matchingFood.name} (ID: ${matchingFood.id})`);
+            } else if (!originalIngredient.food) {
+              // Utiliser l'aliment analysé sans ID (sera créé lors de la mise à jour)
+              originalIngredient.food = parsedIngredient.food;
+              console.log(`Aucune correspondance trouvée pour '${parsedIngredient.food.name}'`);
+            }
+          }
+          
+          // Extraire les notes et commentaires si disponibles
+          if (parsedIngredient.note) {
+            originalIngredient.note = parsedIngredient.note;
+          }
+          
+          // Conserver le referenceId original ou en générer un nouveau si nécessaire
+          if (!originalIngredient.referenceId) {
+            originalIngredient.referenceId = this.generateUUID();
+          }
+          
+          // Mettre à jour l'affichage pour refléter les modifications
+          originalIngredient.display = this.formatIngredientDisplay(originalIngredient);
+        }
+      }
+      
+      console.log("Ingrédients optimisés:", optimizedRecipe.recipeIngredient);
+      
+      return optimizedRecipe;
+    } catch (error) {
+      console.error('Erreur lors de l\'optimisation des ingrédients:', error);
+      throw new Error('Impossible d\'optimiser les ingrédients de la recette');
+    }
+  },
+
+
+  /**
+   * Extrait la note d'un ingrédient depuis différentes sources possibles
+   * @param {Object} ingredient - L'ingrédient à analyser
+   * @returns {String} La note extraite
+   */
+  extractIngredientNote(ingredient) {
+    // Si la note existe déjà, l'utiliser directement
+    if (ingredient.note && ingredient.note.trim()) {
+      return ingredient.note.trim();
+    }
+    
+    // Essayer d'extraire la note depuis le originalText
+    if (ingredient.originalText) {
+      // Extraire le contenu entre parenthèses s'il existe
+      const parenthesesMatch = ingredient.originalText.match(/\(([^)]+)\)/);
+      if (parenthesesMatch && parenthesesMatch[1]) {
+        return parenthesesMatch[1].trim();
+      }
+    }
+    
+    // Essayer d'extraire la note depuis le display
+    if (ingredient.display) {
+      // Même logique pour le display
+      const parenthesesMatch = ingredient.display.match(/\(([^)]+)\)/);
+      if (parenthesesMatch && parenthesesMatch[1]) {
+        return parenthesesMatch[1].trim();
+      }
+    }
+    
+    return '';
+  },
+
+  /**
+   * Met à jour une recette avec les ingrédients optimisés après validation par l'utilisateur
+   * @param {String} recipeId - ID de la recette à mettre à jour
+   * @param {Object} optimizedRecipe - Données de la recette avec ingrédients optimisés
+   * @returns {Promise<Object>} Recette mise à jour
+   */
+  async updateRecipeWithOptimizedIngredients(recipeId, optimizedRecipe) {
+    if (!recipeId || !optimizedRecipe) {
+      throw new Error('ID de recette et données optimisées requis');
+    }
+    
+    try {
+      // D'abord récupérer la version originale de la recette
+      const originalRecipeResponse = await this.getById(recipeId);
+      if (!originalRecipeResponse || !originalRecipeResponse.data) {
+        throw new Error('Impossible de récupérer la recette originale');
+      }
+      
+      const originalRecipe = originalRecipeResponse.data;
+      
+      // Créer une copie du payload original pour préserver sa structure
+      const payload = JSON.parse(JSON.stringify(originalRecipe));
+      
+      // Mise à jour uniquement des ingrédients
+      if (optimizedRecipe.recipeIngredient && Array.isArray(optimizedRecipe.recipeIngredient)) {
+        // Pour chaque ingrédient optimisé, maintenir la structure mais mettre à jour les valeurs
+        payload.recipeIngredient = optimizedRecipe.recipeIngredient.map((ingredient, index) => {
+          // Générer un nouveau referenceId pour chaque ingrédient pour éviter les conflits
+          const referenceId = this.generateUUID();
+          
+          // Extraire la note de la parenthèse si présente
+          let note = ingredient.note || '';
+          if (ingredient.originalText) {
+            const match = ingredient.originalText.match(/\(([^)]+)\)/);
+            if (match && match[1]) {
+              note = match[1].trim();
+            }
+          }
+          
+          // Formater l'affichage proprement
+          let display = '';
+          if (ingredient.quantity) {
+            display += ingredient.quantity;
+          }
+          
+          if (ingredient.unit) {
+            const unitSymbol = ingredient.unit.abbreviation || ingredient.unit.name;
+            if (unitSymbol) {
+              display += ' ' + unitSymbol;
+            }
+          }
+          
+          if (ingredient.food && ingredient.food.name) {
+            display += ' ' + ingredient.food.name;
+          }
+          
+          if (note) {
+            display += ' ' + note;
+          }
+          
+          display = display.trim();
+          
+          // Retourner un ingrédient bien formaté
+          return {
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
+            food: ingredient.food,
+            note: note,
+            isFood: true,
+            disableAmount: false,
+            display: display,
+            title: null,
+            originalText: ingredient.originalText || null,
+            referenceId: referenceId
+          };
+        });
+      }
+      
+      // Utiliser PUT avec le slug pour la mise à jour
+      return await axiosInstance.put(`/recipes/${originalRecipe.slug}`, payload);
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la recette avec les ingrédients optimisés:', error);
+      
+      // Afficher les détails de l'erreur pour le débogage
+      if (error.response && error.response.data) {
+        console.error('Détails de l\'erreur API:', error.response.data);
+      }
+      
+      throw new Error('Impossible de mettre à jour la recette avec les ingrédients optimisés');
+    }
+  },
+
+  /**
+   * Formate l'affichage d'un ingrédient en fonction de ses propriétés
+   * @param {Object} ingredient - L'ingrédient à formater
+   * @returns {String} Chaîne formatée pour l'affichage
+   */
+  formatIngredientDisplay(ingredient) {
+    let display = '';
+    
+    // Ajouter la quantité si présente
+    if (ingredient.quantity) {
+      display += ingredient.quantity;
+    }
+    
+    // Ajouter l'unité si présente
+    if (ingredient.unit) {
+      const unitName = ingredient.unit.abbreviation || ingredient.unit.name;
+      if (unitName) {
+        display += display ? ' ' + unitName : unitName;
+      }
+    }
+    
+    // Ajouter le nom de l'aliment si présent
+    if (ingredient.food && ingredient.food.name) {
+      display += display ? ' ' + ingredient.food.name : ingredient.food.name;
+    }
+    
+    // Ajouter la note si présente
+    if (ingredient.note) {
+      display += display ? ' ' + ingredient.note : ingredient.note;
+    }
+    
+    return display.trim();
+  },
+
+
+  /**
+   * Analyse les ingrédients d'une recette importée et tente de trouver des correspondances dans la base de données
+   * @param {Object} recipeData - Données de la recette avec ingrédients à analyser
+   * @returns {Promise<Object>} Recette avec ingrédients analysés (modifications locales uniquement)
+   */
+  async parseAndUpdateRecipeIngredients(recipeData) {
+    if (!recipeData || !recipeData.recipeIngredient || !Array.isArray(recipeData.recipeIngredient)) {
+      throw new Error('Données de recette invalides ou ingrédients manquants');
+    }
+    
+    try {
+      // Extraire les textes d'ingrédients à analyser
+      const ingredientTexts = recipeData.recipeIngredient.map(ingredient => {
+        // Essayer d'extraire le texte le plus pertinent
+        if (ingredient.originalText && ingredient.originalText.trim()) {
+          return ingredient.originalText.trim();
+        } else if (ingredient.note && ingredient.note.trim()) {
+          if (ingredient.display && ingredient.display.trim()) {
+            // Combiner pour avoir une représentation complète
+            return `${ingredient.display.trim()} (${ingredient.note.trim()})`;
+          }
+          return ingredient.note.trim();
+        } else if (ingredient.display && ingredient.display.trim()) {
+          return ingredient.display.trim();
+        }
+        return ''; // Fallback pour les ingrédients sans texte
+      }).filter(text => text); // Filtrer les textes vides
+      
+      if (ingredientTexts.length === 0) {
+        console.warn("Aucun texte d'ingrédient à analyser");
+        return recipeData;
+      }
+      
+      console.log("Textes d'ingrédients à analyser:", ingredientTexts);
+      
+      // Appeler l'API de parsing d'ingrédients
+      const parseResponse = await this.parseIngredients({
+        parser: 'nlp', // Utiliser le parser NLP pour une meilleure précision
+        ingredients: ingredientTexts
+      });
+      
+      if (!parseResponse.data || !Array.isArray(parseResponse.data)) {
+        throw new Error('Réponse invalide du parser d\'ingrédients');
+      }
+      
+      console.log("Résultats du parsing:", parseResponse.data);
+      
+      // Créer une copie des données de recette pour les modifications locales
+      const updatedRecipeData = JSON.parse(JSON.stringify(recipeData));
+      
+      // Parcourir les résultats d'analyse pour enrichir les ingrédients existants
+      // sans remplacer complètement les ingrédients (ce qui pourrait casser les références)
+      const parsedResults = parseResponse.data;
+      
+      for (let i = 0; i < Math.min(parsedResults.length, recipeData.recipeIngredient.length); i++) {
+        const parsedResult = parsedResults[i];
+        const originalIngredient = recipeData.recipeIngredient[i];
+        
+        // Vérifier si l'analyse a produit un résultat valide
+        if (parsedResult && parsedResult.ingredient && parsedResult.confidence.average > 0.7) {
+          const parsedIngredient = parsedResult.ingredient;
+          
+          // Enrichir l'ingrédient existant avec les données analysées
+          // mais conserver les ID et references qui existent déjà
+          if (parsedIngredient.quantity !== undefined) {
+            updatedRecipeData.recipeIngredient[i].quantity = parsedIngredient.quantity;
+          }
+          
+          // Utiliser l'unité du parsing seulement si celle d'origine est null
+          if (parsedIngredient.unit && !originalIngredient.unit) {
+            updatedRecipeData.recipeIngredient[i].unit = parsedIngredient.unit;
+          }
+          
+          // Ajouter des informations sur l'aliment si manquantes
+          if (parsedIngredient.food && !originalIngredient.food) {
+            updatedRecipeData.recipeIngredient[i].food = parsedIngredient.food;
+          }
+          
+          // Ajouter une note si elle n'existe pas déjà
+          if (parsedIngredient.note && !originalIngredient.note) {
+            updatedRecipeData.recipeIngredient[i].note = parsedIngredient.note;
+          }
+          
+          // Conserver le referenceId original
+          // Le display peut être mis à jour pour refléter les changements
+          updatedRecipeData.recipeIngredient[i].display = this.formatIngredientDisplay(updatedRecipeData.recipeIngredient[i]);
+        }
+      }
+      
+      console.log("Ingrédients enrichis (modifications locales uniquement):", updatedRecipeData.recipeIngredient);
+      
+      return updatedRecipeData;
+    } catch (error) {
+      console.error('Erreur lors de l\'analyse des ingrédients:', error);
+      
+      // Gestion détaillée des erreurs
+      if (error.response && error.response.data) {
+        console.error('Détails de l\'erreur API:', error.response.data);
+      }
+      
+      throw new Error('Impossible d\'analyser les ingrédients');
+    }
+  },
+
+  /**
+   * Formate l'affichage d'un ingrédient en fonction de ses propriétés
+   * @param {Object} ingredient - L'ingrédient à formater
+   * @returns {String} Chaîne formatée pour l'affichage
+   */
+  formatIngredientDisplay(ingredient) {
+    let display = '';
+    
+    // Ajouter la quantité si présente
+    if (ingredient.quantity) {
+      display += ingredient.quantity;
+    }
+    
+    // Ajouter l'unité si présente
+    if (ingredient.unit) {
+      const unitName = ingredient.unit.abbreviation || ingredient.unit.name;
+      if (unitName) {
+        display += display ? ' ' + unitName : unitName;
+      }
+    }
+    
+    // Ajouter le nom de l'aliment si présent
+    if (ingredient.food && ingredient.food.name) {
+      display += display ? ' ' + ingredient.food.name : ingredient.food.name;
+    }
+    
+    // Ajouter la note si présente
+    if (ingredient.note) {
+      display += display ? ' ' + ingredient.note : ingredient.note;
+    }
+    
+    return display.trim();
+  },
+
+  /**
+   * Génère un UUID v4 pour les referenceId des ingrédients
+   * @returns {String} UUID généré
+   */
+  generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   },
 
   /**
@@ -556,7 +1134,235 @@ export const recipeService = {
   },
 
 
+  /**
+   * Analyse les ingrédients d'une recette et tente de les associer à la base de données d'ingrédients
+   * @param {Object} recipeData - Données de la recette à analyser
+   * @returns {Promise<Object>} Résultat de l'analyse avec les correspondances trouvées
+   */
+  async analyzeRecipeIngredients(recipeData) {
+    if (!recipeData || !recipeData.recipeIngredient || !Array.isArray(recipeData.recipeIngredient)) {
+      throw new Error('Données de recette invalides ou ingrédients manquants');
+    }
     
+    // Extraire les textes d'ingrédients pour l'analyse
+    const ingredientTexts = recipeData.recipeIngredient.map(ingredient => {
+      if (ingredient.originalText && ingredient.originalText.trim()) {
+        return ingredient.originalText.trim();
+      } else if (ingredient.display && ingredient.display.trim()) {
+        return ingredient.display.trim();
+      } else if (ingredient.note && ingredient.note.trim()) {
+        return ingredient.note.trim();
+      }
+      return '';
+    }).filter(text => text);
+    
+    if (ingredientTexts.length === 0) {
+      throw new Error('Aucun ingrédient à analyser');
+    }
+    
+    try {
+      // 1. Analyser les ingrédients avec le parser NLP
+      console.log("Analyse des ingrédients avec le parser NLP");
+      const parseResponse = await this.parseIngredients({
+        parser: 'nlp',
+        ingredients: ingredientTexts
+      });
+      
+      if (!parseResponse.data || !Array.isArray(parseResponse.data)) {
+        throw new Error('Réponse invalide du parser d\'ingrédients');
+      }
+      
+      const parsedResults = parseResponse.data;
+      
+      // 2. Pour chaque ingrédient analysé, chercher une correspondance dans la base de données
+      const enhancedIngredients = [];
+      
+      for (let i = 0; i < Math.min(parsedResults.length, recipeData.recipeIngredient.length); i++) {
+        const parsedResult = parsedResults[i];
+        const originalIngredient = recipeData.recipeIngredient[i];
+        
+        // Créer une copie de l'ingrédient original pour les modifications
+        const enhancedIngredient = { ...originalIngredient };
+        
+        // Si l'analyse a produit un résultat valide
+        if (parsedResult && parsedResult.ingredient && parsedResult.confidence && parsedResult.confidence.average > 0.7) {
+          const parsedIngredient = parsedResult.ingredient;
+          
+          // Appliquer les valeurs du parsing à l'ingrédient
+          enhancedIngredient.quantity = parsedIngredient.quantity;
+          enhancedIngredient.unit = parsedIngredient.unit; // L'unité du parser contient déjà l'ID
+          enhancedIngredient.note = parsedIngredient.note || enhancedIngredient.note;
+          
+          // Chercher une correspondance pour l'aliment dans la base de données
+          if (parsedIngredient.food && parsedIngredient.food.name) {
+            try {
+              const foodName = parsedIngredient.food.name;
+              console.log(`Recherche d'une correspondance pour: "${foodName}"`);
+              
+              // Utiliser searchFoods pour trouver des correspondances
+              const searchResponse = await this.searchFoods(foodName, { 
+                limit: 5,
+                exactMatch: false
+              });
+              
+              if (searchResponse.data && searchResponse.data.items && searchResponse.data.items.length > 0) {
+                // Trouver la meilleure correspondance
+                const matchedFoods = searchResponse.data.items;
+                
+                // Ordonner par similarité de nom
+                const sortedMatches = matchedFoods.sort((a, b) => {
+                  const aSimilarity = this.calculateSimilarity(a.name.toLowerCase(), foodName.toLowerCase());
+                  const bSimilarity = this.calculateSimilarity(b.name.toLowerCase(), foodName.toLowerCase());
+                  return bSimilarity - aSimilarity; // Tri décroissant
+                });
+                
+                // Si la meilleure correspondance a une similarité suffisante
+                const bestMatch = sortedMatches[0];
+                const similarity = this.calculateSimilarity(bestMatch.name.toLowerCase(), foodName.toLowerCase());
+                
+                if (similarity > 0.7) {
+                  console.log(`Correspondance trouvée: "${bestMatch.name}" (${similarity.toFixed(2)})`);
+                  enhancedIngredient.food = bestMatch;
+                  enhancedIngredient.matchConfidence = similarity;
+                } else {
+                  // Garder l'aliment analysé sans ID (sera traité comme nouveau)
+                  console.log(`Pas de correspondance pertinente pour "${foodName}"`);
+                  enhancedIngredient.food = parsedIngredient.food;
+                  enhancedIngredient.matchConfidence = 0;
+                  enhancedIngredient.needsReview = true;
+                }
+                
+                // Stocker les correspondances alternatives pour l'interface
+                enhancedIngredient.alternativeFoods = sortedMatches.slice(0, 3).map(food => ({
+                  ...food,
+                  similarity: this.calculateSimilarity(food.name.toLowerCase(), foodName.toLowerCase())
+                }));
+              } else {
+                // Aucune correspondance trouvée
+                enhancedIngredient.food = parsedIngredient.food;
+                enhancedIngredient.matchConfidence = 0;
+                enhancedIngredient.needsReview = true;
+              }
+            } catch (searchErr) {
+              console.warn(`Erreur lors de la recherche pour "${parsedIngredient.food.name}":`, searchErr);
+              enhancedIngredient.food = parsedIngredient.food;
+              enhancedIngredient.matchConfidence = 0;
+              enhancedIngredient.needsReview = true;
+            }
+          }
+          
+          // Mettre à jour l'affichage formaté
+          enhancedIngredient.display = this.formatIngredientDisplay(enhancedIngredient);
+        } else {
+          // Si l'analyse n'a pas réussi, marquer pour révision
+          enhancedIngredient.needsReview = true;
+        }
+        
+        enhancedIngredients.push(enhancedIngredient);
+      }
+      
+      // 3. Retourner les ingrédients enrichis avec les métadonnées d'analyse
+      return {
+        originalRecipe: recipeData,
+        enhancedIngredients: enhancedIngredients,
+        analysisResults: parsedResults,
+        needsReview: enhancedIngredients.some(ing => ing.needsReview)
+      };
+    } catch (error) {
+      console.error('Erreur lors de l\'analyse et de la mise en correspondance des ingrédients:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Calcule la similarité entre deux chaînes (score simple entre 0 et 1)
+   * @param {String} str1 - Première chaîne
+   * @param {String} str2 - Deuxième chaîne
+   * @returns {Number} Score de similarité (0-1)
+   */
+  calculateSimilarity(str1, str2) {
+    if (!str1 || !str2) return 0;
+    
+    // Algorithme simple de similarité basé sur les sous-chaînes communes
+    const longerStr = str1.length > str2.length ? str1 : str2;
+    const shorterStr = str1.length > str2.length ? str2 : str1;
+    
+    // Si la chaîne courte est contenue dans la longue
+    if (longerStr.includes(shorterStr)) {
+      return shorterStr.length / longerStr.length;
+    }
+    
+    // Chercher la plus longue sous-chaîne commune
+    let longestCommon = 0;
+    for (let i = 0; i < shorterStr.length; i++) {
+      for (let j = i + 1; j <= shorterStr.length; j++) {
+        const subStr = shorterStr.substring(i, j);
+        if (longerStr.includes(subStr) && subStr.length > longestCommon) {
+          longestCommon = subStr.length;
+        }
+      }
+    }
+    
+    return longestCommon / longerStr.length;
+  },
+
+  /**
+   * Met à jour une recette avec des ingrédients optimisés après révision
+   * @param {String} recipeId - ID de la recette à mettre à jour
+   * @param {Array} revisedIngredients - Ingrédients révisés
+   * @returns {Promise<Object>} Recette mise à jour
+   */
+  async updateRecipeWithRevisedIngredients(recipeId, revisedIngredients) {
+    if (!recipeId) {
+      throw new Error('ID de recette requis');
+    }
+    
+    if (!revisedIngredients || !Array.isArray(revisedIngredients)) {
+      throw new Error('Ingrédients révisés requis');
+    }
+    
+    try {
+      // 1. Récupérer la recette complète
+      const recipeResponse = await this.getById(recipeId);
+      if (!recipeResponse || !recipeResponse.data) {
+        throw new Error('Impossible de récupérer la recette');
+      }
+      
+      const recipe = recipeResponse.data;
+      
+      // 2. Mettre à jour uniquement les ingrédients
+      const updatedRecipe = {
+        ...recipe,
+        recipeIngredient: revisedIngredients
+      };
+      
+      // 3. Faire la mise à jour en utilisant le slug pour plus de fiabilité
+      console.log(`Mise à jour de la recette ${recipe.name} (${recipe.slug}) avec les ingrédients révisés`);
+      const updateResponse = await axiosInstance.put(`/recipes/${recipe.slug}`, updatedRecipe);
+      
+      return updateResponse;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la recette avec les ingrédients révisés:', error);
+      throw error;
+    }
+  },
+
+
+  /**
+   * Parse les ingrédients à partir d'un tableau de chaînes.
+   * @param {Object} payload - Doit contenir :
+   *   - parser : un identifiant (ex. "nlp" ou "brute")
+   *   - ingredients : un tableau de chaînes d'ingrédients non analysés
+   * @returns {Promise<Object>} Réponse de l’API avec les données parsées
+   */
+  async parseIngredients(payload) {
+    try {
+      return await axiosInstance.post('/parser/ingredients', payload);
+    } catch (error) {
+      console.error('Erreur lors du parsing des ingrédients', error);
+      throw error;
+    }
+  },
   
   async uploadRecipeImageFixed(slugOrId, imageFile) {
     if (!slugOrId || !imageFile) {
