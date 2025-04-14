@@ -70,6 +70,31 @@
             <p class="mt-1 text-sm text-gray-500">Collez l'URL d'une recette en ligne</p>
           </div>
 
+          <!-- Affichage du statut de l'importation -->
+          <div v-if="loading" class="mb-4">
+            <div class="flex items-center text-emerald-700">
+              <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ importStatus }}</span>
+            </div>
+            
+            <!-- Explication du processus d'importation -->
+            <div class="mt-3 bg-emerald-50 rounded-lg p-4 text-sm">
+              <h3 class="font-medium text-emerald-800 mb-2">Améliorations de l'importation</h3>
+              <p class="text-gray-700 mb-2">
+                Notre système analyse automatiquement les ingrédients de la recette pour vous offrir une expérience optimale :
+              </p>
+              <ul class="list-disc pl-5 text-gray-700">
+                <li>Identification précise des quantités</li>
+                <li>Reconnaissance des unités de mesure</li>
+                <li>Liaison automatique avec les ingrédients de votre base de données</li>
+                <li>Séparation des notes et instructions spécifiques</li>
+              </ul>
+            </div>
+          </div>
+
           <div class="flex justify-end space-x-2">
             <button
               type="button"
@@ -700,6 +725,7 @@ export default {
     const recipeUrl = ref('');
     const manualImageUrl = ref('');
     const fileInput = ref(null);
+    const importStatus = ref('');
     
     // Variables pour la pagination des ingrédients
     const currentFoodsPage = ref(1);
@@ -778,12 +804,14 @@ export default {
       loading.value = true;
       error.value = false;
       errorMessage.value = '';
+      success.value = false;
+      importStatus.value = 'Importation de la recette...';
       
       try {
         const response = await recipeService.importRecipeFromUrl(recipeUrl.value);
         
         if (response && response.data) {
-          success.value = true;
+          importStatus.value = 'Analyse des ingrédients...';
           
           // Recherche de l'ID ou du slug dans la réponse
           let recipeId = null;
@@ -793,29 +821,38 @@ export default {
             recipeId = response.data.id;
             recipeSlug = response.data.slug;
           } else if (typeof response.data === 'string') {
-            recipeId = response.data;
+            // Déterminer si c'est un slug ou un ID en cherchant des tirets
+            if (response.data.includes('-')) {
+              recipeSlug = response.data;
+            } else {
+              recipeId = response.data;
+            }
           }
+          
+          // Finalisation de l'importation
+          importStatus.value = 'Finalisation...';
+          success.value = true;
           
           // Redirection après un délai
           setTimeout(() => {
-            if (recipeId) {
-              // Mettre à jour le store (optionnel)
-              recipeService.getById(recipeId).then(detailResponse => {
-                if (detailResponse && detailResponse.data) {
-                  recipeStore.addRecipe(detailResponse.data);
-                }
-              }).catch(err => console.warn('Erreur lors du chargement des détails', err));
-              
-              // Émettre l'événement
-              emit('recipe-created', recipeId);
-              
-              // Rediriger vers la recette
-              router.push(`/recipes/${recipeId}`);
+            // Décider vers quelle URL rediriger - préférer TOUJOURS le slug
+            let redirectTarget;
+            
+            if (recipeSlug) {
+              // Ajouter un paramètre pour indiquer que la recette vient d'être importée
+              redirectTarget = `/recipes/${recipeSlug}?imported=true`;
+              console.log("Redirection vers la recette avec slug:", recipeSlug);
             } else {
-              // Si pas d'ID trouvé, retourner à la liste des recettes
-              emit('recipe-created');
-              router.push('/recipes');
+              // Si pas de slug, revenir à la liste des recettes
+              redirectTarget = '/recipes';
+              console.log("Redirection vers la liste des recettes (pas de slug disponible)");
             }
+            
+            // Indiquer que l'opération est terminée
+            emit('recipe-created', recipeSlug || recipeId || null);
+            
+            // Rediriger vers la recette ou la liste
+            router.push(redirectTarget);
           }, 1500);
         } else {
           throw new Error('Réponse invalide de l\'API');
@@ -1775,7 +1812,8 @@ export default {
       toggleNutritionSection,
       isLoadingMoreFoods,
       hasMoreFoods,
-      currentFoodsPage
+      currentFoodsPage,
+      importStatus
     };
   }
 };

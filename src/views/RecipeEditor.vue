@@ -1417,85 +1417,99 @@
         return recipeToSave;
         };
   
-      const saveRecipe = async () => {
-        if (!recipe.value.name) {
-          error.value = true;
-          errorMessage.value = "Le nom de la recette est obligatoire";
-          return;
-        }
-        
-        loading.value = true;
-        error.value = false;
-        errorMessage.value = '';
-        success.value = false;
-        
-        try {
-          // Préparer la recette pour la sauvegarde
-          const recipeToSave = prepareRecipeForSave();
-          
-          // Si on est en mode édition, identifier uniquement les champs modifiés
-          let response;
-          
-          if (isNewRecipe.value) {
-            // Mode création - utiliser POST avec l'objet complet
-            response = await recipeService.createRecipe(recipeToSave);
-          } else {
-            // Mode édition - utiliser PATCH avec uniquement les champs modifiés
-            const modifiedFields = getModifiedFields(recipeToSave, originalRecipe.value);
-            
-            // Vérifier si l'API supporte PATCH
-            if (recipeService.updateRecipePartial) {
-              console.log("Utilisation de PATCH avec les champs modifiés:", modifiedFields);
-              response = await recipeService.updateRecipePartial(recipeToSave.id, modifiedFields);
-            } else {
-              // Si la méthode n'existe pas, utiliser PUT comme solution de secours
-              console.log("API PATCH non disponible, utilisation de PUT avec l'objet complet");
-              response = await recipeService.updateRecipe(recipeToSave.id, recipeToSave);
-            }
+        const saveRecipe = async () => {
+          if (!recipe.value.name) {
+            error.value = true;
+            errorMessage.value = "Le nom de la recette est obligatoire";
+            return;
           }
           
-          if (response && response.data) {
-            const savedRecipe = response.data;
+          loading.value = true;
+          error.value = false;
+          errorMessage.value = '';
+          success.value = false;
+          
+          try {
+            // Préparer la recette pour la sauvegarde
+            const recipeToSave = prepareRecipeForSave();
             
-            // Si une image a été uploadée, l'envoyer
-            if (imageFile.value) {
-              try {
-                await recipeService.uploadRecipeImageFixed(savedRecipe.slug, imageFile.value);
-                console.log("Image uploadée avec succès");
-              } catch (imgErr) {
-                console.error("Erreur lors de l'upload de l'image:", imgErr);
-                // On continue malgré l'erreur d'image
+            // Si on est en mode édition, identifier uniquement les champs modifiés
+            let response;
+            
+            if (isNewRecipe.value) {
+              // Mode création - utiliser POST avec l'objet complet
+              response = await recipeService.createRecipe(recipeToSave);
+            } else {
+              // Mode édition - utiliser PATCH avec uniquement les champs modifiés
+              const modifiedFields = getModifiedFields(recipeToSave, originalRecipe.value);
+              
+              // Vérifier si l'API supporte PATCH
+              if (recipeService.updateRecipePartial) {
+                console.log("Utilisation de PATCH avec les champs modifiés:", modifiedFields);
+                response = await recipeService.updateRecipePartial(recipeToSave.id, modifiedFields);
+              } else {
+                // Si la méthode n'existe pas, utiliser PUT comme solution de secours
+                console.log("API PATCH non disponible, utilisation de PUT avec l'objet complet");
+                response = await recipeService.updateRecipe(recipeToSave.id, recipeToSave);
               }
             }
             
-            // Afficher le succès
-            success.value = true;
-            setTimeout(() => {
-              success.value = false;
-              // Émettre l'événement de sauvegarde réussie avec la recette sauvegardée
-              emit('recipe-saved', savedRecipe);
-            }, 1500);
-          }
-        } catch (err) {
-          console.error('Erreur lors de la sauvegarde de la recette', err);
-          error.value = true;
-          
-          // Extraire le message d'erreur
-          if (err.response && err.response.data) {
-            if (err.response.data.detail) {
-              errorMessage.value = Array.isArray(err.response.data.detail) 
-                ? err.response.data.detail[0].msg 
-                : err.response.data.detail;
-            } else {
-              errorMessage.value = JSON.stringify(err.response.data);
+            if (response && response.data) {
+              const savedRecipe = response.data;
+              
+              // Si une image a été uploadée, l'envoyer
+              if (imageFile.value) {
+                try {
+                  await recipeService.uploadRecipeImageFixed(savedRecipe.slug, imageFile.value);
+                  console.log("Image uploadée avec succès");
+                } catch (imgErr) {
+                  console.error("Erreur lors de l'upload de l'image:", imgErr);
+                  // On continue malgré l'erreur d'image
+                }
+              }
+              
+              // Afficher le succès
+              success.value = true;
+              setTimeout(() => {
+                success.value = false;
+                
+                // Émettre l'événement de sauvegarde réussie avec la recette sauvegardée
+                emit('recipe-saved', savedRecipe);
+                
+                // Rediriger vers la page de détail avec le paramètre modified=true
+                // Vérifier d'abord si le composant utilise un router ou s'il doit simplement émettre un événement
+                if (router) {
+                  // Si le router est disponible dans le composant
+                  router.push(`/recipes/${savedRecipe.slug || savedRecipe.id}?modified=true`);
+                } else {
+                  // Si pas de router, émettre un événement supplémentaire pour la redirection
+                  emit('redirect', {
+                    path: `/recipes/${savedRecipe.slug || savedRecipe.id}`,
+                    query: { modified: 'true' }
+                  });
+                }
+              }, 1500);
             }
-          } else {
-            errorMessage.value = err.message || 'Impossible de sauvegarder la recette';
+          } catch (err) {
+            console.error('Erreur lors de la sauvegarde de la recette', err);
+            error.value = true;
+            
+            // Extraire le message d'erreur
+            if (err.response && err.response.data) {
+              if (err.response.data.detail) {
+                errorMessage.value = Array.isArray(err.response.data.detail) 
+                  ? err.response.data.detail[0].msg 
+                  : err.response.data.detail;
+              } else {
+                errorMessage.value = JSON.stringify(err.response.data);
+              }
+            } else {
+              errorMessage.value = err.message || 'Impossible de sauvegarder la recette';
+            }
+          } finally {
+            loading.value = false;
           }
-        } finally {
-          loading.value = false;
-        }
-      };
+        };
   
       // Fermeture du composant
       const close = () => {

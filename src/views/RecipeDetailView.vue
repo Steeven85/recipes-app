@@ -169,6 +169,57 @@
       </div>
     </div>
 
+    <div v-if="recipe">
+      <!-- Notification pour les recettes fraîchement importées ou modifiées -->
+      <div v-if="(recipeJustImported || recipeJustModified) && !showOptimizer" class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-700">
+              {{ recipeJustImported ? 'Recette importée avec succès!' : 'Recette modifiée avec succès!' }} 
+              Vous pouvez optimiser les ingrédients pour une meilleure structure.
+            </p>
+            <div class="mt-2">
+              <button 
+                @click="displayOptimizer" 
+                class="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-sm"
+              >
+                Optimiser maintenant
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bouton d'optimisation toujours visible (en plus petit, dans la section des ingrédients) -->
+      <div v-if="!showOptimizer" class="mb-4">
+        <button 
+          @click="displayOptimizer" 
+          class="flex items-center text-sm px-3 py-1 border border-emerald-300 text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+          </svg>
+          Optimiser les ingrédients
+        </button>
+      </div>
+      
+      <!-- Composant d'optimisation des ingrédients -->
+      <IngredientOptimizer 
+        v-if="showOptimizer" 
+        :recipe-id="recipe.id"
+        :recipe-slug="recipe.slug"
+        :original-recipe="recipe"
+        @update:recipe="updateRecipeAfterOptimization"
+        @optimization-complete="handleOptimizationComplete"
+      />
+    </div>
+
+
     <!-- Ingrédients -->
     <section v-show="activeTab === 'ingredients' || !isMobile" class="mb-8 bg-white p-6 rounded-xl shadow-sm">
       <h2 class="text-2xl font-bold text-gray-900 mb-4">Ingrédients</h2>
@@ -247,10 +298,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { recipeService } from '../services/api';
 import { useRecipeStore } from '../stores/recipeStore';
 import RecipeEditor from './RecipeEditor.vue';
+import IngredientOptimizer from '../components/IngredientOptimizer.vue';
 
 export default {
   components: {
     RecipeEditor,
+    IngredientOptimizer
   },
   
   setup() {
@@ -263,6 +316,12 @@ export default {
     const imageLoading = ref(true);
     const abortController = new AbortController();
     const isFavorite = ref(false);
+    const showOptimizer = ref(false);
+    const recipeJustImported = ref(false);
+    const displayOptimizer = () => {
+      showOptimizer.value = true;
+    };
+
     
     // Gestion du mode édition
     const isEditing = ref(false);
@@ -528,6 +587,22 @@ export default {
       return result;
     });
 
+    const handleOptimizationComplete = (success) => {
+      if (success) {
+        // Recharger les données de la recette après une optimisation réussie
+        loadRecipeDetails();
+      }
+      showOptimizer.value = false;
+    };
+    
+    // Ajouter cette méthode pour mettre à jour la recette après optimisation
+    const updateRecipeAfterOptimization = (updatedRecipe) => {
+      if (updatedRecipe && recipe.value) {
+        recipe.value = updatedRecipe;
+      }
+    };
+
+
     // Dans la fonction onMounted
     onMounted(async () => {
       // Ajouter l'écouteur de redimensionnement
@@ -593,6 +668,12 @@ export default {
       } finally {
         loading.value = false;
       }
+     // Vérifier si la recette vient d'être importée (via un paramètre d'URL par exemple)
+     const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('imported') === 'true') {
+        recipeJustImported.value = true;
+        showOptimizer.value = true;
+      }
     });
     
     onBeforeUnmount(() => {
@@ -627,7 +708,12 @@ export default {
       adjustedNutrition,
       confirmDelete,
       deleteRecipe,
-      handleImageError
+      handleImageError,
+      showOptimizer,
+      recipeJustImported,
+      handleOptimizationComplete,
+      updateRecipeAfterOptimization,
+      displayOptimizer
     };
   }
 };
