@@ -811,49 +811,30 @@ export default {
         const response = await recipeService.importRecipeFromUrl(recipeUrl.value);
         
         if (response && response.data) {
-          importStatus.value = 'Analyse des ingrédients...';
+          importStatus.value = 'Importation réussie!';
           
-          // Recherche de l'ID ou du slug dans la réponse
-          let recipeId = null;
-          let recipeSlug = null;
-          
-          if (typeof response.data === 'object') {
-            recipeId = response.data.id;
-            recipeSlug = response.data.slug;
-          } else if (typeof response.data === 'string') {
-            // Déterminer si c'est un slug ou un ID en cherchant des tirets
-            if (response.data.includes('-')) {
-              recipeSlug = response.data;
-            } else {
-              recipeId = response.data;
-            }
+          // Stocker la recette importée dans le store sans optimisation
+          if (response.data.id) {
+            // Ajouter au store
+            recipeStore.addRecipe(response.data);
+            
+            // Redirection vers la page de la recette avec un paramètre pour afficher l'optimiseur
+            setTimeout(() => {
+              let redirectTarget;
+              if (response.data.slug) {
+                redirectTarget = `/recipes/${response.data.slug}?showOptimizer=true`;
+              } else {
+                redirectTarget = `/recipes/${response.data.id}?showOptimizer=true`;
+              }
+              
+              emit('recipe-created', response.data.slug || response.data.id);
+              router.push(redirectTarget);
+            }, 1500);
+          } else {
+            throw new Error("ID de recette manquant dans la réponse");
           }
           
-          // Finalisation de l'importation
-          importStatus.value = 'Finalisation...';
           success.value = true;
-          
-          // Redirection après un délai
-          setTimeout(() => {
-            // Décider vers quelle URL rediriger - préférer TOUJOURS le slug
-            let redirectTarget;
-            
-            if (recipeSlug) {
-              // Ajouter un paramètre pour indiquer que la recette vient d'être importée
-              redirectTarget = `/recipes/${recipeSlug}?imported=true`;
-              console.log("Redirection vers la recette avec slug:", recipeSlug);
-            } else {
-              // Si pas de slug, revenir à la liste des recettes
-              redirectTarget = '/recipes';
-              console.log("Redirection vers la liste des recettes (pas de slug disponible)");
-            }
-            
-            // Indiquer que l'opération est terminée
-            emit('recipe-created', recipeSlug || recipeId || null);
-            
-            // Rediriger vers la recette ou la liste
-            router.push(redirectTarget);
-          }, 1500);
         } else {
           throw new Error('Réponse invalide de l\'API');
         }

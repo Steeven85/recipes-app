@@ -113,7 +113,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
-            {{ showCompleted ? 'Masquer' : 'Afficher' }}
+            {{ showCompleted ? 'Masquer les articles cochés' : 'Afficher les articles cochés' }}
           </button>
           
           <button 
@@ -207,17 +207,10 @@
           <p class="text-gray-500">Votre liste de courses est vide.</p>
           <div class="flex flex-col items-center gap-2 mt-4">
             <button 
-              @click="generateFromMealPlan"
+              @click="generateShoppingList"
               class="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 w-full md:w-auto"
             >
               Générer depuis le planning
-            </button>
-            
-            <button 
-              @click="useTestDataForDebug"
-              class="px-4 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 w-full md:w-auto"
-            >
-              Utiliser des données de démonstration
             </button>
           </div>
         </div>
@@ -314,16 +307,10 @@
                 </p>
                 <div class="mt-2 flex flex-col sm:flex-row gap-2">
                   <button 
-                    @click="generateFromMealPlan"
+                    @click="generateShoppingList"
                     class="px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded"
                   >
                     Générer depuis le planning
-                  </button>
-                  <button 
-                    @click="useTestDataForDebug"
-                    class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded"
-                  >
-                    Voir un exemple
                   </button>
                 </div>
               </div>
@@ -892,27 +879,6 @@ export default {
       timeout: null
     });
 
-    const showToast = (message, type = 'success') => {
-      if (toast.value.timeout) {
-        clearTimeout(toast.value.timeout);
-      }
-      toast.value = {
-        show: true,
-        message,
-        type,
-        timeout: setTimeout(() => {
-          toast.value.show = false;
-        }, 3000)
-      };
-    };
-
-    // Fonction pour forcer l'utilisation des données de test (pour le débogage)
-    const useTestDataForDebug = () => {
-      useMockData(true);
-      error.value = false;
-      errorMessage.value = '';
-    };
-
     const determineCategory = (itemName) => {
       if (!itemName) return 'Divers';
       
@@ -1172,25 +1138,22 @@ export default {
       }
     };
     
-    const generateFromMealPlan = async () => {
+    const generateShoppingList = async () => {
       loading.value = true;
       try {
         console.log('Génération de la liste de courses depuis le planning...');
         
-        // Définir la plage de dates (par exemple, aujourd’hui et une semaine plus tard)
+        // 1. Récupérer les identifiants des recettes du planning
         const today = new Date();
         const startDate = formatDate(today);
         const endDate = new Date(today);
         endDate.setDate(today.getDate() + 7);
         const formattedEndDate = formatDate(endDate);
         
-        // Récupérer le planning de repas
         const mealPlanResponse = await recipeService.getMealPlan(startDate, formattedEndDate);
-        console.log('Planning de repas récupéré:', mealPlanResponse.data);
         
-        // Extraire les identifiants des recettes planifiées
         const recipeIds = new Set();
-        if (mealPlanResponse.data.items) {
+        if (mealPlanResponse.data && mealPlanResponse.data.items) {
           mealPlanResponse.data.items.forEach(meal => {
             if (meal.recipe && meal.recipe.id) {
               recipeIds.add(meal.recipe.id);
@@ -1199,45 +1162,48 @@ export default {
         }
         
         if (recipeIds.size === 0) {
-          throw new Error('Aucune recette trouvée dans le planning pour générer la liste.');
+          throw new Error('Aucune recette trouvée dans le planning pour générer la liste');
         }
         
-        // Récupérer la liste principale de courses
+        // 2. Récupérer la liste de courses principale
         const listResponse = await shoppingService.getMainShoppingList();
         const mainList = listResponse.data.items?.[0];
+        
         if (!mainList || !mainList.id) {
           throw new Error('Aucune liste de courses valide trouvée');
         }
         
-        // Pour chaque recette, ajouter ses ingrédients dans la liste de courses
-        for (const id of recipeIds) {
-          const recipeResponse = await recipeService.getById(id);
-          if (!recipeResponse.data) continue;
-          const recipe = recipeResponse.data;
-          // Préparer le payload attendu par l’API
-          const payload = [{
-            recipeId: recipe.id,
+        // 3. Pour chaque recette, ajouter à la liste de courses
+        const recipePromises = Array.from(recipeIds).map(recipeId => {
+          // Utiliser le format exact attendu par l'API
+          return axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, [{
+            recipeId: recipeId,
             recipeIncrementQuantity: 1,
-            recipeIngredients: recipe.recipeIngredient || []
-          }];
-          // Envoi de la requête POST vers le même endpoint utilisé dans le planning
-          await axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, payload);
-        }
+            recipeIngredients: [] // L'API extraira les ingrédients de la recette
+          }]);
+        });
         
-        showToast('Liste de courses générée avec succès');
-        // Recharger la liste mise à jour
+        await Promise.all(recipePromises);
+        
+        // 4. Recharger la liste de courses
         await loadShoppingList();
         
       } catch (error) {
-        console.error('Erreur lors de la génération de la liste de courses', error);
+        console.error('Erreur lors de la génération de la liste', error);
+        
+        if (error.response) {
+          console.error('Détails de l\'erreur API:', {
+            status: error.response.status,
+            data: error.response.data
+          });
+        }
+        
         error.value = true;
         errorMessage.value = error.message || 'Impossible de générer la liste de courses.';
-        showToast(errorMessage.value, 'error');
       } finally {
         loading.value = false;
       }
     };
-
 
     // Utilitaire pour formater la date en YYYY-MM-DD
     const formatDate = (date) => {
@@ -1245,6 +1211,19 @@ export default {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
+    };
+
+    // Fonction pour afficher des notifications
+    const showToast = (message, type = 'success') => {
+      // Si cette fonction n'existe pas déjà dans votre composant, ajoutez-la
+      console.log(`Toast: ${message} (${type})`);
+      // Ici, vous pourriez implémenter une notification visuelle
+      // Exemple simple avec alert:
+      if (type === 'error') {
+        alert(`Erreur: ${message}`);
+      } else {
+        alert(message);
+      }
     };
 
     return {
@@ -1267,8 +1246,7 @@ export default {
       addNewItem,
       toggleCompletedItems,
       loadShoppingList,
-      generateFromMealPlan,
-      useTestDataForDebug,
+      generateShoppingList,
       router,
       getFoodName,
       getUnitDisplay,

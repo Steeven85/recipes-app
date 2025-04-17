@@ -1129,11 +1129,7 @@ export default {
           throw new Error('Aucune recette trouvée dans le planning pour générer la liste');
         }
         
-        // 2. Pour chaque recette, récupérer ses détails complets
-        const recipePromises = Array.from(recipeIds).map(id => recipeService.getById(id));
-        const recipeResponses = await Promise.all(recipePromises);
-        
-        // 3. Récupérer la liste de courses principale
+        // 2. Récupérer la liste de courses principale
         const listResponse = await shoppingService.getMainShoppingList();
         const mainList = listResponse.data.items?.[0];
         
@@ -1141,29 +1137,21 @@ export default {
           throw new Error('Aucune liste de courses valide trouvée');
         }
         
-        // 4. Pour chaque recette, envoyer une requête séparée
-        for (const recipeResponse of recipeResponses) {
-          if (!recipeResponse.data || !recipeResponse.data.id) {
-            console.warn('Recette invalide ignorée');
-            continue;
-          }
-          
-          const recipe = recipeResponse.data;
-          
-          // Préparer le payload au format attendu par l'API
-          const payload = [{
-            recipeId: recipe.id,
+        // 3. Pour chaque recette, ajouter à la liste de courses
+        const recipePromises = Array.from(recipeIds).map(recipeId => {
+          // Utiliser le format exact attendu par l'API
+          return axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, [{
+            recipeId: recipeId,
             recipeIncrementQuantity: 1,
-            recipeIngredients: recipe.recipeIngredient || []
-          }];
-          
-          // Appeler l'API avec le format exact qu'elle attend
-          await axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, payload);
-        }
+            recipeIngredients: [] // L'API extraira les ingrédients de la recette
+          }]);
+        });
+        
+        await Promise.all(recipePromises);
         
         showToast('Liste de courses générée avec succès');
         
-        // 5. Redirection vers la page des courses
+        // 4. Redirection vers la page des courses
         setTimeout(() => {
           router.push('/shopping');
         }, 1000);
