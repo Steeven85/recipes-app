@@ -2,6 +2,575 @@
 import axios from 'axios';
 
 const imageUrlCache = new Map(); 
+
+
+// ======================================================
+// Fonctions utilitaires pour le matching d'aliments
+// ======================================================
+
+/**
+ * Recherche asynchrone de la meilleure correspondance pour un aliment dans une liste existante.
+ * On procède de la manière suivante :
+ * - Recherche d'une correspondance exacte dans existingFoods.
+ * - Calcul d'un score via découpage en tokens et similarité.
+ * - Si le score est en dessous de 1 (i.e. correspondance partielle), on lance une recherche via API
+ *   (exemple ici avec referenceService.searchFoods) pour trouver éventuellement un meilleur candidat.
+ *
+ *
+ * Améliorations pour findBestFoodMatch avec gestion spéciale pour viandes et ingrédients composés
+ *
+*
+ * Recherche asynchrone de la meilleure correspondance pour un aliment en utilisant les données existantes.
+ * Version finale améliorée.
+ * @param {String} foodName Nom d'aliment recherché
+ * @param {Array} existingFoods Liste d'aliments de la base de données
+ * @param {Array} existingUnits Liste d'unités de la base de données
+ * @returns {Promise<Object|null>} Objet { food, score } ou null si aucun candidat n'est trouvé.
+ */
+async function findBestFoodMatch(foodName, existingFoods, existingUnits = []) {
+  if (!foodName || !existingFoods || existingFoods.length === 0) {
+    return null;
+  }
+
+  // Préparer un nom d'aliment nettoyé (sans accents, en minuscules)
+  const normalizedFoodName = normalizeString(foodName.toLowerCase().trim());
+  console.log(`Recherche normalisée pour: "${normalizedFoodName}"`);
+  
+  // Construire l'ensemble des termes d'unités
+  const unitTerms = new Set();
+  if (existingUnits && existingUnits.length > 0) {
+    existingUnits.forEach(unit => {
+      if (unit.name) unitTerms.add(normalizeString(unit.name.toLowerCase()));
+      if (unit.pluralName) unitTerms.add(normalizeString(unit.pluralName.toLowerCase()));
+      if (unit.abbreviation) unitTerms.add(normalizeString(unit.abbreviation.toLowerCase()));
+      if (unit.pluralAbbreviation) unitTerms.add(normalizeString(unit.pluralAbbreviation.toLowerCase()));
+    });
+  }
+  
+  // Ajouter des abréviations communes qui pourraient manquer
+  const commonAbbr = ['g', 'kg', 'ml', 'l', 'cl', 'cas', 'cac', 'cs', 'cc', 'gou', 'gou.', 'c.a.s', 'c.a.c'];
+  commonAbbr.forEach(abbr => unitTerms.add(abbr));
+  
+  // Nettoyer le nom de l'aliment en retirant les unités et expressions parasites
+  const cleanedFoodName = cleanFoodName(normalizedFoodName, unitTerms);
+  console.log(`Nom d'aliment nettoyé: "${cleanedFoodName}"`);
+  
+  // Définir des catégories d'aliments et leurs variations pour améliorer la recherche
+  const foodCategories = {
+    'viande': {
+      base: ['viande', 'boeuf', 'bœuf', 'porc', 'agneau', 'mouton', 'volaille', 'poulet', 'dinde', 'canard', 'veau'],
+      variations: ['hache', 'haché', 'émincé', 'emince', 'filet', 'steak', 'côte', 'cote', 'escalope', 'cuisse', 'aile']
+    },
+    'legume': {
+      base: ['legume', 'légume', 'tomate', 'carotte', 'oignon', 'ail', 'pomme de terre', 'salade', 'laitue'],
+      variations: ['frais', 'fraiche', 'cru', 'cuite', 'surgelé', 'surgele', 'en conserve']
+    }
+  };
+  
+  // Identifier la catégorie de l'aliment et ses composants
+  const words = cleanedFoodName.split(/\s+/);
+  const foodComponents = {
+    category: null,
+    base: null,
+    variation: null
+  };
+  
+  // Analyser chaque mot pour identifier la composition de l'aliment
+  for (const word of words) {
+    for (const [category, terms] of Object.entries(foodCategories)) {
+      if (terms.base.includes(word)) {
+        foodComponents.category = category;
+        foodComponents.base = word;
+      }
+      if (terms.variations.includes(word)) {
+        foodComponents.variation = word;
+      }
+    }
+  }
+  
+  // 1. Recherche de correspondance exacte
+  const exactMatch = existingFoods.find(food => {
+    if (!food.name) return false;
+    return normalizeString(food.name.toLowerCase()) === cleanedFoodName;
+  });
+  
+  if (exactMatch) {
+    console.log(`Correspondance exacte trouvée: "${exactMatch.name}"`);
+    return { food: exactMatch, score: 1 };
+  }
+  
+  // 2. Cas spécial pour "boeuf haché" et variations similaires
+  if (cleanedFoodName.includes('boeuf') && cleanedFoodName.includes('hache')) {
+    // Chercher d'abord une correspondance directe comme "boeuf haché"
+    const beefMatch = existingFoods.find(food => {
+      if (!food.name) return false;
+      const normalizedName = normalizeString(food.name.toLowerCase());
+      return (normalizedName.includes('boeuf') && normalizedName.includes('hache')) ||
+             (normalizedName.includes('viande') && normalizedName.includes('hache')) ||
+             (normalizedName === 'boeuf hache') || 
+             (normalizedName === 'viande hachee');
+    });
+    
+    if (beefMatch) {
+      console.log(`Correspondance spéciale pour viande hachée: "${beefMatch.name}"`);
+      return { food: beefMatch, score: 0.95 };
+    }
+    
+    // Si pas de correspondance directe, chercher "viande hachée" ou similaire
+    const beefVariants = ['viande hachee', 'steak hache', 'boeuf hache', 'viande de boeuf'];
+    for (const variant of beefVariants) {
+      const variantMatch = existingFoods.find(food => {
+        if (!food.name) return false;
+        return normalizeString(food.name.toLowerCase()).includes(variant);
+      });
+      
+      if (variantMatch) {
+        console.log(`Correspondance variante pour boeuf haché: "${variantMatch.name}"`);
+        return { food: variantMatch, score: 0.9 };
+      }
+    }
+  }
+  
+  // 3. Recherche par composants pour les aliments composés
+  if (foodComponents.base && foodComponents.variation) {
+    // Rechercher les aliments qui contiennent à la fois la base et la variation
+    const composedMatches = existingFoods.filter(food => {
+      if (!food.name) return false;
+      const normalizedName = normalizeString(food.name.toLowerCase());
+      return normalizedName.includes(foodComponents.base) && 
+             normalizedName.includes(foodComponents.variation);
+    });
+    
+    if (composedMatches.length > 0) {
+      // Trier par longueur pour favoriser les noms plus courts (généralement plus précis)
+      composedMatches.sort((a, b) => a.name.length - b.name.length);
+      console.log(`Correspondance par composants: "${composedMatches[0].name}"`);
+      return { food: composedMatches[0], score: 0.9 };
+    }
+  }
+  
+  // 4. Construire un index de mots pour chaque aliment
+  const foodWordIndex = new Map();
+  existingFoods.forEach(food => {
+    if (!food.name) return;
+    
+    const words = normalizeString(food.name.toLowerCase()).split(/\s+/);
+    words.forEach(word => {
+      if (word.length < 2) return; // Ignorer les mots trop courts
+      
+      if (!foodWordIndex.has(word)) {
+        foodWordIndex.set(word, []);
+      }
+      foodWordIndex.get(word).push(food);
+    });
+  });
+  
+  // 5. Trouver les aliments qui contiennent des mots du terme recherché
+  const searchWords = cleanedFoodName.split(/\s+/);
+  const candidateFoods = new Map(); // Map pour stocker les candidats et leur score initial
+  
+  searchWords.forEach(word => {
+    if (word.length < 2) return; // Ignorer les mots trop courts
+    
+    // Chercher les aliments contenant ce mot
+    if (foodWordIndex.has(word)) {
+      foodWordIndex.get(word).forEach(food => {
+        if (!candidateFoods.has(food.id)) {
+          candidateFoods.set(food.id, { food, score: 0 });
+        }
+        // Incrémenter le score pour chaque mot correspondant
+        candidateFoods.get(food.id).score += 0.2;
+      });
+    }
+  });
+  
+  // 6. Si aucun candidat n'est trouvé, chercher par similarité globale
+  if (candidateFoods.size === 0) {
+    existingFoods.forEach(food => {
+      const similarity = calculateSimilarity(cleanedFoodName, normalizeString(food.name.toLowerCase()));
+      if (similarity > 0.4) { // Seuil de similarité minimum
+        candidateFoods.set(food.id, { food, score: similarity });
+      }
+    });
+  }
+  
+  // 7. Règles spéciales pour termes courts ou ingrédients difficiles
+  if (candidateFoods.size === 0 || cleanedFoodName.length <= 5) {
+    existingFoods.forEach(food => {
+      if (!food.name) return;
+      
+      const normalizedName = normalizeString(food.name.toLowerCase());
+      
+      // Pour les aliments courts comme "ail", "riz", etc.
+      if (cleanedFoodName.length <= 5 && normalizedName.includes(cleanedFoodName)) {
+        const score = 0.5 + (cleanedFoodName.length / normalizedName.length) * 0.3;
+        
+        // Favoriser les correspondances exactes aux extrémités des mots
+        if (normalizedName.startsWith(cleanedFoodName) || normalizedName.endsWith(cleanedFoodName)) {
+          candidateFoods.set(food.id, { food, score: score + 0.1 });
+        } else {
+          candidateFoods.set(food.id, { food, score });
+        }
+      }
+      
+      // Recherche par mot-clé unique pour les aliments composés
+      if (searchWords.length === 1 && searchWords[0].length >= 3) {
+        const searchWord = searchWords[0];
+        const foodWords = normalizedName.split(/\s+/);
+        
+        if (foodWords.includes(searchWord)) {
+          // Score proportionnel à l'importance du mot dans le nom
+          const wordImportance = searchWord.length / normalizedName.length;
+          candidateFoods.set(food.id, { food, score: 0.6 + wordImportance * 0.3 });
+        }
+      }
+    });
+  }
+  
+  // 8. Affiner les scores des candidats
+  for (const [id, candidate] of candidateFoods.entries()) {
+    const food = candidate.food;
+    const normalizedName = normalizeString(food.name.toLowerCase());
+    
+    // Bonus pour mots entiers correspondants
+    const foodWords = normalizedName.split(/\s+/);
+    const exactWordMatches = searchWords.filter(word => foodWords.includes(word)).length;
+    
+    if (exactWordMatches > 0) {
+      const wordMatchRatio = exactWordMatches / searchWords.length;
+      candidate.score += 0.1 * exactWordMatches + (wordMatchRatio * 0.2);
+    }
+    
+    // Bonus si le nom de l'aliment contient entièrement le terme recherché
+    if (normalizedName.includes(cleanedFoodName)) {
+      candidate.score += 0.2;
+      
+      // Bonus supplémentaire si c'est au début ou à la fin (indiquant souvent l'ingrédient principal)
+      if (normalizedName.startsWith(cleanedFoodName) || normalizedName.endsWith(cleanedFoodName)) {
+        candidate.score += 0.1;
+      }
+    }
+    
+    // Bonus si les longueurs sont similaires
+    const lengthRatio = Math.min(normalizedName.length, cleanedFoodName.length) / 
+                        Math.max(normalizedName.length, cleanedFoodName.length);
+    candidate.score += lengthRatio * 0.1;
+    
+    // Malus pour les noms très longs ou trop différents
+    if (normalizedName.length > cleanedFoodName.length * 3) {
+      candidate.score -= 0.1;
+    }
+    
+    // Plafonner le score à 1
+    candidate.score = Math.min(1, candidate.score);
+  }
+  
+  // 9. Trouver le meilleur candidat
+  let bestMatch = null;
+  let bestScore = 0;
+  
+  for (const [id, candidate] of candidateFoods.entries()) {
+    if (candidate.score > bestScore) {
+      bestScore = candidate.score;
+      bestMatch = candidate.food;
+    }
+  }
+  
+  // 10. Gestion spéciale des catégories si toujours pas de bonne correspondance
+  if (bestScore < 0.6 && foodComponents.base) {
+    // Chercher par catégorie de base (viande, légume, etc.)
+    const categoryMatches = existingFoods.filter(food => {
+      if (!food.name) return false;
+      const normalizedName = normalizeString(food.name.toLowerCase());
+      return normalizedName.includes(foodComponents.base);
+    });
+    
+    if (categoryMatches.length > 0) {
+      // Trier par similarité avec le terme complet
+      categoryMatches.sort((a, b) => {
+        const aSim = calculateSimilarity(cleanedFoodName, normalizeString(a.name.toLowerCase()));
+        const bSim = calculateSimilarity(cleanedFoodName, normalizeString(b.name.toLowerCase()));
+        return bSim - aSim;
+      });
+      
+      // Utiliser le meilleur match par catégorie si son score est meilleur
+      const categoryScore = calculateSimilarity(cleanedFoodName, normalizeString(categoryMatches[0].name.toLowerCase()));
+      if (categoryScore > bestScore) {
+        bestMatch = categoryMatches[0];
+        bestScore = categoryScore;
+      }
+    }
+  }
+  
+  // Seuil minimum pour considérer une correspondance valide
+  const threshold = 0.5;
+  
+  if (bestScore >= threshold && bestMatch) {
+    console.log(`Meilleure correspondance: "${bestMatch.name}" avec score ${bestScore.toFixed(2)}`);
+    return { food: bestMatch, score: bestScore };
+  }
+  
+  console.log(`Aucune correspondance satisfaisante trouvée. Meilleur score: ${bestScore.toFixed(2)}`);
+  return null;
+}
+
+/**
+ * Fonction dédiée pour traiter les fractions, y compris les cas spéciaux
+ * @param {String} text Texte contenant potentiellement des fractions
+ * @returns {Number|null} Valeur numérique extraite ou null
+ */
+function extractFraction(text) {
+  if (!text) return null;
+  
+  // Détection explicite pour les cas les plus problématiques
+  if (text.includes('¹/₄')) return 0.25;
+  if (text.includes('¹/₂')) return 0.5;
+  if (text.includes('¹/₃')) return 0.333;
+  if (text.includes('²/₃')) return 0.667;
+  if (text.includes('¾')) return 0.75;
+  if (text.includes('½')) return 0.5;
+  if (text.includes('¼')) return 0.25;
+  
+  // Essayer de capturer les autres fractions en notation standard
+  const fractionMatch = text.match(/(\d+)\/(\d+)/);
+  if (fractionMatch && fractionMatch[1] && fractionMatch[2]) {
+    const numerator = parseInt(fractionMatch[1], 10);
+    const denominator = parseInt(fractionMatch[2], 10);
+    if (denominator !== 0) {
+      return numerator / denominator;
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Fonction utilitaire pour convertir les fractions Unicode et textuelles en valeurs numériques
+ * @param {String} text Texte contenant potentiellement des fractions
+ * @returns {Number|null} Valeur numérique ou null si pas de conversion possible
+ */
+function parseQuantityWithFractions(text) {
+  if (!text) return null;
+  
+  // Normaliser les espaces
+  const normalizedText = text.trim().replace(/\s+/g, ' ');
+  
+  // 1. Cas des fractions Unicode comme ¼, ½, ¾, etc.
+  const fractionMap = {
+    '¼': 0.25,
+    '½': 0.5,
+    '¾': 0.75,
+    '⅓': 0.333,
+    '⅔': 0.667,
+    '⅕': 0.2,
+    '⅖': 0.4,
+    '⅗': 0.6,
+    '⅘': 0.8,
+    '⅙': 0.167,
+    '⅚': 0.833,
+    '⅛': 0.125,
+    '⅜': 0.375,
+    '⅝': 0.625,
+    '⅞': 0.875
+  };
+  
+  // Détecter les fractions Unicode
+  for (const [fraction, value] of Object.entries(fractionMap)) {
+    if (normalizedText === fraction) {
+      console.log(`Fraction Unicode détectée: ${fraction} -> ${value}`);
+      return value;
+    }
+    
+    // Cas mixte: nombre entier suivi d'une fraction Unicode (ex: "1 ½")
+    const mixedPattern = new RegExp(`^(\\d+)\\s*${fraction}$`);
+    const mixedMatch = normalizedText.match(mixedPattern);
+    if (mixedMatch) {
+      const wholeNumber = parseInt(mixedMatch[1], 10);
+      const result = wholeNumber + value;
+      console.log(`Fraction mixte détectée: ${normalizedText} -> ${result}`);
+      return result;
+    }
+  }
+  
+  // 2. Détecter les fractions écrites avec des chiffres en exposant/indice (ex: ¹/₄, ¹/₂)
+  const superSubscriptPattern = /^(?:(\d+)\s+)?([¹²³⁴⁵⁶⁷⁸⁹]+)\s*[\/\u2044]\s*([₀₁₂₃₄₅₆₇₈₉]+)$/;
+  const ssMatch = normalizedText.match(superSubscriptPattern);
+  
+  if (ssMatch) {
+    // Convertir les chiffres en exposant/indice en nombres
+    const superscriptMap = {'¹': 1, '²': 2, '³': 3, '⁴': 4, '⁵': 5, '⁶': 6, '⁷': 7, '⁸': 8, '⁹': 9};
+    const subscriptMap = {'₀': 0, '₁': 1, '₂': 2, '₃': 3, '₄': 4, '₅': 5, '₆': 6, '₇': 7, '₈': 8, '₉': 9};
+    
+    let wholeNumber = ssMatch[1] ? parseInt(ssMatch[1], 10) : 0;
+    
+    // Convertir le numérateur
+    let numerator = 0;
+    for (const char of ssMatch[2]) {
+      if (superscriptMap[char]) {
+        numerator = numerator * 10 + superscriptMap[char];
+      }
+    }
+    
+    // Convertir le dénominateur
+    let denominator = 0;
+    for (const char of ssMatch[3]) {
+      if (subscriptMap[char]) {
+        denominator = denominator * 10 + subscriptMap[char];
+      }
+    }
+    
+    if (denominator > 0) {
+      const result = wholeNumber + (numerator / denominator);
+      console.log(`Fraction exposant/indice détectée: ${normalizedText} -> ${result}`);
+      return result;
+    }
+  }
+  
+  // 3. Détecter les fractions traditionnelles (ex: "1/4", "1/2")
+  const fractionPattern = /^(?:(\d+)\s+)?(\d+)\s*[\/\u2044]\s*(\d+)$/;
+  const fractionMatch = normalizedText.match(fractionPattern);
+  
+  if (fractionMatch) {
+    const wholeNumber = fractionMatch[1] ? parseInt(fractionMatch[1], 10) : 0;
+    const numerator = parseInt(fractionMatch[2], 10);
+    const denominator = parseInt(fractionMatch[3], 10);
+    
+    if (denominator > 0) {
+      const result = wholeNumber + (numerator / denominator);
+      console.log(`Fraction traditionnelle détectée: ${normalizedText} -> ${result}`);
+      return result;
+    }
+  }
+  
+  // 4. Cas simple: juste un nombre
+  if (/^\d+(\.\d+)?$/.test(normalizedText)) {
+    const result = parseFloat(normalizedText);
+    return result;
+  }
+  
+  // Aucun format reconnu
+  return null;
+}
+
+
+/**
+ * Normalise une chaîne en retirant les accents et caractères spéciaux
+ * @param {String} str Chaîne à normaliser
+ * @returns {String} Chaîne normalisée
+ */
+function normalizeString(str) {
+  if (!str) return '';
+  
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Retire les accents
+    .replace(/œ/g, 'oe')             // Remplace œ par oe
+    .replace(/[^\w\s]/g, '')         // Retire caractères spéciaux
+    .trim();
+}
+
+/**
+ * Nettoie le nom d'un aliment en retirant les unités et expressions parasites
+ * Version améliorée
+ * @param {String} foodName Nom d'aliment à nettoyer
+ * @param {Set} unitTerms Ensemble des termes d'unités à rechercher
+ * @returns {String} Nom nettoyé
+ */
+function cleanFoodName(foodName, unitTerms) {
+  if (!foodName) return '';
+  
+  // 1. Retirer le contenu entre parenthèses
+  let cleaned = foodName.replace(/\(.*?\)/g, '').trim();
+  
+  // 2. Retirer les chiffres au début et les unités numériques
+  cleaned = cleaned.replace(/^\d+(\.\d+)?\s*/, '').trim();
+  cleaned = cleaned.replace(/^\d+\/\d+\s*/, '').trim();
+  
+  // 3. Découper en mots pour analyse
+  const words = cleaned.split(/\s+/);
+  if (words.length === 0) return cleaned;
+  
+  // Vérifier si le premier mot est une unité
+  if (words.length > 1) {
+    const firstWord = words[0];
+    
+    // Si c'est une unité connue, la retirer
+    if (unitTerms.has(firstWord)) {
+      words.shift();
+      cleaned = words.join(' ');
+    }
+  }
+  
+  // 4. Traiter les patterns comme "X de Y" ou "X d'Y"
+  if (words.length >= 3) {
+    // Cas: "poignée de laitue" -> "laitue"
+    if ((words[1] === 'de' || words[1] === 'd') && words[2]) {
+      return words.slice(2).join(' ');
+    }
+  }
+  
+  // 5. Amélioration spéciale pour "bœuf haché" et variations
+  // Si le texte contient "boeuf" et "hache", on les garde ensemble
+  if (cleaned.includes('boeuf') && cleaned.includes('hache')) {
+    return 'boeuf hache';
+  }
+  
+  // 6. Retirer les articles et prépositions courants du début
+  cleaned = cleaned.replace(/^(le|la|les|du|de la|des|de|d'|l'|en|au|aux|à|a)\s+/i, '');
+  
+  return cleaned;
+}
+
+/**
+ * Calcule un score de similarité entre deux chaînes
+ * @param {String} str1 Première chaîne
+ * @param {String} str2 Deuxième chaîne
+ * @returns {Number} Score de similarité entre 0 et 1
+ */
+function calculateSimilarity(str1, str2) {
+  if (!str1 || !str2) return 0;
+
+  const longerStr = str1.length > str2.length ? str1 : str2;
+  const shorterStr = str1.length > str2.length ? str2 : str1;
+  
+  // Si l'une est contenue dans l'autre
+  if (longerStr.includes(shorterStr)) {
+    return (shorterStr.length / longerStr.length) * 0.8 + 0.2;
+  }
+  
+  // Traitement des pluriels
+  if (shorterStr.length > 2 && longerStr.endsWith('s') && 
+      longerStr.slice(0, -1) === shorterStr) {
+    return 0.9;
+  }
+  
+  // Recherche de la plus longue sous-chaîne commune
+  let longestCommon = 0;
+  
+  // D'abord vérifier les mots entiers
+  const shorterWords = shorterStr.split(/\s+/);
+  for (const word of shorterWords) {
+    if (word.length >= 3 && longerStr.includes(word)) {
+      longestCommon = Math.max(longestCommon, word.length);
+    }
+  }
+  
+  // Si aucun mot entier, essayer les sous-chaînes
+  if (longestCommon === 0) {
+    for (let i = 0; i < shorterStr.length; i++) {
+      for (let j = i + 3; j <= shorterStr.length; j++) {
+        const subStr = shorterStr.substring(i, j);
+        if (longerStr.includes(subStr) && subStr.length > longestCommon) {
+          longestCommon = subStr.length;
+        }
+      }
+    }
+  }
+  
+  return longestCommon / longerStr.length;
+}
+
+
 /**
  * Service pour les opérations liées aux recettes
  */
@@ -621,7 +1190,7 @@ export const recipeService = {
 
 
   /**
-   * Analyse et optimise les ingrédients d'une recette en utilisant le slug au lieu de l'ID
+   * Version complète et optimisée de l'optimisation des ingrédients
    * @param {String} recipeIdOrSlug - ID ou slug de la recette à optimiser
    * @returns {Promise<Object>} Recette avec ingrédients optimisés
    */
@@ -631,11 +1200,10 @@ export const recipeService = {
     }
     
     try {
-      // Déterminer si l'identifiant est un slug ou un ID
       const isSlug = recipeIdOrSlug.includes('-') && isNaN(recipeIdOrSlug.charAt(0));
       console.log(`Optimisation des ingrédients pour ${isSlug ? 'slug' : 'ID'}: ${recipeIdOrSlug}`);
       
-      // Récupérer les détails de la recette (directement par slug si possible)
+      // 1. Récupérer les données de la recette
       let recipeResponse;
       if (isSlug) {
         recipeResponse = await this.getBySlug(recipeIdOrSlug);
@@ -650,36 +1218,37 @@ export const recipeService = {
       const recipeData = recipeResponse.data;
       console.log(`Récupération réussie de la recette: ${recipeData.name} (Slug: ${recipeData.slug})`);
       
-      // Vérifier si la recette a des ingrédients
       if (!recipeData.recipeIngredient || !Array.isArray(recipeData.recipeIngredient) || recipeData.recipeIngredient.length === 0) {
         throw new Error('La recette ne contient pas d\'ingrédients à optimiser');
       }
       
-      // Extraire les textes d'ingrédients en nettoyant le format "1 [texte réel]"
+      // 2. Charger les unités et aliments depuis l'API
+      console.log("Chargement des unités et aliments depuis l'API...");
+      const [unitsResponse, foodsResponse] = await Promise.all([
+        referenceService.getUnits(),
+        referenceService.getFoods({ perPage: 1000 })
+      ]);
+      
+      const existingUnits = (unitsResponse.data && unitsResponse.data.items) ? unitsResponse.data.items : [];
+      const existingFoods = (foodsResponse.data && foodsResponse.data.items) ? foodsResponse.data.items : [];
+      
+      console.log(`${existingUnits.length} unités et ${existingFoods.length} aliments chargés`);
+      
+      // 3. Prétraiter et nettoyer les textes d'ingrédients
       const ingredientTexts = recipeData.recipeIngredient.map(ingredient => {
-        // Utiliser originalText si disponible
+        // Obtenir le texte d'origine
+        let text = '';
         if (ingredient.originalText && ingredient.originalText.trim()) {
-          // Nettoyer le format "1 [texte réel]" si présent
-          const text = ingredient.originalText.trim();
-          // Si le texte commence par "1 " suivi d'une autre unité ou nombre, supprimer ce "1 "
-          if (text.match(/^1\s+(?:\d+|\d+\/\d+|\d+\.\d+|\d+\s+\w+)/)) {
-            return text.replace(/^1\s+/, '');
-          }
-          return text;
+          text = ingredient.originalText.trim();
+        } else if (ingredient.display && ingredient.display.trim()) {
+          text = ingredient.display.trim();
         }
         
-        // Sinon, utiliser display
-        if (ingredient.display && ingredient.display.trim()) {
-          const text = ingredient.display.trim();
-          // Nettoyer le même format dans display
-          if (text.match(/^1\s+(?:\d+|\d+\/\d+|\d+\.\d+|\d+\s+\w+)/)) {
-            return text.replace(/^1\s+/, '');
-          }
-          return text;
-        }
+        // Stocker l'original pour référence future
+        ingredient._originalText = text;
         
-        return '';
-      }).filter(text => text); // Filtrer les textes vides
+        return text;
+      }).filter(text => text);
       
       if (ingredientTexts.length === 0) {
         console.warn("Aucun texte d'ingrédient à analyser");
@@ -688,7 +1257,7 @@ export const recipeService = {
       
       console.log("Textes d'ingrédients nettoyés à analyser:", ingredientTexts);
       
-      // Analyser les ingrédients via l'API de parsing
+      // 4. Analyser les ingrédients avec le parser NLP
       const parseResponse = await this.parseIngredients({
         parser: 'nlp',
         ingredients: ingredientTexts
@@ -698,94 +1267,271 @@ export const recipeService = {
         throw new Error('Réponse invalide du parser d\'ingrédients');
       }
       
-      // Récupérer les aliments existants pour la recherche de correspondance
-      const foodsResponse = await referenceService.getFoods({ perPage: 1000 });
-      const existingFoods = (foodsResponse.data && foodsResponse.data.items) ? foodsResponse.data.items : [];
-      
-      // Récupérer les unités existantes
-      const unitsResponse = await referenceService.getUnits();
-      const existingUnits = (unitsResponse.data && unitsResponse.data.items) ? unitsResponse.data.items : [];
-      
-      // Créer une copie profonde de la recette pour les modifications
+      // 5. Optimiser les ingrédients
       const optimizedRecipe = JSON.parse(JSON.stringify(recipeData));
-      
-      // Mapper les résultats d'analyse aux ingrédients
       const parsedResults = parseResponse.data;
       
+      // Fonction d'aide pour trouver une unité spécifique par nom/abréviation exacte
+      function findExactUnit(unitText) {
+        if (!unitText) return null;
+        
+        const normalizedText = normalizeString(unitText.toLowerCase().trim());
+        
+        // Chercher par nom exact, pluriel ou abréviation
+        const foundUnit = existingUnits.find(unit => {
+          const unitName = unit.name ? normalizeString(unit.name.toLowerCase()) : '';
+          const unitPluralName = unit.pluralName ? normalizeString(unit.pluralName.toLowerCase()) : '';
+          const unitAbbr = unit.abbreviation ? normalizeString(unit.abbreviation.toLowerCase()) : '';
+          
+          return normalizedText === unitName || 
+                normalizedText === unitPluralName || 
+                normalizedText === unitAbbr;
+        });
+        
+        return foundUnit || null;
+      }
+      
+      // Fonction pour détecter une unité dans un texte en utilisant des motifs spécifiques
+      function detectUnitInText(text) {
+        if (!text) return null;
+        
+        // Détection pour les grammes
+        const gramMatch = text.match(/(\d+)\s*g(?:rammes?)?(?:\b|\s|$)/i);
+        if (gramMatch) {
+          const gramUnit = existingUnits.find(u => u.abbreviation === 'g');
+          if (gramUnit) {
+            console.log("Unité gramme détectée dans le texte");
+            return gramUnit;
+          }
+        }
+        
+        // Détection pour les gousses
+        const gousseMatch = text.match(/(\d+\/\d+|\d+|\d+[.,]\d+)\s*(?:gou(?:sse)?s?)(?:\b|\s|\.|\d'|\s)/i);
+        if (gousseMatch) {
+          const gousseUnit = existingUnits.find(u => u.name === 'gousse');
+          if (gousseUnit) {
+            console.log("Unité gousse détectée dans le texte");
+            return gousseUnit;
+          }
+        }
+        
+        // Détection pour "cuillère à soupe" et variantes
+        const cuillereSoupeMatch = text.match(/(?:c(?:uill[èe]re)?\.?\s*[àa]\.?\s*s(?:oupe)?|c\s*[àa]\s*s|cas|cs)(?:\b|\s|\.)/i);
+        if (cuillereSoupeMatch) {
+          const casUnit = existingUnits.find(u => u.name === 'cuillère à soupe' || u.abbreviation === 'càs');
+          if (casUnit) {
+            console.log("Unité cuillère à soupe détectée dans le texte");
+            return casUnit;
+          }
+        }
+        
+        // Détection pour "cuillère à café" et variantes
+        const cuillereCafeMatch = text.match(/(?:c(?:uill[èe]re)?\.?\s*[àa]\.?\s*c(?:af[ée])?|c\s*[àa]\s*c|cac|cc)(?:\b|\s|\.)/i);
+        if (cuillereCafeMatch) {
+          const cacUnit = existingUnits.find(u => u.name === 'cuillère à café' || u.abbreviation === 'càc');
+          if (cacUnit) {
+            console.log("Unité cuillère à café détectée dans le texte");
+            return cacUnit;
+          }
+        }
+        
+        // Aucune unité détectée
+        return null;
+      }
+      
+      // Traiter chaque ingrédient
       for (let i = 0; i < Math.min(parsedResults.length, optimizedRecipe.recipeIngredient.length); i++) {
         const originalIngredient = optimizedRecipe.recipeIngredient[i];
         const parsedResult = parsedResults[i];
+        const originalText = originalIngredient._originalText || '';
         
-        if (parsedResult && parsedResult.ingredient && parsedResult.confidence.average > 0.7) {
+        // Initialiser des valeurs par défaut
+        let quantity = null;
+        let unit = null;
+        let food = null;
+        let note = '';
+        
+        // Vérifier si le parsing est suffisamment fiable
+        if (parsedResult && parsedResult.ingredient && parsedResult.confidence.average > 0.6) {
           const parsedIngredient = parsedResult.ingredient;
           
-          // Mettre à jour la quantité uniquement si elle semble valide
-          if (parsedIngredient.quantity !== undefined && parsedIngredient.quantity > 0) {
-            originalIngredient.quantity = parsedIngredient.quantity;
+          // 1. Extraire la quantité correctement
+          
+          // 1.1 Vérifier d'abord si le texte contient des fractions
+          const fractionValue = extractFraction(originalText);
+          if (fractionValue !== null) {
+            quantity = fractionValue;
+            console.log(`Fraction extraite directement du texte: ${originalText} -> ${quantity}`);
+          } else if (parsedIngredient.quantity !== undefined && parsedIngredient.quantity !== null) {
+            quantity = parsedIngredient.quantity;
+            
+            // 1.2 Vérifier si c'est un cas où le parser interprète mal une fraction
+            if (quantity === 1.25 && (originalText.includes('1/4') || originalText.includes('¼'))) {
+              quantity = 0.25;
+              console.log('Correction de 1.25 -> 0.25');
+            } else if (quantity === 1.5 && (originalText.includes('1/2') || originalText.includes('½'))) {
+              quantity = 0.5;
+              console.log('Correction de 1.5 -> 0.5');
+            }
+            
+            // 1.3 Si le texte contient 1 suivi d'une fraction, c'est peut-être juste la fraction
+            if (quantity === 1 && /1\s+[¹\/]/.test(originalText)) {
+              if (originalText.includes('1/4') || originalText.includes('¹/₄')) {
+                quantity = 0.25;
+                console.log('Correction de 1 + fraction -> 0.25');
+              } else if (originalText.includes('1/2') || originalText.includes('¹/₂')) {
+                quantity = 0.5;
+                console.log('Correction de 1 + fraction -> 0.5');
+              }
+            }
+            
+            // 1.4 Correction spécifique pour les grammes avec nombre
+            const gramMatch = originalText.match(/(\d+)\s*g\b/i);
+            if (gramMatch && gramMatch[1] && quantity === 1) {
+              quantity = parseInt(gramMatch[1], 10);
+              console.log(`Correction de quantité pour grammes: ${quantity}g`);
+            }
+            
+            // 1.5 Si la quantité est une valeur fractionnaire, arrondir à 3 décimales
+            if (quantity % 1 !== 0) {
+              quantity = Math.round(quantity * 1000) / 1000;
+            }
           }
           
-          // Mettre à jour l'unité avec recherche de correspondance
+          // 2. Traiter l'unité correctement et prudemment
           if (parsedIngredient.unit) {
-            // Si l'API a renvoyé une unité avec ID, l'utiliser directement
             if (parsedIngredient.unit.id) {
-              originalIngredient.unit = parsedIngredient.unit;
-            } 
-            // Sinon, chercher une correspondance
-            else if (parsedIngredient.unit.name) {
-              const unitName = parsedIngredient.unit.name.toLowerCase();
-              const matchingUnit = existingUnits.find(unit => 
-                unit.name.toLowerCase() === unitName || 
-                unit.abbreviation && unit.abbreviation.toLowerCase() === unitName ||
-                unit.pluralName && unit.pluralName.toLowerCase() === unitName
-              );
-              
-              if (matchingUnit) {
-                originalIngredient.unit = matchingUnit;
-                console.log(`Correspondance d'unité trouvée: ${matchingUnit.name}`);
-              } else {
-                originalIngredient.unit = parsedIngredient.unit;
+              // 2.1 Vérifier si l'ID existe dans notre base
+              const dbUnit = existingUnits.find(u => u.id === parsedIngredient.unit.id);
+              if (dbUnit) {
+                unit = dbUnit;
+                console.log(`Unité trouvée par ID dans la base: ${unit.name}`);
+              }
+            } else if (parsedIngredient.unit.name) {
+              // 2.2 Chercher une correspondance exacte par nom
+              const unitName = parsedIngredient.unit.name;
+              const exactUnit = findExactUnit(unitName);
+              if (exactUnit) {
+                unit = exactUnit;
+                console.log(`Unité trouvée par correspondance exacte: ${unit.name}`);
               }
             }
           }
           
-          // Rechercher une correspondance pour l'aliment
-          if (parsedIngredient.food && parsedIngredient.food.name) {
-            const foodName = parsedIngredient.food.name.toLowerCase();
-            // Rechercher une correspondance exacte ou partielle
-            const matchingFood = existingFoods.find(food => 
-              food.name.toLowerCase() === foodName || 
-              food.name.toLowerCase().includes(foodName) || 
-              foodName.includes(food.name.toLowerCase())
-            );
+          // 2.3 Si aucune unité n'a été trouvée, essayer de la détecter dans le texte
+          if (!unit) {
+            unit = detectUnitInText(originalText);
             
-            if (matchingFood) {
-              // Utiliser l'aliment existant trouvé
-              originalIngredient.food = matchingFood;
-              console.log(`Correspondance trouvée pour '${parsedIngredient.food.name}': ${matchingFood.name} (ID: ${matchingFood.id})`);
-            } else if (!originalIngredient.food) {
-              // Utiliser l'aliment analysé sans ID (sera créé lors de la mise à jour)
-              originalIngredient.food = parsedIngredient.food;
-              console.log(`Aucune correspondance trouvée pour '${parsedIngredient.food.name}'`);
+            // Cas spécial pour les grammes sans "g" explicite
+            if (!unit && /^\d+$/.test(originalText.trim()) && parseInt(originalText.trim()) >= 5 && parseInt(originalText.trim()) <= 1000) {
+              const gramUnit = existingUnits.find(u => u.abbreviation === 'g');
+              if (gramUnit) {
+                unit = gramUnit;
+                console.log(`Attribution de l'unité gramme pour nombre seul: ${originalText.trim()}`);
+              }
             }
           }
           
-          // Extraire les notes et commentaires si disponibles
+          // 3. Traiter l'aliment
+          if (parsedIngredient.food && parsedIngredient.food.name) {
+            // Extraire le nom réel de l'aliment
+            const foodNameRaw = parsedIngredient.food.name;
+            
+            // Utiliser notre fonction améliorée pour trouver la meilleure correspondance
+            const bestCandidate = await findBestFoodMatch(foodNameRaw, existingFoods, existingUnits);
+            
+            if (bestCandidate && bestCandidate.food) {
+              food = bestCandidate.food;
+              console.log(`Correspondance trouvée pour '${foodNameRaw}': ${bestCandidate.food.name} (Score: ${bestCandidate.score.toFixed(2)})`);
+              
+              // Cas spécial pour "boeuf haché"
+              if (originalText.toLowerCase().includes('bœuf') && originalText.toLowerCase().includes('haché')) {
+                // Rechercher spécifiquement viande hachée ou équivalent
+                const beefMatch = existingFoods.find(f => {
+                  if (!f.name) return false;
+                  const name = f.name.toLowerCase();
+                  return name.includes('haché') && (name.includes('bœuf') || name.includes('boeuf') || name.includes('viande'));
+                });
+                
+                if (beefMatch) {
+                  food = beefMatch;
+                  console.log(`Correction spéciale pour bœuf haché: ${beefMatch.name}`);
+                  
+                  // Extraire correctement la quantité et l'unité si c'est en grammes
+                  const gramMatch = originalText.match(/(\d+)\s*g\b/i);
+                  if (gramMatch && gramMatch[1]) {
+                    quantity = parseFloat(gramMatch[1]);
+                    
+                    // Trouver l'unité "g" dans les unités existantes
+                    const gramUnit = existingUnits.find(u => u.abbreviation === 'g');
+                    if (gramUnit) {
+                      unit = gramUnit;
+                    }
+                  }
+                }
+              }
+            } else {
+              // Si pas de correspondance, garder l'aliment original du parser
+              food = parsedIngredient.food;
+              console.log(`Aucune correspondance trouvée pour '${foodNameRaw}', utilisation des données du parser`);
+            }
+          }
+          
+          // 4. Extraire la note
           if (parsedIngredient.note) {
-            originalIngredient.note = parsedIngredient.note;
+            note = parsedIngredient.note;
+          } else {
+            // Pour les ingrédients entre parenthèses
+            const parenthesesMatch = originalText.match(/\(([^)]+)\)/);
+            if (parenthesesMatch && parenthesesMatch[1]) {
+              note = parenthesesMatch[1].trim();
+            }
           }
           
-          // Conserver le referenceId original ou en générer un nouveau si nécessaire
-          if (!originalIngredient.referenceId) {
-            originalIngredient.referenceId = this.generateUUID();
+          // 5. Nettoyage de la note
+          if (note) {
+            // Éviter de répéter le nom de l'aliment dans la note
+            if (food && food.name && note.includes(food.name)) {
+              note = note.replace(new RegExp(food.name, 'gi'), '').trim();
+            }
+            
+            // Éviter de répéter la quantité et l'unité dans la note
+            if (quantity && unit && unit.name) {
+              const qtyUnitRegex = new RegExp(`${quantity}\\s*${unit.name}`, 'gi');
+              note = note.replace(qtyUnitRegex, '').trim();
+            }
+            
+            // Nettoyer les parenthèses vides et caractères de ponctuation superflus
+            note = note.replace(/^\(+|\)+$/g, '').trim();
+            note = note.replace(/^[,;:\s]+|[,;:\s]+$/g, '').trim();
           }
-          
-          // Mettre à jour l'affichage pour refléter les modifications
-          originalIngredient.display = this.formatIngredientDisplay(originalIngredient);
+        } else {
+          // Si le parsing n'est pas fiable, conserver les valeurs originales
+          quantity = originalIngredient.quantity;
+          unit = originalIngredient.unit;
+          food = originalIngredient.food;
+          note = originalIngredient.note;
         }
+        
+        // 6. Mettre à jour l'ingrédient
+        originalIngredient.quantity = quantity;
+        originalIngredient.unit = unit;
+        originalIngredient.food = food;
+        originalIngredient.note = note;
+        
+        // 7. Générer un referenceId si absent
+        if (!originalIngredient.referenceId) {
+          originalIngredient.referenceId = this.generateUUID();
+        }
+        
+        // 8. Mettre à jour l'affichage formaté
+        originalIngredient.display = this.formatIngredientDisplay(originalIngredient);
+        
+        // Nettoyer la propriété temporaire
+        delete originalIngredient._originalText;
       }
       
       console.log("Ingrédients optimisés:", optimizedRecipe.recipeIngredient);
-      
       return optimizedRecipe;
     } catch (error) {
       console.error('Erreur lors de l\'optimisation des ingrédients:', error);
@@ -838,25 +1584,18 @@ export const recipeService = {
     }
     
     try {
-      // D'abord récupérer la version originale de la recette
       const originalRecipeResponse = await this.getById(recipeId);
       if (!originalRecipeResponse || !originalRecipeResponse.data) {
         throw new Error('Impossible de récupérer la recette originale');
       }
       
       const originalRecipe = originalRecipeResponse.data;
-      
-      // Créer une copie du payload original pour préserver sa structure
       const payload = JSON.parse(JSON.stringify(originalRecipe));
       
-      // Mise à jour uniquement des ingrédients
       if (optimizedRecipe.recipeIngredient && Array.isArray(optimizedRecipe.recipeIngredient)) {
-        // Pour chaque ingrédient optimisé, maintenir la structure mais mettre à jour les valeurs
         payload.recipeIngredient = optimizedRecipe.recipeIngredient.map((ingredient, index) => {
-          // Générer un nouveau referenceId pour chaque ingrédient pour éviter les conflits
           const referenceId = this.generateUUID();
           
-          // Extraire la note de la parenthèse si présente
           let note = ingredient.note || '';
           if (ingredient.originalText) {
             const match = ingredient.originalText.match(/\(([^)]+)\)/);
@@ -865,7 +1604,6 @@ export const recipeService = {
             }
           }
           
-          // Formater l'affichage proprement
           let display = '';
           if (ingredient.quantity) {
             display += ingredient.quantity;
@@ -888,7 +1626,6 @@ export const recipeService = {
           
           display = display.trim();
           
-          // Retourner un ingrédient bien formaté
           return {
             quantity: ingredient.quantity,
             unit: ingredient.unit,
@@ -904,16 +1641,12 @@ export const recipeService = {
         });
       }
       
-      // Utiliser PUT avec le slug pour la mise à jour
       return await axiosInstance.put(`/recipes/${originalRecipe.slug}`, payload);
     } catch (error) {
       console.error('Erreur lors de la mise à jour de la recette avec les ingrédients optimisés:', error);
-      
-      // Afficher les détails de l'erreur pour le débogage
       if (error.response && error.response.data) {
         console.error('Détails de l\'erreur API:', error.response.data);
       }
-      
       throw new Error('Impossible de mettre à jour la recette avec les ingrédients optimisés');
     }
   },
@@ -926,12 +1659,10 @@ export const recipeService = {
   formatIngredientDisplay(ingredient) {
     let display = '';
     
-    // Ajouter la quantité si présente
     if (ingredient.quantity) {
       display += ingredient.quantity;
     }
     
-    // Ajouter l'unité si présente
     if (ingredient.unit) {
       const unitName = ingredient.unit.abbreviation || ingredient.unit.name;
       if (unitName) {
@@ -939,12 +1670,10 @@ export const recipeService = {
       }
     }
     
-    // Ajouter le nom de l'aliment si présent
     if (ingredient.food && ingredient.food.name) {
       display += display ? ' ' + ingredient.food.name : ingredient.food.name;
     }
     
-    // Ajouter la note si présente
     if (ingredient.note) {
       display += display ? ' ' + ingredient.note : ingredient.note;
     }
@@ -1274,38 +2003,6 @@ export const recipeService = {
       console.error('Erreur lors de l\'analyse et de la mise en correspondance des ingrédients:', error);
       throw error;
     }
-  },
-
-  /**
-   * Calcule la similarité entre deux chaînes (score simple entre 0 et 1)
-   * @param {String} str1 - Première chaîne
-   * @param {String} str2 - Deuxième chaîne
-   * @returns {Number} Score de similarité (0-1)
-   */
-  calculateSimilarity(str1, str2) {
-    if (!str1 || !str2) return 0;
-    
-    // Algorithme simple de similarité basé sur les sous-chaînes communes
-    const longerStr = str1.length > str2.length ? str1 : str2;
-    const shorterStr = str1.length > str2.length ? str2 : str1;
-    
-    // Si la chaîne courte est contenue dans la longue
-    if (longerStr.includes(shorterStr)) {
-      return shorterStr.length / longerStr.length;
-    }
-    
-    // Chercher la plus longue sous-chaîne commune
-    let longestCommon = 0;
-    for (let i = 0; i < shorterStr.length; i++) {
-      for (let j = i + 1; j <= shorterStr.length; j++) {
-        const subStr = shorterStr.substring(i, j);
-        if (longerStr.includes(subStr) && subStr.length > longestCommon) {
-          longestCommon = subStr.length;
-        }
-      }
-    }
-    
-    return longestCommon / longerStr.length;
   },
 
   /**

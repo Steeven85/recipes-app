@@ -572,6 +572,7 @@
   </template>
   
   <script>
+  import { useRouter } from 'vue-router';
   import { ref, computed, onMounted, nextTick, reactive } from 'vue';
   import { recipeService, referenceService } from '../services/api';
   
@@ -588,6 +589,7 @@
     },
     
     setup(props, { emit }) {
+      const router = useRouter();
       const loading = ref(false);
       const error = ref(false);
       const errorMessage = ref('');
@@ -1522,6 +1524,7 @@
         error,
         errorMessage,
         success,
+        router,
         isNewRecipe,
         imageFile,
         imagePreview,

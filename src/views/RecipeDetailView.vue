@@ -214,6 +214,7 @@
         :recipe-id="recipe.id"
         :recipe-slug="recipe.slug"
         :original-recipe="recipe"
+        :skip-auto-optimization="recipeJustImported"
         @update:recipe="updateRecipeAfterOptimization"
         @optimization-complete="handleOptimizationComplete"
       />
@@ -228,10 +229,14 @@
         <li
           v-for="(ingredient, index) in adjustedIngredients"
           :key="index"
-          class="flex items-center bg-gray-50 p-3 rounded-lg"
+          class="flex items-center p-3 rounded-lg"
+          :class="isIngredientEmpty(ingredient) ? 'bg-red-100 border border-red-300' : 'bg-gray-50'"
         >
-          <span class="mr-2 text-emerald-500">•</span>
+          <span class="mr-2" :class="isIngredientEmpty(ingredient) ? 'text-red-500' : 'text-emerald-500'">•</span>
           <span class="text-gray-700">{{ formatIngredient(ingredient) }}</span>
+          <span v-if="isIngredientEmpty(ingredient)" class="ml-auto text-red-500 text-xs font-medium">
+            Ingrédient incomplet
+          </span>
         </li>
       </ul>
     </section>
@@ -293,7 +298,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { recipeService } from '../services/api';
 import { useRecipeStore } from '../stores/recipeStore';
@@ -318,6 +323,7 @@ export default {
     const isFavorite = ref(false);
     const showOptimizer = ref(false);
     const recipeJustImported = ref(false);
+    const recipeJustModified = ref(false);
     const displayOptimizer = () => {
       showOptimizer.value = true;
     };
@@ -462,6 +468,58 @@ export default {
       return 'N/A';
     };
     
+    const isIngredientEmpty = (ingredient) => {
+      if (!ingredient) return true;
+      
+      // Vérifier si les propriétés essentielles sont vides
+      const hasFood = ingredient.food && ingredient.food.name;
+      const hasQuantity = ingredient.quantity !== null && ingredient.quantity !== undefined;
+      const hasUnit = ingredient.unit && ingredient.unit.name;
+      
+      // Un ingrédient est considéré comme vide s'il n'a pas de nom d'aliment
+      // ou si la quantité est 0 ou non définie
+      return !hasFood || (hasQuantity && parseFloat(ingredient.quantity) === 0);
+    };
+
+
+    // Ajoutez cette fonction dans le setup de RecipeDetailView.vue
+    const loadRecipeDetails = async () => {
+      try {
+        loading.value = true;
+        const recipeId = route.params.id;
+        
+        if (!recipeId) {
+          error.value = 'Identifiant de recette manquant';
+          return;
+        }
+        
+        const response = await recipeService.getById(recipeId, { signal: abortController.signal });
+        
+        if (!response.data) {
+          throw new Error('Recette non trouvée');
+        }
+        
+        recipe.value = response.data;
+        
+        // Initialiser originalServings à partir de la recette
+        if (recipe.value && recipe.value.recipeServings) {
+          originalServings.value = recipe.value.recipeServings;
+          servings.value = recipe.value.recipeServings;
+        }
+        
+        // Mettre à jour le store avec les détails complets
+        recipeStore.updateRecipe(recipeId, { ...response.data, _detailsLoaded: true });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error(err);
+          error.value = 'Erreur lors du chargement de la recette';
+        }
+      } finally {
+        loading.value = false;
+      }
+    };
+
+
     // Fonction pour ajouter/retirer des favoris
     const toggleFavorite = () => {
       isFavorite.value = !isFavorite.value;
@@ -590,18 +648,44 @@ export default {
     const handleOptimizationComplete = (success) => {
       if (success) {
         // Recharger les données de la recette après une optimisation réussie
-        loadRecipeDetails();
-      }
-      showOptimizer.value = false;
-    };
-    
-    // Ajouter cette méthode pour mettre à jour la recette après optimisation
-    const updateRecipeAfterOptimization = (updatedRecipe) => {
-      if (updatedRecipe && recipe.value) {
-        recipe.value = updatedRecipe;
+        loadRecipeDetails().then(() => {
+          // Après avoir rechargé les données, on ferme l'optimiseur
+          showOptimizer.value = false;
+          
+          // Ajouter un message temporaire de confirmation
+          const successMessage = document.createElement('div');
+          successMessage.className = 'fixed top-4 right-4 bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 rounded shadow-lg z-50';
+          successMessage.innerHTML = `
+            <div class="flex items-center">
+              <svg class="h-6 w-6 text-emerald-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <p>Optimisation réussie. Vérifiez les ingrédients mis en évidence.</p>
+            </div>
+          `;
+          document.body.appendChild(successMessage);
+          
+          // Retirer le message après 5 secondes
+          setTimeout(() => {
+            document.body.removeChild(successMessage);
+          }, 5000);
+        });
+      } else {
+        showOptimizer.value = false;
       }
     };
 
+    const updateRecipeAfterOptimization = (updatedRecipe) => {
+      if (updatedRecipe && recipe.value) {
+        recipe.value = updatedRecipe;
+        
+        // Forcer une mise à jour complète pour s'assurer que les styles des ingrédients sont appliqués
+        nextTick(() => {
+          // Cette fonction sera exécutée après le prochain cycle de rendu de Vue
+          console.log("Mise à jour des ingrédients après optimisation");
+        });
+      }
+    };
 
     // Dans la fonction onMounted
     onMounted(async () => {
@@ -672,6 +756,7 @@ export default {
      const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('imported') === 'true') {
         recipeJustImported.value = true;
+        // Afficher automatiquement l'optimiseur sans optimisation auto
         showOptimizer.value = true;
       }
     });
@@ -710,10 +795,13 @@ export default {
       deleteRecipe,
       handleImageError,
       showOptimizer,
+      recipeJustModified,
       recipeJustImported,
       handleOptimizationComplete,
       updateRecipeAfterOptimization,
-      displayOptimizer
+      displayOptimizer,
+      isIngredientEmpty,
+      loadRecipeDetails
     };
   }
 };
