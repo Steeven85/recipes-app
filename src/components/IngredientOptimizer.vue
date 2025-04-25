@@ -4,7 +4,6 @@
     <!-- Bouton d'optimisation qui apparaît sur la page de détail de la recette -->
     <button 
       v-if="!isOptimizing && !optimizedRecipe" 
-<<<<<<< HEAD
       class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center mx-auto my-4" 
       @click="optimizeIngredients"
     >
@@ -19,19 +18,11 @@
           d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
           clip-rule="evenodd"
         />
-=======
-      @click="optimizeIngredients" 
-      class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center mx-auto my-4"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
       </svg>
       Optimiser les ingrédients
     </button>
 
     <!-- Indicateur de chargement -->
-<<<<<<< HEAD
     <div
       v-if="isOptimizing"
       class="text-center py-4"
@@ -81,25 +72,6 @@
         v-if="success"
         class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded"
       >
-=======
-    <div v-if="isOptimizing" class="text-center py-4">
-      <svg class="animate-spin h-8 w-8 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-      <p class="mt-2 text-gray-600">Analyse et optimisation des ingrédients en cours...</p>
-    </div>
-
-    <!-- Affichage des résultats d'optimisation pour révision par l'utilisateur -->
-    <div v-if="optimizedRecipe && !isUpdating" class="mt-6 bg-white rounded-lg shadow-md p-6">
-      <h3 class="text-xl font-semibold text-gray-800 mb-4">Révision des ingrédients optimisés</h3>
-      
-      <div v-if="error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-        {{ errorMessage }}
-      </div>
-      
-      <div v-if="success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         Ingrédients mis à jour avec succès !
       </div>
       
@@ -129,7 +101,6 @@
         <table class="min-w-full bg-white">
           <thead>
             <tr class="bg-gray-100">
-<<<<<<< HEAD
               <th class="py-2 px-4 border-b text-left">
                 Ingrédient d'origine
               </th>
@@ -161,22 +132,6 @@
                 'opacity-50': ingredient.isAlreadyOptimized
               }"
             >
-=======
-              <th class="py-2 px-4 border-b text-left">Ingrédient d'origine</th>
-              <th class="py-2 px-4 border-b text-left">Ingrédient optimisé</th>
-              <th class="py-2 px-2 border-b text-center">Quantité</th>
-              <th class="py-2 px-2 border-b text-center">Unité</th>
-              <th class="py-2 px-2 border-b text-center">Aliment</th>
-              <th class="py-2 px-2 border-b text-center w-16">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(ingredient, index) in comparisonData" :key="index" class="border-b hover:bg-gray-50" :class="{ 
-              'bg-yellow-50': ingredient.matchQuality === 'Partiel',
-              'bg-green-50': ingredient.isAlreadyOptimized,
-              'opacity-50': ingredient.isAlreadyOptimized
-            }">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               <td class="py-2 px-4">
                 {{ ingredient.original }}
               </td>
@@ -219,7 +174,6 @@
               <td class="py-2 px-2 text-center">
                 <div class="flex justify-center">
                   <button 
-<<<<<<< HEAD
                     :title="ingredient.use ? 'Conserver la version optimisée' : 'Revenir à la version d\'origine'" 
                     :class="ingredient.use ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'"
                     class="p-1 rounded-full hover:bg-opacity-80"
@@ -250,23 +204,10 @@
                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
                         clip-rule="evenodd"
                       />
-=======
-                    @click="toggleIngredient(index)" 
-                    :title="ingredient.use ? 'Conserver la version optimisée' : 'Revenir à la version d\'origine'"
-                    :class="ingredient.use ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'"
-                    class="p-1 rounded-full hover:bg-opacity-80"
-                  >
-                    <svg v-if="ingredient.use" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                     </svg>
                   </button>
                   <!-- Bouton d'édition -->
                   <button 
-<<<<<<< HEAD
                     title="Modifier cet ingrédient" 
                     class="ml-2 p-1 rounded-full hover:bg-gray-200 text-blue-600" 
                     @click="openIngredientEditor(index)"
@@ -277,13 +218,6 @@
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
-=======
-                    @click="openIngredientEditor(index)" 
-                    title="Modifier cet ingrédient" 
-                    class="ml-2 p-1 rounded-full hover:bg-gray-200 text-blue-600"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                   </button>
@@ -328,7 +262,6 @@
             </div>
             <div class="flex space-x-2">
               <button 
-<<<<<<< HEAD
                 :title="ingredient.use ? 'Conserver la version optimisée' : 'Revenir à la version d\'origine'" 
                 :class="ingredient.use ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'"
                 class="p-1 rounded-full hover:bg-opacity-80"
@@ -372,26 +305,6 @@
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
-=======
-                @click="toggleIngredient(index)" 
-                :title="ingredient.use ? 'Conserver la version optimisée' : 'Revenir à la version d\'origine'"
-                :class="ingredient.use ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-700'"
-                class="p-1 rounded-full hover:bg-opacity-80"
-              >
-                <svg v-if="ingredient.use" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-              </button>
-              <button 
-                @click="openIngredientEditor(index)" 
-                title="Modifier cet ingrédient" 
-                class="p-1 rounded-full hover:bg-gray-200 text-blue-600"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                 </svg>
               </button>
@@ -401,30 +314,21 @@
           <div class="p-3 bg-white">
             <div class="mb-2">
               <span class="text-xs font-medium text-gray-500">Original:</span>
-<<<<<<< HEAD
               <p class="text-gray-800">
                 {{ ingredient.original }}
               </p>
-=======
-              <p class="text-gray-800">{{ ingredient.original }}</p>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             
             <div class="mb-2">
               <span class="text-xs font-medium text-gray-500">Optimisé:</span>
-<<<<<<< HEAD
               <p class="text-gray-800 font-medium">
                 {{ ingredient.optimized }}
               </p>
-=======
-              <p class="text-gray-800 font-medium">{{ ingredient.optimized }}</p>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             
             <div class="grid grid-cols-3 gap-2 mt-3 text-sm">
               <div>
                 <span class="text-xs font-medium text-gray-500">Quantité</span>
-<<<<<<< HEAD
                 <p class="text-gray-800">
                   {{ ingredient.optimizedObject.quantity || '-' }}
                 </p>
@@ -440,17 +344,6 @@
                 <p class="text-gray-800">
                   {{ ingredient.optimizedObject.food ? ingredient.optimizedObject.food.name : '-' }}
                 </p>
-=======
-                <p class="text-gray-800">{{ ingredient.optimizedObject.quantity || '-' }}</p>
-              </div>
-              <div>
-                <span class="text-xs font-medium text-gray-500">Unité</span>
-                <p class="text-gray-800">{{ ingredient.optimizedObject.unit ? (ingredient.optimizedObject.unit.abbreviation || ingredient.optimizedObject.unit.name) : '-' }}</p>
-              </div>
-              <div>
-                <span class="text-xs font-medium text-gray-500">Aliment</span>
-                <p class="text-gray-800">{{ ingredient.optimizedObject.food ? ingredient.optimizedObject.food.name : '-' }}</p>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               </div>
             </div>
           </div>
@@ -460,18 +353,12 @@
       <!-- Actions -->
       <div class="mt-6 flex flex-wrap justify-end gap-3">
         <button 
-<<<<<<< HEAD
           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 w-full md:w-auto" 
           @click="cancel"
-=======
-          @click="cancel" 
-          class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 w-full md:w-auto"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         >
           Annuler
         </button>
         <button 
-<<<<<<< HEAD
           class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center justify-center w-full md:w-auto" 
           :disabled="isUpdating"
           @click="applyOptimizations"
@@ -496,16 +383,6 @@
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
               />
-=======
-          @click="applyOptimizations" 
-          class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center justify-center w-full md:w-auto"
-          :disabled="isUpdating"
-        >
-          <span v-if="isUpdating">
-            <svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
             Mise à jour...
           </span>
@@ -517,7 +394,6 @@
     </div>
 
     <!-- Modal d'édition d'ingrédient -->
-<<<<<<< HEAD
     <div
       v-if="editingIngredientIndex !== null"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
@@ -544,39 +420,22 @@
                 stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
-=======
-    <div v-if="editingIngredientIndex !== null" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-lg shadow-xl p-4 md:p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Modifier l'ingrédient</h3>
-          <button @click="closeIngredientEditor" class="text-gray-500 hover:text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
         
-<<<<<<< HEAD
         <div
           v-if="editingIngredient"
           class="mb-3 p-3 bg-gray-50 rounded-lg"
         >
-=======
-        <div v-if="editingIngredient" class="mb-3 p-3 bg-gray-50 rounded-lg">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           <!-- Utiliser une disposition en colonne pour mobile, grille pour desktop -->
           <div class="space-y-3 md:space-y-0 md:grid md:grid-cols-12 md:gap-2">
             <!-- Quantité -->
             <div class="md:col-span-2">
-<<<<<<< HEAD
               <label
                 for="quantity"
                 class="block text-sm font-medium text-gray-700 mb-1 md:sr-only"
               >
-=======
-              <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1 md:sr-only">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 Quantité
               </label>
               <input 
@@ -587,57 +446,35 @@
                 step="0.1"
                 placeholder="Qté"
                 class="w-full border border-gray-300 rounded p-2 text-center"
-<<<<<<< HEAD
               >
-=======
-              />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             
             <!-- Unité -->
             <div class="md:col-span-3">
-<<<<<<< HEAD
               <label
                 for="unit"
                 class="block text-sm font-medium text-gray-700 mb-1 md:sr-only"
               >
-=======
-              <label for="unit" class="block text-sm font-medium text-gray-700 mb-1 md:sr-only">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 Unité
               </label>
               <div class="relative">
                 <input 
                   id="unit"
                   v-model="editingUnitInput"
-<<<<<<< HEAD
                   placeholder="Unité (optionnelle)"
                   class="w-full border border-gray-300 rounded p-2" 
                   @input="editingIngredient.unit = null"
                   @focus="showUnitDropdown = true"
                   @blur="closeUnitDropdown"
                 >
-=======
-                  @input="editingIngredient.unit = null"
-                  @focus="showUnitDropdown = true" 
-                  @blur="closeUnitDropdown"
-                  placeholder="Unité (optionnelle)"
-                  class="w-full border border-gray-300 rounded p-2"
-                />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 <div 
                   v-if="showUnitDropdown" 
                   class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
                 >
                   <!-- Option pour aucune unité -->
                   <div 
-<<<<<<< HEAD
                     class="p-2 hover:bg-gray-100 cursor-pointer bg-gray-50 text-gray-700 font-medium border-b border-gray-200"
                     @mousedown.prevent="handleUnitSelection(null)"
-=======
-                    @mousedown.prevent="handleUnitSelection(null)"
-                    class="p-2 hover:bg-gray-100 cursor-pointer bg-gray-50 text-gray-700 font-medium border-b border-gray-200"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                   >
                     -- Aucune unité --
                   </div>
@@ -646,13 +483,8 @@
                   <div 
                     v-for="unit in filteredUnits(editingUnitInput)" 
                     :key="unit.id" 
-<<<<<<< HEAD
                     class="p-2 hover:bg-gray-100 cursor-pointer"
                     @mousedown.prevent="handleUnitSelection(unit)"
-=======
-                    @mousedown.prevent="handleUnitSelection(unit)"
-                    class="p-2 hover:bg-gray-100 cursor-pointer"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                   >
                     {{ unit.name }}
                   </div>
@@ -661,7 +493,6 @@
               <!-- Bouton pour effacer l'unité -->
               <button 
                 v-if="editingUnitInput" 
-<<<<<<< HEAD
                 class="absolute right-12 mt-2 text-gray-400 hover:text-gray-600"
                 title="Effacer l'unité"
                 @click="clearUnit"
@@ -679,35 +510,22 @@
                     stroke-width="2"
                     d="M6 18L18 6M6 6l12 12"
                   />
-=======
-                @click="clearUnit"
-                class="absolute right-12 mt-2 text-gray-400 hover:text-gray-600"
-                title="Effacer l'unité"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 </svg>
               </button>
             </div>
 
             <!-- Ingrédient -->
             <div class="md:col-span-7">
-<<<<<<< HEAD
               <label
                 for="food"
                 class="block text-sm font-medium text-gray-700 mb-1 md:sr-only"
               >
-=======
-              <label for="food" class="block text-sm font-medium text-gray-700 mb-1 md:sr-only">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 Ingrédient
               </label>
               <div class="relative">
                 <input 
                   id="food"
                   v-model="editingFoodInput"
-<<<<<<< HEAD
                   placeholder="Ingrédient"
                   class="w-full border border-gray-300 rounded p-2" 
                   @input="editingIngredient.food = null"
@@ -715,29 +533,16 @@
                   @blur="closeFoodDropdown"
                   @keydown.enter.prevent="handleFoodInputEnter"
                 >
-=======
-                  @input="editingIngredient.food = null"
-                  @focus="openFoodDropdown" 
-                  @blur="closeFoodDropdown"
-                  @keydown.enter.prevent="handleFoodInputEnter"
-                  placeholder="Ingrédient"
-                  class="w-full border border-gray-300 rounded p-2"
-                />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 <div 
                   v-if="showFoodDropdown" 
                   class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
                   @scroll="handleFoodDropdownScroll"
                 >
                   <!-- Message si aucun ingrédient trouvé -->
-<<<<<<< HEAD
                   <div
                     v-if="filteredFoods(editingFoodInput).length === 0"
                     class="p-3 text-gray-500 text-center"
                   >
-=======
-                  <div v-if="filteredFoods(editingFoodInput).length === 0" class="p-3 text-gray-500 text-center">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                     Aucun ingrédient trouvé
                   </div>
                   
@@ -745,10 +550,6 @@
                   <div 
                     v-for="food in filteredFoods(editingFoodInput)" 
                     :key="food.id" 
-<<<<<<< HEAD
-=======
-                    @mousedown.prevent="selectFood(food)"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                     :class="[
                       'p-2 cursor-pointer',
                       food.isNewFood 
@@ -757,7 +558,6 @@
                           ? 'text-gray-600 bg-gray-100 font-medium text-center'
                           : 'hover:bg-gray-100'
                     ]"
-<<<<<<< HEAD
                     @mousedown.prevent="selectFood(food)"
                   >
                     <!-- Icône plus pour nouvel ingrédient -->
@@ -801,19 +601,6 @@
                           fill="currentColor"
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         />
-=======
-                  >
-                    <!-- Icône plus pour nouvel ingrédient -->
-                    <svg v-if="food.isNewFood" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                    </svg>
-                    
-                    <!-- Indicateur de chargement pour "Charger plus" -->
-                    <div v-if="food.isLoadMoreIndicator && isLoadingMoreFoods" class="flex justify-center items-center">
-                      <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                       </svg>
                     </div>
                     
@@ -826,14 +613,10 @@
           
           <!-- Note (optionnel) -->
           <div class="mt-3">
-<<<<<<< HEAD
             <label
               for="note"
               class="block text-sm font-medium text-gray-700 mb-1"
             >
-=======
-            <label for="note" class="block text-sm font-medium text-gray-700 mb-1">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               Note (optionnel)
             </label>
             <input 
@@ -841,35 +624,21 @@
               v-model="editingIngredient.note" 
               placeholder="Note (optionnel)"
               class="w-full border border-gray-300 rounded p-2 text-sm"
-<<<<<<< HEAD
             >
-=======
-            />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           </div>
         </div>
 
         <!-- Boutons d'action -->
         <div class="flex flex-col-reverse md:flex-row md:justify-end space-y-2 space-y-reverse md:space-y-0 md:space-x-2 pt-4">
           <button 
-<<<<<<< HEAD
             class="px-3 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 w-full md:w-auto" 
             @click="closeIngredientEditor"
-=======
-            @click="closeIngredientEditor" 
-            class="px-3 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 w-full md:w-auto"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           >
             Annuler
           </button>
           <button 
-<<<<<<< HEAD
             class="px-3 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 w-full md:w-auto" 
             @click="saveEditingIngredient"
-=======
-            @click="saveEditingIngredient" 
-            class="px-3 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700 w-full md:w-auto"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           >
             Enregistrer
           </button>
@@ -881,11 +650,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue';
-<<<<<<< HEAD
 import { recipeService, referenceService } from '@/services/api';
-=======
-import { recipeService, referenceService } from '../services/api';
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
 export default {
   name: 'IngredientOptimizer',
@@ -942,10 +707,6 @@ export default {
     // Charger les unités et aliments disponibles
     const loadReferenceData = async () => {
       try {
-<<<<<<< HEAD
-=======
-        console.log("Chargement des données de référence...");
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         isOptimizing.value = true;
         
         // Charger les unités
@@ -965,10 +726,6 @@ export default {
         // Charger les aliments
         await loadAllFoods('');
         
-<<<<<<< HEAD
-=======
-        console.log(`${units.value.length} unités et ${foods.value.length} aliments chargés`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
       } catch (err) {
         console.error('Erreur lors du chargement des données de référence', err);
         error.value = true;
@@ -1013,13 +770,7 @@ export default {
       
       try {
         const perPage = 100; // Nombre d'éléments par page
-<<<<<<< HEAD
               
-=======
-        
-        console.log(`Chargement de la page ${currentFoodsPage.value} d'ingrédients avec requête: "${query}"`);
-        
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         const response = await referenceService.getFoods({
           page: currentFoodsPage.value,
           perPage: perPage,
@@ -1583,11 +1334,7 @@ export default {
       result.food = cleanedText;
       
       return result;
-<<<<<<< HEAD
     }
-=======
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
     // Fonction auxiliaire pour gérer le reste du texte après extraction de la quantité
     function handleRemainingText(text, result) {
@@ -1614,11 +1361,7 @@ export default {
         // S'il n'y a pas d'unité explicite, considérer tout comme l'aliment
         result.food = text;
       }
-<<<<<<< HEAD
     }
-=======
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
     // Fonction améliorée pour trouver une unité par son nom ou pattern
     function findUnitByName(unitName, unitsList) {
@@ -1639,10 +1382,6 @@ export default {
         );
         
         if (tableSpoon) {
-<<<<<<< HEAD
-=======
-          console.log(`Unité cuillère à soupe trouvée: ${tableSpoon.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           return tableSpoon;
         }
       }
@@ -1658,10 +1397,6 @@ export default {
         );
         
         if (teaSpoon) {
-<<<<<<< HEAD
-=======
-          console.log(`Unité cuillère à café trouvée: ${teaSpoon.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           return teaSpoon;
         }
       }
@@ -1734,17 +1469,8 @@ export default {
         }
       }
       
-<<<<<<< HEAD
       return null;
     }
-=======
-      // Si aucune correspondance n'est trouvée, on peut logger pour déboguer
-      console.log(`Aucune unité trouvée pour '${unitName}' dans la liste de ${unitsList.length} unités`);
-      
-      // Retourner null si aucune correspondance
-      return null;
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
     // Amélioration pour vérifier directement les unités spéciales au début de optimizeIngredients
     function checkForSpecialUnits(unitsList) {
@@ -1759,31 +1485,16 @@ export default {
         (u.name && u.name.toLowerCase().includes('cuill') && u.name.toLowerCase().includes('café')) ||
         (u.abbreviation && ['cac', 'càc', 'cc'].includes(u.abbreviation.toLowerCase()))
       );
-<<<<<<< HEAD
             
-=======
-      
-      console.log(`Vérification des unités spéciales - cuillère à soupe: ${casExists ? 'Trouvée' : 'Non trouvée'}, cuillère à café: ${cacExists ? 'Trouvée' : 'Non trouvée'}`);
-      
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
       // Si les unités n'existent pas, afficher un avertissement
       if (!casExists || !cacExists) {
         console.warn("ATTENTION: Certaines unités essentielles ne sont pas disponibles dans la base de données!");
         
         // Lister toutes les unités pour débogage
-<<<<<<< HEAD
         unitsList.forEach(u => {
         });
       }
     }
-=======
-        console.log("Unités disponibles:");
-        unitsList.forEach(u => {
-          console.log(`- ${u.name || 'Sans nom'} (Abbr: ${u.abbreviation || 'Aucune'})`);
-        });
-      }
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
 
 
@@ -1820,10 +1531,6 @@ export default {
       });
       
       if (exactMatch) {
-<<<<<<< HEAD
-=======
-        console.log(`Correspondance exacte trouvée pour "${foodName}": ${exactMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         return exactMatch;
       }
       
@@ -1835,10 +1542,6 @@ export default {
         });
         
         if (potatoMatch) {
-<<<<<<< HEAD
-=======
-          console.log(`Correspondance spéciale pour pommes de terre: ${potatoMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           return potatoMatch;
         }
       }
@@ -1851,10 +1554,6 @@ export default {
         });
         
         if (pestoMatch) {
-<<<<<<< HEAD
-=======
-          console.log(`Correspondance spéciale pour pesto: ${pestoMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           return pestoMatch;
         }
       }
@@ -1866,10 +1565,6 @@ export default {
       });
       
       if (startsWithMatch) {
-<<<<<<< HEAD
-=======
-        console.log(`Correspondance par début trouvée pour "${foodName}": ${startsWithMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         return startsWithMatch;
       }
       
@@ -1887,10 +1582,6 @@ export default {
       });
       
       if (wordMatch) {
-<<<<<<< HEAD
-=======
-        console.log(`Correspondance par mots trouvée pour "${foodName}": ${wordMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         return wordMatch;
       }
       
@@ -1901,10 +1592,6 @@ export default {
       });
       
       if (inclusionMatch) {
-<<<<<<< HEAD
-=======
-        console.log(`Correspondance par inclusion trouvée pour "${foodName}": ${inclusionMatch.name}`);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         return inclusionMatch;
       }
       
@@ -1915,21 +1602,11 @@ export default {
       });
       
       if (reversedMatch) {
-<<<<<<< HEAD
         return reversedMatch;
       }
       
       return null;
     }
-=======
-        console.log(`Correspondance inversée trouvée pour "${foodName}": ${reversedMatch.name}`);
-        return reversedMatch;
-      }
-      
-      console.log(`Aucune correspondance trouvée pour "${foodName}"`);
-      return null;
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
 
     // Fonction pour formater l'affichage d'un ingrédient
@@ -1976,11 +1653,7 @@ export default {
       }
       
       return display.trim();
-<<<<<<< HEAD
     }
-=======
-    };
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
 
     // Construire l'affichage optimisé amélioré
@@ -2097,7 +1770,6 @@ export default {
         // 1. Il a un food avec un id défini dans l'original
         // 2. Il a une unité avec un id défini dans l'original
         // 3. Il a une quantité définie dans l'original
-<<<<<<< HEAD
         // Ne tient compte que de l'ingrédient (food.id) et de la quantité
         if (
           original.food && original.food.id &&
@@ -2108,16 +1780,6 @@ export default {
             optimized.food && optimized.food.id === original.food.id &&
             optimized.quantity === original.quantity
           ) {
-=======
-        if (original.food && original.food.id && 
-            original.unit && original.unit.id && 
-            (original.quantity !== null && original.quantity !== undefined)) {
-          
-          // Vérifier si les valeurs sont les mêmes entre l'original et l'optimisé
-          if (optimized.food && original.food.id === optimized.food.id &&
-              optimized.unit && original.unit.id === optimized.unit.id &&
-              original.quantity === optimized.quantity) {
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             isAlreadyOptimized = true;
           }
         }
@@ -2197,13 +1859,6 @@ export default {
         error.value = true;
         errorMessage.value = "Tous les ingrédients sont déjà optimisés. Aucune modification nécessaire.";
       }
-<<<<<<< HEAD
-=======
-      
-      console.log("Initialisation des données de comparaison terminée avec", 
-                  comparisonData.value.length, "ingrédients",
-                  comparisonData.value.filter(i => i.isAlreadyOptimized).length, "déjà optimisés");
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     };
     
     // Ouvrir l'éditeur d'ingrédient pour un index donné

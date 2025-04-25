@@ -58,10 +58,6 @@
       <div class="flex justify-center md:absolute md:top-0 md:right-0 mt-4 md:mt-0 space-x-2">
         <!-- Bouton Modifier/Visualiser -->
         <button 
-<<<<<<< HEAD
-=======
-          @click="toggleEditMode"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           class="p-2 bg-emerald-600 text-white rounded-full hover:bg-emerald-700 shadow-md transition-all"
           title="Modifier la recette"
           @click="toggleEditMode"
@@ -131,7 +127,6 @@
 
     <!-- Image principale avec lazy loading et chargement progressif -->
     <div class="mb-8 relative">
-<<<<<<< HEAD
       <div
         v-if="imageLoading"
         class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-xl"
@@ -155,12 +150,6 @@
             fill="currentColor"
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           />
-=======
-      <div v-if="imageLoading" class="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-xl">
-        <svg class="animate-spin h-8 w-8 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         </svg>
       </div>
       
@@ -179,20 +168,12 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
       <!-- Sélecteur de portions -->
       <div class="bg-emerald-50 p-4 rounded-lg text-center col-span-2 md:col-span-1">
-<<<<<<< HEAD
         <p class="text-sm font-semibold text-emerald-600 mb-1">
           Portions
         </p>
         <div class="flex items-center justify-center">
           <button 
             class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors" 
-=======
-        <p class="text-sm font-semibold text-emerald-600 mb-1">Portions</p>
-        <div class="flex items-center justify-center">
-          <button 
-            @click="decreaseServings" 
-            class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             :disabled="servings <= 1"
             :class="{'opacity-50 cursor-not-allowed': servings <= 1}"
             @click="decreaseServings"
@@ -212,13 +193,8 @@
           </button>
           <span class="mx-3 text-lg font-medium text-gray-900">{{ servings }}</span>
           <button 
-<<<<<<< HEAD
             class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors" 
             @click="increaseServings"
-=======
-            @click="increaseServings" 
-            class="bg-emerald-100 text-emerald-800 w-8 h-8 rounded-full flex items-center justify-center hover:bg-emerald-200 transition-colors"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -238,7 +214,6 @@
 
       <!-- Champs Temps de préparation/cuisson -->
       <div class="bg-emerald-50 p-4 rounded-lg text-center">
-<<<<<<< HEAD
         <p class="text-sm font-semibold text-emerald-600 mb-1">
           Préparation
         </p>
@@ -263,20 +238,6 @@
         <p class="text-lg text-gray-900">
           {{ formatTime(recipe.totalTime) }}
         </p>
-=======
-        <p class="text-sm font-semibold text-emerald-600 mb-1">Préparation</p>
-        <p class="text-lg text-gray-900">{{ formatTime(recipe.prepTime) }}</p>
-      </div>
-      
-      <div class="bg-emerald-50 p-4 rounded-lg text-center">
-        <p class="text-sm font-semibold text-emerald-600 mb-1">Cuisson</p>
-        <p class="text-lg text-gray-900">{{ formatTime(recipe.performTime) }}</p>
-      </div>
-      
-      <div class="bg-emerald-50 p-4 rounded-lg text-center">
-        <p class="text-sm font-semibold text-emerald-600 mb-1">Total</p>
-        <p class="text-lg text-gray-900">{{ formatTime(recipe.totalTime) }}</p>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
       </div>
     </div>
 
@@ -284,36 +245,21 @@
     <div class="md:hidden mb-4">
       <div class="flex space-x-2 overflow-x-auto pb-2">
         <button 
-<<<<<<< HEAD
           :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'ingredients' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']" 
           @click="activeTab = 'ingredients'"
-=======
-          @click="activeTab = 'ingredients'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'ingredients' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         >
           Ingrédients
         </button>
         <button 
-<<<<<<< HEAD
           :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'instructions' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']" 
           @click="activeTab = 'instructions'"
-=======
-          @click="activeTab = 'instructions'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'instructions' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         >
           Instructions
         </button>
         <button 
           v-if="recipe.nutrition" 
-<<<<<<< HEAD
           :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'nutrition' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']" 
           @click="activeTab = 'nutrition'"
-=======
-          @click="activeTab = 'nutrition'" 
-          :class="['px-4 py-2 rounded-lg text-sm whitespace-nowrap', activeTab === 'nutrition' ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-800']"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         >
           Nutrition
         </button>
@@ -322,7 +268,6 @@
 
     <div v-if="recipe">
       <!-- Notification pour les recettes fraîchement importées ou modifiées -->
-<<<<<<< HEAD
       <div
         v-if="(recipeJustImported || recipeJustModified) && !showOptimizer"
         class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4"
@@ -340,13 +285,6 @@
                 d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                 clip-rule="evenodd"
               />
-=======
-      <div v-if="(recipeJustImported || recipeJustModified) && !showOptimizer" class="bg-blue-50 border-l-4 border-blue-500 p-4 my-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </div>
           <div class="ml-3">
@@ -356,13 +294,8 @@
             </p>
             <div class="mt-2">
               <button 
-<<<<<<< HEAD
                 class="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-sm" 
                 @click="displayOptimizer"
-=======
-                @click="displayOptimizer" 
-                class="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 text-sm"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               >
                 Optimiser maintenant
               </button>
@@ -372,7 +305,6 @@
       </div>
       
       <!-- Bouton d'optimisation toujours visible (en plus petit, dans la section des ingrédients) -->
-<<<<<<< HEAD
       <div
         v-if="!showOptimizer"
         class="mb-4"
@@ -392,15 +324,6 @@
               d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
               clip-rule="evenodd"
             />
-=======
-      <div v-if="!showOptimizer" class="mb-4">
-        <button 
-          @click="displayOptimizer" 
-          class="flex items-center text-sm px-3 py-1 border border-emerald-300 text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           </svg>
           Optimiser les ingrédients
         </button>
@@ -435,7 +358,6 @@
           class="flex items-center p-3 rounded-lg"
           :class="isIngredientEmpty(ingredient) ? 'bg-red-100 border border-red-300' : 'bg-gray-50'"
         >
-<<<<<<< HEAD
           <span
             class="mr-2"
             :class="isIngredientEmpty(ingredient) ? 'text-red-500' : 'text-emerald-500'"
@@ -445,11 +367,6 @@
             v-if="isIngredientEmpty(ingredient)"
             class="ml-auto text-red-500 text-xs font-medium"
           >
-=======
-          <span class="mr-2" :class="isIngredientEmpty(ingredient) ? 'text-red-500' : 'text-emerald-500'">•</span>
-          <span class="text-gray-700">{{ formatIngredient(ingredient) }}</span>
-          <span v-if="isIngredientEmpty(ingredient)" class="ml-auto text-red-500 text-xs font-medium">
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             Ingrédient incomplet
           </span>
         </li>
@@ -918,11 +835,6 @@ export default {
         
         // Forcer une mise à jour complète pour s'assurer que les styles des ingrédients sont appliqués
         nextTick(() => {
-<<<<<<< HEAD
-=======
-          // Cette fonction sera exécutée après le prochain cycle de rendu de Vue
-          console.log("Mise à jour des ingrédients après optimisation");
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         });
       }
     };

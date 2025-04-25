@@ -22,15 +22,8 @@
           >
             <!-- Header -->
             <div 
-<<<<<<< HEAD
               v-if="$slots.header || title" 
               class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center"
-=======
-              :class="[size, roundedClass]"
-              class="relative bg-white dark:bg-emerald-600 overflow-hidden shadow-xl transform transition-all max-w-full"
-              :style="contentStyle"
-              @click.stop
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             >
               <slot name="header">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">

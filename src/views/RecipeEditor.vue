@@ -1,5 +1,4 @@
 <template>
-<<<<<<< HEAD
   <div class="recipe-editor">
     <!-- En-tête du formulaire avec boutons d'action -->
     <div class="flex justify-between items-center mb-4">
@@ -22,82 +21,11 @@
             stroke-linejoin="round"
             stroke-width="2"
             d="M6 18L18 6M6 6l12 12"
-=======
-    <div class="recipe-editor">
-      <!-- En-tête du formulaire avec boutons d'action -->
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">{{ isNewRecipe ? 'Créer une nouvelle recette' : 'Modifier "' + recipe.name + '"' }}</h2>
-        <button @click="close" class="text-gray-500 hover:text-gray-700">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-  
-      <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        {{ errorMessage }}
-      </div>
-  
-      <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-        Recette {{ isNewRecipe ? 'créée' : 'modifiée' }} avec succès!
-      </div>
-  
-      <div class="mb-6">
-        <!-- Image de la recette -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
-          <div class="flex items-center">
-            <div class="relative h-32 w-32 bg-gray-100 rounded-lg overflow-hidden">
-              <img 
-                v-if="imagePreview" 
-                :src="imagePreview" 
-                alt="Aperçu de l'image" 
-                class="h-full w-full object-cover"
-              />
-              <div v-else-if="recipe.id && !isNewRecipe" class="h-full w-full">
-                <img 
-                  :src="getRecipeImageUrl(recipe.id)" 
-                  alt="Image actuelle" 
-                  class="h-full w-full object-cover"
-                  @error="handleImageError"
-                />
-              </div>
-              <div v-else class="flex items-center justify-center h-full text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <input 
-                type="file" 
-                accept="image/*" 
-                class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                @change="handleImageUpload"
-              />
-            </div>
-            <div class="ml-4 text-sm text-gray-500">
-              <p>Cliquez pour {{ imagePreview || (!isNewRecipe && recipe.id) ? 'changer' : 'ajouter' }} une image</p>
-              <p v-if="imageFile">{{ imageFile.name }}</p>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Nom de la recette -->
-        <div class="mb-4">
-          <label for="recipe-name" class="block text-sm font-medium text-gray-700 mb-1">Nom de la recette *</label>
-          <input
-            id="recipe-name"
-            v-model="recipe.name"
-            type="text"
-            placeholder="Nom de votre recette"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            required
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           />
         </svg>
       </button>
     </div>
   
-<<<<<<< HEAD
     <div
       v-if="error"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
@@ -123,76 +51,6 @@
               :src="imagePreview" 
               alt="Aperçu de l'image" 
               class="h-full w-full object-cover"
-=======
-        <!-- Description -->
-        <div class="mb-4">
-          <label for="recipe-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            id="recipe-description"
-            v-model="recipe.description"
-            rows="3"
-            placeholder="Décrivez votre recette"
-            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          ></textarea>
-        </div>
-  
-        <!-- Temps et portions -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div>
-            <label for="prep-time" class="block text-sm font-medium text-gray-700 mb-1">Préparation (min)</label>
-            <input
-              id="prep-time"
-              v-model.number="recipe.prepTime"
-              type="number"
-              min="0"
-              placeholder="20"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label for="cook-time" class="block text-sm font-medium text-gray-700 mb-1">Cuisson (min)</label>
-            <input
-              id="cook-time"
-              v-model.number="recipe.performTime"
-              type="number"
-              min="0"
-              placeholder="30"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label for="total-time" class="block text-sm font-medium text-gray-700 mb-1">Temps total (min)</label>
-            <input
-              id="total-time"
-              v-model.number="recipe.totalTime"
-              type="number"
-              min="0"
-              placeholder="50"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label for="servings" class="block text-sm font-medium text-gray-700 mb-1">Portions</label>
-            <input
-              id="servings"
-              v-model.number="recipe.recipeServings"
-              type="number"
-              min="1"
-              placeholder="4"
-              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
-          </div>
-        </div>
-  
-        <!-- Ingrédients -->
-        <div class="mb-6">
-          <div class="flex justify-between items-center mb-3">
-            <h3 class="text-lg font-medium text-gray-800">Ingrédients</h3>
-            <button
-              type="button"
-              @click="addNewIngredient"
-              class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             >
             <div
               v-else-if="recipe.id && !isNewRecipe"
@@ -231,7 +89,6 @@
               @change="handleImageUpload"
             >
           </div>
-<<<<<<< HEAD
           <div class="ml-4 text-sm text-gray-500">
             <p>Cliquez pour {{ imagePreview || (!isNewRecipe && recipe.id) ? 'changer' : 'ajouter' }} une image</p>
             <p v-if="imageFile">
@@ -356,13 +213,6 @@
                 stroke-width="2"
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
-=======
-          
-          <div v-if="loadingIngredients" class="text-center py-4">
-            <svg class="animate-spin h-6 w-6 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
             Ajouter
           </button>
@@ -446,85 +296,12 @@
                       class="p-2 hover:bg-gray-100 cursor-pointer"
                       @mousedown.prevent="handleUnitSelection(index, unit)"
                     >
-<<<<<<< HEAD
                       {{ unit.name }}
-=======
-                        {{ unit.name }}
-                    </div>
-                    </div>
-                </div>
-                </div>
-                
-                <!-- Modification de la fonction pour effacer l'unité -->
-                <button 
-                v-if="ingredient.unitInput" 
-                @click="clearUnit(index)"
-                class="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                title="Effacer l'unité"
-                >
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                </button>
-
-                <!-- Ingrédient -->
-                <div class="col-span-5">
-                  <div class="relative">
-                    <input 
-                      v-model="ingredient.foodInput"
-                      @input="ingredient.food = null"
-                      @focus="openFoodDropdown(index)" 
-                      @blur="closeFoodDropdown(index, $event)"
-                      @keydown.enter.prevent="handleFoodInputEnter(index, ingredient.foodInput)"
-                      placeholder="Ingrédient"
-                      class="w-full border border-gray-300 rounded p-2"
-                    />
-                    <div 
-                      v-if="ingredient.showFoodDropdown" 
-                      class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"
-                      @scroll="handleFoodDropdownScroll($event, index)"
-                    >
-                      <!-- Message si aucun ingrédient trouvé -->
-                      <div v-if="filteredFoods(ingredient.foodInput).length === 0" class="p-3 text-gray-500 text-center">
-                        Aucun ingrédient trouvé
-                      </div>
-                      
-                      <!-- Liste d'ingrédients -->
-                      <div 
-                        v-for="food in filteredFoods(ingredient.foodInput)" 
-                        :key="food.id" 
-                        @mousedown.prevent="selectFood(index, food)"
-                        :class="[
-                          'p-2 cursor-pointer',
-                          food.isNewFood 
-                            ? 'text-emerald-600 font-medium bg-emerald-50 hover:bg-emerald-100 flex items-center' 
-                            : food.isLoadMoreIndicator
-                              ? 'text-gray-600 bg-gray-100 font-medium text-center'
-                              : 'hover:bg-gray-100'
-                        ]"
-                      >
-                        <!-- Icône plus pour nouvel ingrédient -->
-                        <svg v-if="food.isNewFood" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        
-                        <!-- Indicateur de chargement pour "Charger plus" -->
-                        <div v-if="food.isLoadMoreIndicator && isLoadingMoreFoods" class="flex justify-center items-center">
-                          <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                        </div>
-                        
-                        {{ food.name }}
-                      </div>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                     </div>
                   </div>
                 </div>
               </div>
                 
-<<<<<<< HEAD
               <!-- Modification de la fonction pour effacer l'unité -->
               <button 
                 v-if="ingredient.unitInput" 
@@ -538,47 +315,6 @@
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-=======
-                <!-- Supprimer -->
-                <div class="col-span-2 flex justify-center items-center">
-                  <button 
-                    @click="removeIngredient(index)" 
-                    class="text-red-500 hover:text-red-700"
-                    title="Supprimer cet ingrédient"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <!-- Note (optionnel) -->
-              <div class="mt-2">
-                <input 
-                  v-model="ingredient.note" 
-                  placeholder="Note (optionnel)"
-                  class="w-full border border-gray-300 rounded p-2 text-sm"
-                />
-              </div>
-            </div>
-            
-            <!-- Message quand aucun ingrédient -->
-            <div v-if="recipe.recipeIngredient.length === 0" class="text-center py-4 text-gray-500 border border-dashed border-gray-300 rounded-lg">
-              Cliquez sur "Ajouter" pour commencer à saisir des ingrédients
-            </div>
-          </div>
-        </div>
-  
-        <!-- Instructions -->
-        <div class="mb-6">
-            <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-medium text-gray-800">Instructions</h3>
-                <button
-                type="button"
-                @click="addNewInstruction"
-                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 >
                   <path
                     stroke-linecap="round"
@@ -702,97 +438,6 @@
                 </button>
               </div>
             </div>
-<<<<<<< HEAD
-=======
-          
-            <div v-for="(instruction, index) in recipe.recipeInstructions" :key="`ins-${index}`" class="mb-3">
-                <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
-                <div class="flex justify-between items-center mb-2">
-                    <div class="font-semibold text-emerald-600">
-                    Étape {{ index + 1 }}
-                    </div>
-                    <!-- Boutons réordonner/supprimer -->
-                    <div class="flex space-x-2">
-                    <button 
-                        @click="moveInstructionUp(index)"
-                        :disabled="index === 0"
-                        :class="{'opacity-50 cursor-not-allowed': index === 0}"
-                        class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Déplacer vers le haut"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <button 
-                        @click="moveInstructionDown(index)" 
-                        :disabled="index === recipe.recipeInstructions.length - 1"
-                        :class="{'opacity-50 cursor-not-allowed': index === recipe.recipeInstructions.length - 1}"
-                        class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                        title="Déplacer vers le bas"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <button 
-                        @click="removeInstruction(index)"
-                        class="p-1 text-red-500 hover:text-red-700 transition-colors"
-                        title="Supprimer cette étape"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    </div>
-                </div>
-                
-                <!-- Champ pour le résumé (optionnel) si présent dans l'objet instruction -->
-                <input 
-                    v-if="instruction.summary !== undefined"
-                    v-model="instruction.summary" 
-                    class="w-full mb-2 border border-emerald-500 rounded p-2 text-gray-700"
-                    placeholder="Résumé de l'étape (optionnel)"
-                />
-                
-                <!-- Champ pour le texte de l'instruction (toujours présent) -->
-                <textarea 
-                    v-model="instruction.text" 
-                    class="w-full border border-emerald-500 rounded p-2 text-gray-700"
-                    placeholder="Décrivez cette étape de préparation..."
-                    rows="3"
-                ></textarea>
-                </div>
-            </div>
-            
-            <!-- Message quand aucune instruction -->
-            <div v-if="recipe.recipeInstructions.length === 0" class="text-center py-4 text-gray-500 border border-dashed border-gray-300 rounded-lg">
-                Cliquez sur "Ajouter" pour commencer à saisir les instructions
-            </div>
-            </div>
-  
-        <!-- Section Valeurs Nutritionnelles -->
-        <div class="mb-6">
-          <div class="mb-3">
-            <h3 class="text-lg font-medium text-gray-800">Valeurs Nutritionnelles</h3>
-          </div>
-          
-          <div class="p-4 rounded-lg space-y-4">
-            <p class="text-sm text-gray-600">Les valeurs nutritionnelles sont pour une portion.</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label for="calories" class="block text-sm font-medium text-gray-700 mb-1">Calories (kcal)</label>
-                <input
-                  id="calories"
-                  v-model.number="recipe.nutrition.calories"
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:outline-none"
-                />
-              </div>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               
             <!-- Note (optionnel) -->
             <div class="mt-2">
@@ -803,7 +448,6 @@
               >
             </div>
           </div>
-<<<<<<< HEAD
             
           <!-- Message quand aucun ingrédient -->
           <div
@@ -811,68 +455,10 @@
             class="text-center py-4 text-gray-500 border border-dashed border-gray-300 rounded-lg"
           >
             Cliquez sur "Ajouter" pour commencer à saisir des ingrédients
-=======
-        </div>
-  
-        <!-- Catégories -->
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Catégories</label>
-          <div class="flex flex-wrap gap-2 mb-2">
-            <span 
-              v-for="category in availableCategories" 
-              :key="category.id"
-              @click="toggleCategory(category)"
-              :class="[
-                'px-3 py-1 rounded-full text-sm cursor-pointer',
-                isSelectedCategory(category) 
-                  ? 'bg-emerald-100 border-emerald-300 text-emerald-800 border' 
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-transparent'
-              ]"
-            >
-              {{ category.name }}
-            </span>
-            
-            <button
-              type="button"
-              @click="showAddCategoryInput = !showAddCategoryInput"
-              class="px-3 py-1 rounded-full text-sm border border-dashed border-gray-400 text-gray-700 hover:bg-gray-50 flex items-center"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              Nouvelle catégorie
-            </button>
-          </div>
-          
-          <!-- Ajout de nouvelle catégorie -->
-          <div v-if="showAddCategoryInput" class="flex items-center mt-2">
-            <input 
-              v-model="newCategoryName" 
-              type="text" 
-              placeholder="Nom de la nouvelle catégorie" 
-              class="flex-grow border rounded-lg px-3 py-2 mr-2"
-            />
-            <button 
-              @click="addNewCategory" 
-              class="bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700"
-              :disabled="!newCategoryName.trim()"
-            >
-              Ajouter
-            </button>
-            <button 
-              @click="showAddCategoryInput = false" 
-              class="ml-2 text-gray-500 hover:text-gray-700"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           </div>
         </div>
       </div>
   
-<<<<<<< HEAD
       <!-- Instructions -->
       <div class="mb-6">
         <div class="flex justify-between items-center mb-3">
@@ -897,26 +483,6 @@
                 stroke-width="2"
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
-=======
-      <div class="flex justify-end space-x-2">
-        <button
-          type="button"
-          @click="close"
-          class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-          :disabled="loading"
-        >
-          Annuler
-        </button>
-        <button
-          @click="saveRecipe"
-          class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
-          :disabled="loading"
-        >
-          <span v-if="loading">
-            <svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
             Ajouter
           </button>
@@ -2143,17 +1709,9 @@
               
               // Vérifier si l'API supporte PATCH
               if (recipeService.updateRecipePartial) {
-<<<<<<< HEAD
                 response = await recipeService.updateRecipePartial(recipeToSave.id, modifiedFields);
               } else {
                 // Si la méthode n'existe pas, utiliser PUT comme solution de secours
-=======
-                console.log("Utilisation de PATCH avec les champs modifiés:", modifiedFields);
-                response = await recipeService.updateRecipePartial(recipeToSave.id, modifiedFields);
-              } else {
-                // Si la méthode n'existe pas, utiliser PUT comme solution de secours
-                console.log("API PATCH non disponible, utilisation de PUT avec l'objet complet");
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 response = await recipeService.updateRecipe(recipeToSave.id, recipeToSave);
               }
             }
@@ -2165,10 +1723,6 @@
               if (imageFile.value) {
                 try {
                   await recipeService.uploadRecipeImageFixed(savedRecipe.slug, imageFile.value);
-<<<<<<< HEAD
-=======
-                  console.log("Image uploadée avec succès");
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 } catch (imgErr) {
                   console.error("Erreur lors de l'upload de l'image:", imgErr);
                   // On continue malgré l'erreur d'image

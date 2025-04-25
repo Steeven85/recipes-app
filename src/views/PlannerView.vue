@@ -8,11 +8,7 @@
         Planning des Repas
       </h1>
       <button 
-<<<<<<< HEAD
         @click="openServingsSelector"
-=======
-        @click="generateShoppingList"
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center"
         :disabled="!hasMeals || generatingList"
         :class="{'opacity-50 cursor-not-allowed': !hasMeals || generatingList}"
@@ -589,7 +585,6 @@
       </div>
     </Teleport>
 
-<<<<<<< HEAD
     <!-- Modal pour sélectionner le nombre de portions -->
     <Teleport to="body">
       <div
@@ -703,8 +698,6 @@
     </Teleport>
 
 
-=======
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     <!-- Toast pour les notifications -->
     <div 
       v-if="toast.show" 
@@ -784,11 +777,8 @@ export default {
     });
     const generatingList = ref(false);
     const allChecked = ref(false);
-<<<<<<< HEAD
     const servingsPerPerson = ref(2); // Nombre de portions par défaut
     const showServingsModal = ref(false);
-=======
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     
     // Méthode pour ouvrir le modal de sélection de portions
     const openServingsSelector = () => {
@@ -805,7 +795,6 @@ export default {
       }
     };
 
-<<<<<<< HEAD
     const confirmGenerateList = () => {
       // Vérifier que le nombre de portions est valide
       if (!servingsPerPerson.value || servingsPerPerson.value < 1) {
@@ -819,8 +808,6 @@ export default {
       generateShoppingList();
     };
 
-=======
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     const nextDay = () => {
       if (currentDayIndex.value < 6) {
         currentDayIndex.value += 1;
@@ -1281,10 +1268,7 @@ export default {
         }
         
         // 2. Récupérer la liste de courses principale
-<<<<<<< HEAD
         console.log('Récupération de la liste de courses principale...');
-=======
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         const listResponse = await shoppingService.getMainShoppingList();
         console.log('Réponse de getMainShoppingList:', listResponse);
         
@@ -1295,7 +1279,6 @@ export default {
           throw new Error('Aucune liste de courses valide trouvée');
         }
         
-<<<<<<< HEAD
         console.log(`Liste principale trouvée. ID: ${mainList.id}, Nom: ${mainList.name}`);
         
         // 3. Pour chaque recette, la récupérer puis l'ajouter à la liste de courses
@@ -1358,19 +1341,6 @@ export default {
             }
           }
         }
-=======
-        // 3. Pour chaque recette, ajouter à la liste de courses
-        const recipePromises = Array.from(recipeIds).map(recipeId => {
-          // Utiliser le format exact attendu par l'API
-          return axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, [{
-            recipeId: recipeId,
-            recipeIncrementQuantity: 1,
-            recipeIngredients: [] // L'API extraira les ingrédients de la recette
-          }]);
-        });
-        
-        await Promise.all(recipePromises);
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         
         showToast('Liste de courses générée avec succès');
         
@@ -1525,16 +1495,12 @@ export default {
       pendingRecipeForDate,
       selectedDateForRecipe,
       confirmDateSelection,
-<<<<<<< HEAD
       dayjs,
       servingsPerPerson,
       showServingsModal,
       openServingsSelector,
       confirmGenerateList,
       generateShoppingList
-=======
-      dayjs
->>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     };
   }
 };
