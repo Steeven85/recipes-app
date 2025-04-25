@@ -1,80 +1,52 @@
 <template>
-  <div>
+  <div class="max-w-screen-xl mx-auto px-4 py-6">
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-      <h1 class="text-2xl font-bold">Planning des Repas</h1>
-      <div class="flex space-x-2">
-        <button 
-          @click="generateShoppingList"
-          class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center"
-          :disabled="!hasMeals || generatingList"
-          :class="{'opacity-50 cursor-not-allowed': !hasMeals || generatingList}"
-        >
-          <svg v-if="generatingList" class="animate-spin h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          Générer liste de courses
-        </button>
-      </div>
+      <h1 class="text-2xl font-bold flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        Planning des Repas
+      </h1>
+      <button 
+        @click="openServingsSelector"
+        class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 flex items-center"
+        :disabled="!hasMeals || generatingList"
+        :class="{'opacity-50 cursor-not-allowed': !hasMeals || generatingList}"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        <span v-if="generatingList">Génération en cours...</span>
+        <span v-else>Générer liste de courses</span>
+      </button>
     </div>
 
-    <!-- Modal pour sélectionner une date -->
-    <Teleport to="body">
-      <div v-if="showDateSelector" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full" @click.stop>
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">
-              Choisir une date pour "{{ pendingRecipe?.name }}"
-            </h3>
-            <button @click="showDateSelector = false" class="text-gray-500 hover:text-gray-700">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          
-          <div class="grid grid-cols-1 gap-2 mt-4">
-            <div v-for="day in weekDays" :key="day.date" 
-                class="border rounded-lg p-3 hover:bg-gray-50 cursor-pointer transition-colors"
-                @click="selectDate(day.date)">
-              <div class="text-center">
-                <p class="font-semibold">{{ formatDay(day.date) }} {{ formatDate(day.date) }}</p>
-                <p class="text-sm text-gray-500">{{ formatFullDate(day.date) }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Teleport>
-
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-md p-4 md:p-6 mb-6">
       <div class="flex justify-between items-center mb-6">
         <button 
           @click="previousWeek" 
-          class="p-2 rounded hover:bg-gray-100 flex items-center"
+          class="flex items-center px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           :disabled="loading"
-          :class="{'opacity-50 cursor-not-allowed': loading}"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
-          <span class="hidden md:inline ml-1">Semaine précédente</span>
+          <span class="ml-1 hidden sm:inline">Semaine précédente</span>
         </button>
         
-        <h2 class="text-xl font-semibold">
+        <h2 class="text-xl font-bold flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 hidden md:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
           {{ formatWeekRange(startDate, endDate) }}
         </h2>
         
         <button 
-          @click="nextWeek" 
-          class="p-2 rounded hover:bg-gray-100 flex items-center"
+          @click="nextWeek"
+          class="flex items-center px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
           :disabled="loading"
-          :class="{'opacity-50 cursor-not-allowed': loading}"
         >
-          <span class="hidden md:inline mr-1">Semaine suivante</span>
+          <span class="mr-1 hidden sm:inline">Semaine suivante</span>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
@@ -82,10 +54,12 @@
       </div>
       
       <div v-if="loading" class="flex justify-center py-12">
-        <svg class="animate-spin h-10 w-10 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
+        <div class="animate-spin h-10 w-10 text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
       </div>
       
       <div v-else-if="error" class="text-center py-8">
@@ -97,89 +71,355 @@
         <p class="text-lg font-medium">{{ errorMessage || 'Erreur lors du chargement du planning' }}</p>
         <button 
           @click="loadMealPlan" 
-          class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
         >
           Réessayer
         </button>
       </div>
       
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-7 gap-4">
-        <div 
-          v-for="day in weekDays" 
-          :key="day.date"
-          class="border rounded-lg p-3"
-          :class="{ 'bg-indigo-50': isToday(day.date) }"
+      <!-- Bouton pour cocher/décocher tous les articles -->
+      <div class="flex justify-end mb-4">
+        <button 
+          @click="toggleAllItems"
+          class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
         >
-          <div class="text-center mb-2">
-            <p class="text-sm text-gray-500">{{ formatDay(day.date) }}</p>
-            <p class="font-semibold">{{ formatDate(day.date) }}</p>
+          {{ allChecked ? 'Tout décocher' : 'Tout cocher' }}
+        </button>
+      </div>
+
+      <!-- Affichage mobile : Format horizontal avec défilement (Vue originale) -->
+      <div class="block md:hidden">
+        <!-- Navigation entre les jours (pour mobile) -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center bg-white rounded-lg shadow-sm p-2 mb-3">
+            <button 
+              @click="previousDay" 
+              class="p-2 text-gray-600"
+              :disabled="currentDayIndex === 0"
+              :class="{'opacity-50': currentDayIndex === 0}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div class="text-center">
+              <p class="text-lg font-semibold" :class="{'text-gray-700 font-bold': isToday(weekDays[currentDayIndex].date)}">
+                {{ weekDays[currentDayIndex] ? formatDay(weekDays[currentDayIndex].date) : '' }} {{ formatDate(weekDays[currentDayIndex].date) }}
+              </p>
+              <p class="text-sm text-gray-500">{{ formatFullDate(weekDays[currentDayIndex].date) }}</p>
+            </div>
+            <button 
+              @click="nextDay" 
+              class="p-2 text-gray-600"
+              :disabled="currentDayIndex === 6"
+              :class="{'opacity-50': currentDayIndex === 6}"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
           
-          <div class="min-h-[120px] flex flex-col">
-            <TransitionGroup 
-              name="meal-list" 
-              tag="div" 
-              class="flex-grow"
-            >
-              <div 
-                v-for="meal in day.meals" 
-                :key="meal.id"
-                class="bg-white border border-indigo-100 p-2 rounded mb-2 text-sm shadow-sm hover:shadow transition-shadow flex-shrink-0"
-              >
-                <div class="flex justify-between items-start">
-                  <div class="flex items-start min-w-0 max-w-[calc(100%-40px)]">
-                    <div 
-                      class="w-2 h-2 rounded-full mt-1.5 mr-2 flex-shrink-0"
-                      :class="getMealTypeClass(meal.type)"
-                    ></div>
-                    <span class="truncate overflow-ellipsis" :title="meal.recipe.name">{{ meal.recipe.name }}</span>
-                  </div>
-                  <div class="flex items-center flex-shrink-0 ml-1">
-                    <button 
-                      @click.stop="openRecipeDetails(meal.recipe.id)"
-                      class="text-indigo-500 p-1"
-                      title="Voir la recette"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </button>
-                    <button 
-                      @click.stop="removeMeal(meal)" 
-                      class="text-red-500 p-1"
-                      title="Supprimer"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </TransitionGroup>
-            
-            <div v-if="day.meals.length === 0" class="flex items-center justify-center h-32 opacity-50 text-sm text-center text-gray-500">
-              <p>Aucun repas planifié</p>
-            </div>
-            
-            <div class="mt-auto">
+          <!-- Affichage sous forme de petits onglets pour jours -->
+          <div class="overflow-x-auto">
+            <div class="grid grid-cols-7 gap-1 mb-4">
               <button 
-                @click="openRecipeSelector(day.date)"
-                class="w-full mt-2 py-1 text-xs text-indigo-600 hover:text-indigo-800 border border-dashed border-indigo-300 rounded hover:bg-indigo-50 transition-colors"
+                v-for="(day, index) in weekDays" 
+                :key="day.date"
+                @click="currentDayIndex = index" 
+                class="p-1 rounded text-center text-xs transition-colors"
+                :class="{
+                  'bg-gray-100 border border-gray-300': currentDayIndex === index,
+                  'bg-white border border-gray-200': currentDayIndex !== index,
+                  'font-semibold': isToday(day.date)
+                }"
               >
-                + Ajouter un repas
+                <p class="text-xs" :class="{'text-gray-700': isToday(day.date)}">
+                  {{ formatDay(day.date) }}
+                </p>
+                <p class="text-xs font-bold" :class="{'text-gray-700': isToday(day.date)}">
+                  {{ formatDate(day.date) }}
+                </p>
               </button>
             </div>
           </div>
         </div>
+        
+        <!-- Affichage des repas du jour actif -->
+        <div class="border rounded-lg p-3">    
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-medium">
+              Repas planifiés
+            </h3>
+            <button 
+              @click="openRecipeSelector(weekDays[currentDayIndex].date)"
+              class="px-2 py-1 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-xs flex items-center"
+            >
+              <span class="mr-1">+</span> Ajouter
+            </button>
+          </div>
+          
+          <div v-if="weekDays[currentDayIndex].meals.length === 0" class="text-center py-8 text-gray-500">
+            <p>Aucun repas planifié pour cette journée</p>
+          </div>
+          
+          <TransitionGroup 
+            name="meal-list" 
+            tag="div" 
+            class="space-y-3"
+          >
+            <div 
+              v-for="meal in weekDays[currentDayIndex].meals" 
+              :key="meal.id"
+              class="bg-white border rounded-lg shadow-sm overflow-hidden hover:shadow transition-shadow"
+            >
+              <div class="flex items-start p-3">
+                <div class="w-16 h-16 relative flex-shrink-0 mr-2 rounded overflow-hidden bg-gray-100">
+                  <img 
+                    :src="getRecipeImage(meal.recipe)"
+                    :alt="meal.recipe.name"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                    @error="handleImageError"
+                  />
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center mb-1">
+                    <span :class="getMealTypeClassesSober(meal.type)">
+                      <span v-html="getMealTypeIcon(meal.type)" class="w-3.5 h-3.5"></span>
+                      <span class="ml-1">{{ getMealTypeLabel(meal.type) }}</span>
+                    </span>
+                    <span v-if="meal.recipe.totalTime" class="ml-2 text-xs text-gray-500 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {{ meal.recipe.totalTime }} min
+                    </span>
+                  </div>
+                  <h4 class="font-medium text-sm">{{ meal.recipe.name }}</h4>
+                  
+                  <div class="flex justify-between items-center mt-1">
+                    <div class="flex space-x-1">
+                      <button 
+                        @click="openRecipeDetails(meal.recipe.id)"
+                        class="px-2 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 flex items-center"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                          <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                        </svg>
+                        Voir
+                      </button>
+                      <button 
+                        @click="removeMeal(meal)"
+                        class="px-2 py-1 text-xs border border-gray-200 text-gray-600 rounded hover:bg-gray-50 flex items-center"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TransitionGroup>
+        </div>
+      </div>
+      
+      <!-- Affichage PC : Format vertical avec jour sélectionné -->
+      <div class="hidden md:block">
+        <!-- Sélecteur de jours -->
+        <div class="mb-6">
+          <div class="grid grid-cols-7 gap-2">
+            <button 
+              v-for="(day, index) in weekDays" 
+              :key="day.date"
+              @click="currentDayIndex = index" 
+              class="p-2 rounded-lg text-center transition-colors"
+              :class="{
+                'bg-gray-100 border-2 border-gray-500': currentDayIndex === index,
+                'border border-gray-200 hover:bg-gray-50': currentDayIndex !== index,
+                'font-semibold': isToday(day.date)
+              }"
+            >
+              <p class="text-sm font-medium" :class="{'text-gray-700': isToday(day.date)}">
+                {{ formatDay(day.date) }}
+              </p>
+              <p class="text-lg" :class="{'text-gray-700 font-bold': isToday(day.date)}">
+                {{ formatDate(day.date) }}
+              </p>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Affichage des repas du jour actif -->
+        <div class="border rounded-lg p-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">
+              {{ formatFullDate(weekDays[currentDayIndex].date) }}
+            </h3>
+            <button 
+              @click="openRecipeSelector(weekDays[currentDayIndex].date)"
+              class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm flex items-center"
+            >
+              <span class="mr-1">+</span> Ajouter un repas
+            </button>
+          </div>
+          
+          <div v-if="weekDays[currentDayIndex].meals.length === 0" class="text-center py-10 text-gray-500">
+            <p>Aucun repas planifié pour cette journée</p>
+          </div>
+          
+          <TransitionGroup 
+            name="meal-list" 
+            tag="div" 
+            class="space-y-4"
+          >
+            <div 
+              v-for="meal in weekDays[currentDayIndex].meals" 
+              :key="meal.id"
+              class="bg-white border rounded-lg shadow-sm overflow-hidden hover:shadow transition-shadow"
+            >
+              <div class="flex items-start p-3">
+                <!-- Image de la recette (plus grande) -->
+                <div class="w-24 h-24 relative flex-shrink-0 mr-3 rounded overflow-hidden bg-gray-100">
+                  <img 
+                    :src="getRecipeImage(meal.recipe)"
+                    :alt="meal.recipe.name"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                    @error="handleImageError"
+                  />
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center mb-1">
+                    <span :class="getMealTypeClassesSober(meal.type)">
+                      <span v-html="getMealTypeIcon(meal.type)" class="w-3.5 h-3.5"></span>
+                      <span class="ml-1">{{ getMealTypeLabel(meal.type) }}</span>
+                    </span>
+                    <span v-if="meal.recipe.totalTime" class="ml-2 text-sm text-gray-500 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {{ meal.recipe.totalTime }} min
+                    </span>
+                  </div>
+                  
+                  <h4 class="text-lg font-medium mb-1">{{ meal.recipe.name }}</h4>
+                  
+                  <p v-if="meal.recipe.description" class="text-sm text-gray-600 line-clamp-2 mb-2">
+                    {{ meal.recipe.description }}
+                  </p>
+                  
+                  <div class="flex space-x-2">
+                    <button 
+                      @click="openRecipeDetails(meal.recipe.id)"
+                      class="px-3 py-1 text-sm border border-gray-200 text-gray-600 rounded hover:bg-gray-50 flex items-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                      </svg>
+                      Voir la recette
+                    </button>
+                    <button 
+                      @click="removeMeal(meal)"
+                      class="px-3 py-1 text-sm border border-gray-200 text-gray-600 rounded hover:bg-gray-50 flex items-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                      </svg>
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TransitionGroup>
+        </div>
       </div>
     </div>
     
+    <!-- Résumé de la semaine, visible sur mobile et PC -->
+    <div class="bg-white rounded-lg shadow-md p-4 md:p-6 mb-6">
+      <h3 class="font-semibold mb-4 flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        Résumé de la semaine
+      </h3>
+      <!-- Légende des icônes de catégorie de repas -->
+      <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
+        <div class="flex items-center">
+          <!-- Icon pour petit-déj -->
+          <span v-html="getMealTypeIcon('breakfast')" class="w-4 h-4 mr-1"></span>
+          <span>Petit-déj</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour déjeuner -->
+          <span v-html="getMealTypeIcon('lunch')" class="w-4 h-4 mr-1"></span>
+          <span>Déjeuner</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour dîner -->
+          <span v-html="getMealTypeIcon('dinner')" class="w-4 h-4 mr-1"></span>
+          <span>Dîner</span>
+        </div>
+        <div class="flex items-center">
+          <!-- Icon pour collation -->
+          <span v-html="getMealTypeIcon('snack')" class="w-4 h-4 mr-1"></span>
+          <span>Collation</span>
+        </div>
+      </div>
+      <!-- Conteneur défilable horizontalement si nécessaire -->
+      <!-- Grille responsive : 7 cartes = 7 jours -->
+      <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4">
+        <div 
+          v-for="day in weekDays" 
+          :key="day.date"
+          class="bg-gray-50 border border-gray-200 rounded-lg p-3 relative"
+          :class="{'bg-emerald-50': isToday(day.date)}"
+        >
+          <!-- Titre du jour -->
+          <div class="mb-2 font-medium text-gray-700">
+            <span class="block text-xs uppercase tracking-wider">
+              {{ formatDay(day.date) }}
+            </span>
+            <span class="text-lg font-semibold">
+              {{ formatDate(day.date) }}
+            </span>
+          </div>
+
+          <!-- Repas -->
+          <div v-if="day.meals.length > 0" class="space-y-1">
+            <div 
+              v-for="meal in day.meals"
+              :key="meal.id"
+              class="flex items-center text-xs px-2 py-1 bg-white rounded shadow-sm hover:bg-gray-100 transition-colors cursor-pointer"
+              @click="currentDayIndex = weekDays.findIndex(d => d.date === day.date)"
+            >
+              <span 
+                v-html="getMealTypeIcon(meal.type)" 
+                class="w-4 h-4 mr-1 text-emerald-600"
+              ></span>
+              <span class="font-medium">{{ meal.recipe.name }}</span>
+            </div>
+          </div>
+          <div v-else class="text-xs text-gray-500 italic">
+            Aucun repas planifié
+          </div>
+        </div>
+      </div>
+    </div>
+ 
     <!-- Modal pour sélectionner une recette -->
     <Teleport to="body">
       <div v-if="showRecipeSelector" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[80vh] overflow-auto" @click.stop>
+        <div class="bg-white rounded-lg p-4 md:p-6 max-w-4xl w-full max-h-[90vh] overflow-auto" @click.stop>
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold">
               Ajouter un repas pour le {{ formatFullDate(selectedDate) }}
@@ -191,18 +431,23 @@
             </button>
           </div>
           
-          <div class="mb-4 flex flex-col md:flex-row gap-4">
-            <div class="w-full md:w-3/4">
-              <input 
-                type="text" 
-                v-model="recipeSearch" 
-                placeholder="Rechercher une recette..." 
-                class="w-full border rounded-lg px-3 py-2"
-                @input="debouncedSearch"
-                ref="searchInput"
-              />
+          <div class="mb-4 flex flex-col sm:flex-row gap-4">
+            <div class="w-full sm:w-3/4">
+              <div class="relative">
+                <input 
+                  type="text" 
+                  v-model="recipeSearch" 
+                  placeholder="Rechercher une recette..." 
+                  class="w-full border rounded-lg pl-10 pr-3 py-2"
+                  @input="debouncedSearch"
+                  ref="searchInput"
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-2.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
-            <div class="w-full md:w-1/4">
+            <div class="w-full sm:w-1/4">
               <select 
                 v-model="selectedMealType" 
                 class="w-full border rounded-lg px-3 py-2"
@@ -216,17 +461,19 @@
           </div>
           
           <div v-if="loadingRecipes" class="flex justify-center py-8">
-            <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+            <div class="animate-spin h-8 w-8 text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
           </div>
           
           <div v-else-if="recipesError" class="text-center py-8 text-red-500">
             <p>{{ recipesError }}</p>
             <button 
               @click="loadRecipes" 
-              class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+              class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
             >
               Réessayer
             </button>
@@ -236,14 +483,14 @@
             <p>Aucune recette trouvée</p>
           </div>
           
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <div 
               v-for="recipe in filteredRecipes" 
               :key="recipe.id"
               class="border rounded-lg p-3 flex items-center hover:bg-gray-50 cursor-pointer transition-colors"
               @click="addRecipeToDay(recipe)"
             >
-              <div class="w-12 h-12 relative flex-shrink-0 mr-3 rounded overflow-hidden bg-gray-100">
+              <div class="w-16 h-16 relative flex-shrink-0 mr-3 rounded overflow-hidden bg-gray-100">
                 <img 
                   :src="getRecipeImage(recipe)"
                   :alt="recipe.name"
@@ -253,16 +500,21 @@
                 />
               </div>
               <div class="flex-1 min-w-0">
-                <h4 class="font-medium truncate">{{ recipe.name }}</h4>
+                <h4 class="font-medium line-clamp-2">{{ recipe.name }}</h4>
                 <div class="flex items-center text-xs text-gray-500">
-                  <span v-if="recipe.totalTime">{{ formatCookTime(recipe.totalTime) }}</span>
+                  <span v-if="recipe.totalTime" class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ formatperformTime(recipe.totalTime) }}
+                  </span>
                   <span v-if="recipe.difficulty" class="ml-2 px-2 py-0.5 bg-gray-100 rounded">
                     {{ recipe.difficulty }}
                   </span>
                 </div>
               </div>
               <div class="ml-2 flex-shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
               </div>
@@ -272,11 +524,185 @@
       </div>
     </Teleport>
     
+    <!-- Modal pour sélectionner une date -->
+    <Teleport to="body">
+      <div v-if="showDateSelectorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-4 md:p-6 max-w-md w-full" @click.stop>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">
+              Ajouter "{{ pendingRecipeForDate?.name }}" au planning
+            </h3>
+            <button @click="showDateSelectorModal = false" class="text-gray-500 hover:text-gray-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-4">
+            <label for="recipe-date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input
+              id="recipe-date"
+              v-model="selectedDateForRecipe"
+              type="date"
+              class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              :min="dayjs().format('YYYY-MM-DD')"
+              required
+            />
+          </div>
+          
+          <div class="mb-4">
+            <label for="meal-type" class="block text-sm font-medium text-gray-700 mb-1">Type de repas</label>
+            <select 
+              id="meal-type"
+              v-model="selectedMealType" 
+              class="w-full border rounded-lg px-3 py-2"
+            >
+              <option value="breakfast">Petit-déjeuner</option>
+              <option value="lunch">Déjeuner</option>
+              <option value="dinner">Dîner</option>
+              <option value="snack">Collation</option>
+            </select>
+          </div>
+          
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              @click="showDateSelectorModal = false"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              @click="confirmDateSelection"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+            >
+              Ajouter au planning
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+    <!-- Modal pour sélectionner le nombre de portions -->
+    <Teleport to="body">
+      <div
+        v-if="showServingsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+      >
+        <div
+          class="bg-white rounded-lg p-4 md:p-6 max-w-md w-full"
+          @click.stop
+        >
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">
+              Configuration de la liste de courses
+            </h3>
+            <button
+              class="text-gray-500 hover:text-gray-700"
+              @click="showServingsModal = false"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="mb-6">
+            <label
+              for="servings"
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >Nombre de portions par personne</label>
+            <div class="flex items-center">
+              <button 
+                class="px-3 py-2 bg-gray-200 rounded-l-lg hover:bg-gray-300"
+                @click="servingsPerPerson = Math.max(1, servingsPerPerson - 1)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20 12H4"
+                  />
+                </svg>
+              </button>
+              <input
+                id="servings"
+                v-model.number="servingsPerPerson"
+                type="number"
+                min="1"
+                class="w-16 text-center border-y py-2 focus:outline-none"
+              />
+              <button 
+                class="px-3 py-2 bg-gray-200 rounded-r-lg hover:bg-gray-300"
+                @click="servingsPerPerson++"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </button>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">
+              Les quantités des ingrédients seront ajustées en fonction du nombre de portions.
+            </p>
+          </div>
+          
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              @click="showServingsModal = false"
+            >
+              Annuler
+            </button>
+            <button
+              type="button"
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+              @click="confirmGenerateList"
+            >
+              Générer la liste
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
+
+
     <!-- Toast pour les notifications -->
     <div 
       v-if="toast.show" 
-      class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg flex items-center z-50"
-      :class="{ 'bg-green-600': toast.type === 'success', 'bg-red-600': toast.type === 'error' }"
+      class="fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg flex items-center z-50"
+      :class="{ 'bg-green-600 text-white': toast.type === 'success', 'bg-red-600 text-white': toast.type === 'error' }"
     >
       <span>{{ toast.message }}</span>
       <button @click="toast.show = false" class="ml-2 text-white">
@@ -318,8 +744,17 @@ export default {
     const recipeStore = useRecipeStore();
     const startDate = ref(dayjs().startOf('week').format('YYYY-MM-DD'));
     const endDate = ref(dayjs().endOf('week').format('YYYY-MM-DD'));
-    const weekDays = ref([]);
+    const weekDays = ref(Array.from({ length: 7 }, (_, i) => {
+      const date = dayjs().startOf('week').add(i, 'day').format('YYYY-MM-DD');
+      return {
+        date,
+        meals: []
+      };
+    }));
     const selectedRecipe = ref(null);
+    const showDateSelectorModal = ref(false);
+    const pendingRecipeForDate = ref(null);
+    const selectedDateForRecipe = ref(dayjs().format('YYYY-MM-DD'));
     const loading = ref(true);
     const error = ref(false);
     const errorMessage = ref('');
@@ -333,6 +768,7 @@ export default {
     const recipeSearch = ref('');
     const selectedMealType = ref('dinner');
     const searchInput = ref(null);
+    const currentDayIndex = ref(dayjs().day() % 7); // Jour actuel de la semaine (0-6)
     const toast = ref({
       show: false,
       message: '',
@@ -340,9 +776,51 @@ export default {
       timeout: null
     });
     const generatingList = ref(false);
+    const allChecked = ref(false);
+    const servingsPerPerson = ref(2); // Nombre de portions par défaut
+    const showServingsModal = ref(false);
     
+    // Méthode pour ouvrir le modal de sélection de portions
+    const openServingsSelector = () => {
+      showServingsModal.value = true;
+    };
+
     // Controller pour annuler les requêtes en cours
     let abortController = new AbortController();
+
+    // Navigation entre les jours (pour mobile)
+    const previousDay = () => {
+      if (currentDayIndex.value > 0) {
+        currentDayIndex.value -= 1;
+      }
+    };
+
+    const confirmGenerateList = () => {
+      // Vérifier que le nombre de portions est valide
+      if (!servingsPerPerson.value || servingsPerPerson.value < 1) {
+        servingsPerPerson.value = 1; // Valeur minimale
+      }
+      
+      // Fermer le modal
+      showServingsModal.value = false;
+      
+      // Lancer la génération de la liste
+      generateShoppingList();
+    };
+
+    const nextDay = () => {
+      if (currentDayIndex.value < 6) {
+        currentDayIndex.value += 1;
+      }
+    };
+
+    const currentDay = computed(() => {
+      if (weekDays.value && weekDays.value.length > 0 && 
+          currentDayIndex.value >= 0 && currentDayIndex.value < weekDays.value.length) {
+        return weekDays.value[currentDayIndex.value];
+      }
+      return { date: dayjs().format('YYYY-MM-DD'), meals: [] };
+    });
 
     const openDateSelector = (recipe) => {
       pendingRecipe.value = recipe;
@@ -361,6 +839,7 @@ export default {
         pendingRecipe.value = null;
       }
     };
+    
     // Cache d'images avec Map
     const imageCache = new Map();
     
@@ -370,34 +849,20 @@ export default {
     });
 
     const filteredRecipes = computed(() => {
-      if (!recipeSearch.value.trim()) return recipes.value;
-      
-      const query = recipeSearch.value.toLowerCase().trim();
-      const terms = query.split(/\s+/).filter(term => term.length > 0);
-      
-      if (terms.length === 0) return recipes.value;
-      
-      return recipes.value.filter(recipe => {
-        // Recherche optimisée multi-termes
-        let score = 0;
-        const name = recipe.name.toLowerCase();
-        
-        for (const term of terms) {
-          if (name.includes(term)) score += 5;
-          if (recipe.description?.toLowerCase().includes(term)) score += 2;
-          if (recipe.tags?.some(tag => tag.name?.toLowerCase().includes(term))) score += 3;
-        }
-        
-        return score > 0;
-      }).sort((a, b) => {
-        // Tri par pertinence basé sur le nom contenant tous les termes
-        const aContains = terms.every(term => a.name.toLowerCase().includes(term));
-        const bContains = terms.every(term => b.name.toLowerCase().includes(term));
-        
-        if (aContains && !bContains) return -1;
-        if (!aContains && bContains) return 1;
-        return 0;
+      // Supposons ici que vous ayez déjà appliqué le filtre via recipeSearch
+      let result = recipes.value;
+
+      // Appliquer le tri selon le type de repas en utilisant le mapping
+      result = result.slice().sort((a, b) => {
+        // Récupérer le type (en minuscule) pour chaque recette, par défaut "dinner" si absent
+        const aType = a.entryType ? a.entryType.toLowerCase() : 'dinner';
+        const bType = b.entryType ? b.entryType.toLowerCase() : 'dinner';
+
+        // Calculer l'ordre en se basant sur le mapping défini
+        return (mealTypeOrder[aType] ?? 3) - (mealTypeOrder[bType] ?? 3);
       });
+
+      return result;
     });
 
     const openRecipeSelector = (date) => {
@@ -413,24 +878,98 @@ export default {
       });
     };
 
-    watch(() => route.query, (query) => {
-      if (query.recipeId) {
-        // Récupérez les détails de la recette
-        const recipe = {
-          id: query.recipeId,
-          name: query.recipeName
-        };
-        
-        // Ouvrir le sélecteur de date pour cette recette
-        openDateSelector(recipe);
+    // Fonctions pour récupérer les informations de type de repas
+    const getMealTypeClassesSober = (type) => {
+      switch (type) {
+        case 'breakfast':
+          return 'inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border-gray-200';
+        case 'lunch':
+          return 'inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border-gray-200';
+        case 'dinner':
+          return 'inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border-gray-200';
+        case 'snack':
+          return 'inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border-gray-200';
+        default:
+          return 'inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border-gray-200';
       }
-    }, { immediate: true });
+    };
 
+    // Nouvelle fonction pour obtenir uniquement les classes de fond
+    const getMealTypeBackgroundClassSober = (type) => {
+      switch (type) {
+        case 'breakfast':
+          return 'bg-blue-500 text-white';
+        case 'lunch':
+          return 'bg-yellow-500 text-white';
+        case 'snack':
+          return 'bg-purple-500 text-white';
+        case 'dinner':
+          return 'bg-orange-500 text-white';
+        default:
+          return 'bg-gray-300 text-gray-700';
+      }
+    };
+
+    const getMealTypeIcon = (type) => {
+      switch (type) {
+        case 'breakfast':
+          return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 8h1a4 4 0 1 1 0 8h-1"></path>
+            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"></path>
+            <line x1="6" x2="6" y1="2" y2="4"></line>
+            <line x1="10" x2="10" y1="2" y2="4"></line>
+            <line x1="14" x2="14" y1="2" y2="4"></line>
+          </svg>`;
+        case 'lunch':
+          return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+          </svg>`;
+        case 'dinner':
+          return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21a9 9 0 0 0 9-9H3a9 9 0 0 0 9 9Z"></path>
+            <path d="M7 21h10"></path>
+            <path d="M12.007 12V3"></path>
+          </svg>`;
+        case 'snack':
+          return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22a8 8 0 0 0 8-8"></path>
+            <path d="M2 10s3.5 4 10 4 11.5-4 11.5-4"></path>
+            <path d="M5 18a8 8 0 0 1 0-16h3.5c1.06 0 2.04.37 2.82 1l3.37 2.24a4 4 0 0 1 1.31 5.52 4 4 0 0 1-5.26 1.4L9 11"></path>
+          </svg>`;
+        default:
+          return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+            <path d="M7 2v20"></path>
+            <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+          </svg>`;
+      }
+    };
+
+    const getMealTypeLabel = (type) => {
+      switch (type) {
+        case 'breakfast': return 'Petit-déj';
+        case 'lunch': return 'Déjeuner';
+        case 'dinner': return 'Dîner';
+        case 'snack': return 'Collation';
+        default: return 'Repas';
+      }
+    };
 
     // Lifecycle hooks
     onMounted(async () => {
       await loadMealPlan();
       await loadRecipes();
+      
+      // Initialiser le jour actif à aujourd'hui si possible
+      const todayIndex = weekDays.value.findIndex(day => 
+        isToday(day.date)
+      );
+      
+      if (todayIndex !== -1) {
+        currentDayIndex.value = todayIndex;
+      }
     });
     
     onBeforeUnmount(() => {
@@ -469,12 +1008,22 @@ export default {
           ? response.data.items 
           : [];
         
-        // Initialiser les jours de la semaine
+        // Initialiser les jours de la semaine avec transformation des types de repas
         weekDays.value = Array.from({ length: 7 }, (_, i) => {
           const date = dayjs(startDate.value).add(i, 'day').format('YYYY-MM-DD');
+          // Filtrer les repas pour ce jour et normaliser les types
+          const dayMeals = mealPlanData.filter(meal => meal.date === date) || [];
+          // Assurons-nous que chaque repas a un type valide
+          dayMeals.forEach(meal => {
+            // Si le type n'est pas défini, utilisez le type sélectionné par défaut
+            if (!meal.type) {
+              meal.type = meal.entryType || 'dinner';
+            }
+            meal.type = normalizeType(meal.type);
+          });
           return {
             date,
-            meals: mealPlanData.filter(meal => meal.date === date) || []
+            meals: dayMeals
           };
         });
       } catch (err) {
@@ -492,8 +1041,45 @@ export default {
       }
     };
 
+    const mealTypeOrder = {
+      breakfast: 0, // Petit-déj
+      lunch: 1,     // Déjeuner
+      snack: 2,     // Collation
+      dinner: 3     // Dîner
+    };
+
+    // Fonction de normalisation des types de repas
+    const normalizeType = (type) => {
+      if (!type) return 'dinner';
+      
+      const lowerType = type.toLowerCase();
+      
+      if (lowerType.includes('petit') || lowerType.includes('breakfast') || lowerType === 'b') {
+        return 'breakfast';
+      } else if (lowerType.includes('déj') || lowerType.includes('dej') || lowerType.includes('lunch') || lowerType === 'l') {
+        return 'lunch';
+      } else if (lowerType.includes('dîn') || lowerType.includes('din') || lowerType.includes('dinner') || lowerType === 'd') {
+        return 'dinner';
+      } else if (lowerType.includes('coll') || lowerType.includes('snack') || lowerType === 's') {
+        return 'snack';
+      }
+      
+      return 'dinner';
+    };
+
     const getRecipeImage = (recipe) => {
-      return recipeService.getRecipeImageUrl(recipe, 'min-original.webp', '/default-recipe.png', true);
+      // Vérifier si l'image est dans le cache
+      if (imageCache.has(recipe.id)) {
+        return imageCache.get(recipe.id);
+      }
+      
+      // Utiliser le service pour récupérer l'URL de l'image
+      const imageUrl = recipeService.getRecipeImageUrl(recipe, 'min-original.webp', '/default-recipe.png', true);
+      
+      // Mettre en cache l'URL de l'image
+      imageCache.set(recipe.id, imageUrl);
+      
+      return imageUrl;
     };
 
     const handleImageError = (e) => {
@@ -541,7 +1127,7 @@ export default {
     };
 
     const formatWeekRange = (start, end) => {
-      return `${dayjs(start).format('D MMM')} - ${dayjs(end).format('D MMM YYYY')}`;
+      return `${dayjs(start).format('D')} - ${dayjs(end).format('D')} ${dayjs(end).format('MMMM YYYY')}`;
     };
 
     const formatDay = (date) => {
@@ -556,7 +1142,7 @@ export default {
       return dayjs(date).format('dddd D MMMM');
     };
 
-    const formatCookTime = (minutes) => {
+    const formatperformTime = (minutes) => {
       if (!minutes) return 'N/A';
       if (minutes < 60) return `${minutes} min`;
       const hours = Math.floor(minutes / 60);
@@ -568,7 +1154,6 @@ export default {
       return dayjs(date).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD');
     };
 
-   
     const closeRecipeSelector = () => {
       showRecipeSelector.value = false;
       selectedDate.value = '';
@@ -589,15 +1174,28 @@ export default {
           description: recipe.description || ''
         });
 
-        console.log('Réponse complète de l\'ajout:', response);
-
         if (!response || !response.data) {
           throw new Error('Réponse invalide de l\'API');
         }
 
         const dayIndex = weekDays.value.findIndex(day => day.date === date);
         if (dayIndex !== -1) {
-          weekDays.value[dayIndex].meals.push(response.data);
+          // Créer une référence appropriée pour la recette dans la réponse avec le bon type
+          const newMeal = {
+            ...response.data,
+            // S'assurer que le type est correctement défini
+            type: selectedMealType.value || response.data.type || 'dinner',
+            recipe: {
+              id: recipe.id,
+              name: recipe.name,
+              totalTime: recipe.totalTime,
+              description: recipe.description
+            }
+          };
+          weekDays.value[dayIndex].meals.push(newMeal);
+          
+          // Définir le jour actif sur celui où on vient d'ajouter un repas
+          currentDayIndex.value = dayIndex;
         }
         
         showToast(`"${recipe.name}" ajouté au planning`);
@@ -640,7 +1238,7 @@ export default {
       }
     };
 
-    // Fonction corrigée pour generateShoppingList dans PlannerView.vue
+    // Fonction pour générer la liste de courses
     const generateShoppingList = async () => {
       if (!hasMeals.value) {
         showToast('Aucun repas n\'a été planifié', 'error');
@@ -649,6 +1247,8 @@ export default {
       
       try {
         generatingList.value = true;
+        console.log('Début de la génération de la liste de courses');
+        console.log(`Nombre de portions par personne sélectionné: ${servingsPerPerson.value}`);
         
         // 1. Récupérer les identifiants des recettes du planning
         const recipeIds = new Set();
@@ -656,61 +1256,101 @@ export default {
           day.meals.forEach(meal => {
             if (meal.recipe && meal.recipe.id) {
               recipeIds.add(meal.recipe.id);
+              console.log(`Ajout de la recette ID: ${meal.recipe.id}, Nom: ${meal.recipe.name}`);
             }
           });
         });
+        
+        console.log('Recettes trouvées dans le planning:', Array.from(recipeIds));
         
         if (recipeIds.size === 0) {
           throw new Error('Aucune recette trouvée dans le planning pour générer la liste');
         }
         
-        console.log(`Recettes trouvées dans le planning: ${Array.from(recipeIds).join(', ')}`);
-        
-        // 2. Pour chaque recette, récupérer ses détails complets
-        const recipePromises = Array.from(recipeIds).map(id => recipeService.getById(id));
-        const recipeResponses = await Promise.all(recipePromises);
-        
-        // 3. Récupérer la liste de courses principale
+        // 2. Récupérer la liste de courses principale
+        console.log('Récupération de la liste de courses principale...');
         const listResponse = await shoppingService.getMainShoppingList();
+        console.log('Réponse de getMainShoppingList:', listResponse);
+        
         const mainList = listResponse.data.items?.[0];
         
         if (!mainList || !mainList.id) {
+          console.error('Pas de liste trouvée dans la réponse:', listResponse);
           throw new Error('Aucune liste de courses valide trouvée');
         }
         
-        console.log(`Liste de courses cible: ${mainList.id}`);
+        console.log(`Liste principale trouvée. ID: ${mainList.id}, Nom: ${mainList.name}`);
         
-        // 4. Pour chaque recette, envoyer une requête séparée
-        for (const recipeResponse of recipeResponses) {
-          if (!recipeResponse.data || !recipeResponse.data.id) {
-            console.warn('Recette invalide ignorée');
-            continue;
+        // 3. Pour chaque recette, la récupérer puis l'ajouter à la liste de courses
+        console.log('Ajout des recettes à la liste de courses...');
+        
+        for (const recipeId of recipeIds) {
+          console.log(`Traitement de la recette ${recipeId}...`);
+          
+          try {
+            // D'abord récupérer les détails complets de la recette avec ses ingrédients
+            const recipeResponse = await recipeService.getById(recipeId);
+            
+            if (!recipeResponse || !recipeResponse.data) {
+              console.warn(`Recette ${recipeId} non trouvée, impossible de l'ajouter à la liste`);
+              continue;
+            }
+            
+            const recipe = recipeResponse.data;
+            
+            // Vérifier que la recette a des ingrédients
+            if (!recipe.recipeIngredient || !Array.isArray(recipe.recipeIngredient) || recipe.recipeIngredient.length === 0) {
+              console.warn(`La recette ${recipe.name} (${recipeId}) n'a pas d'ingrédients`);
+              continue;
+            }
+            
+            // Calculer le multiplicateur basé sur le nombre de portions et les portions de la recette
+            let recipeScale = servingsPerPerson.value;
+            
+            // Si la recette a un nombre de portions défini, ajuster le scale
+            if (recipe.recipeServings && recipe.recipeServings > 0) {
+              // Calculer le scale: portions nécessaires / portions de la recette
+              recipeScale = servingsPerPerson.value / recipe.recipeServings;
+              console.log(`La recette ${recipe.name} est pour ${recipe.recipeServings} personnes, scale calculé: ${recipeScale}`);
+            } else {
+              console.log(`La recette ${recipe.name} n'a pas de nombre de portions défini, utilisation du scale direct: ${recipeScale}`);
+            }
+            
+            console.log(`La recette ${recipe.name} contient ${recipe.recipeIngredient.length} ingrédients`);
+            
+            // Préparer le payload au format attendu par l'API
+            const payload = [{
+              recipeId: recipeId,
+              recipeIncrementQuantity: recipeScale, // CORRECTION ICI: Utiliser le scale calculé
+              recipeIngredients: recipe.recipeIngredient
+            }];
+            
+            console.log('Payload préparé pour l\'API:', payload);
+            
+            // Faire la requête API directement avec le bon format
+            const response = await axiosInstance.post(
+              `/households/shopping/lists/${mainList.id}/recipe`, 
+              payload
+            );
+            
+            console.log(`Réponse API pour recette ${recipe.name}:`, response);
+          } catch (recipeError) {
+            console.error(`Erreur lors de l'ajout de la recette ${recipeId}:`, recipeError);
+            if (recipeError.response) {
+              console.error('Détails:', recipeError.response.data);
+            }
           }
-          
-          const recipe = recipeResponse.data;
-          
-          // Préparer le payload au format attendu par l'API
-          const payload = [{
-            recipeId: recipe.id,
-            recipeIncrementQuantity: 1,
-            recipeIngredients: recipe.recipeIngredient || []
-          }];
-          
-          console.log(`Ajout de la recette ${recipe.name} (${recipe.id}) à la liste de courses`);
-          
-          // Appeler l'API avec le format exact qu'elle attend
-          await axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, payload);
         }
         
         showToast('Liste de courses générée avec succès');
         
-        // 5. Redirection vers la page des courses
+        // 4. Redirection vers la page des courses
         setTimeout(() => {
           router.push('/shopping');
         }, 1000);
         
       } catch (error) {
-        console.error('Erreur lors de la génération de la liste', error);
+        console.error('Erreur lors de la génération de la liste:', error);
         
         if (error.response) {
           console.error('Détails de l\'erreur API:', {
@@ -727,18 +1367,60 @@ export default {
         generatingList.value = false;
       }
     };
-
-    const getMealTypeClass = (type) => {
-      const classes = {
-        'lunch': 'bg-green-500',
-        'dinner': 'bg-blue-500',
-        'breakfast': 'bg-orange-400',
-        'snack': 'bg-purple-500'
-      };
-      
-      return classes[type] || 'bg-gray-500';
-    };
     
+    const handleRecipeFromRoute = (query) => {
+      if (query.recipeId) {
+        // Stocker les infos de la recette
+        pendingRecipeForDate.value = {
+          id: query.recipeId,
+          name: query.recipeName || 'Recette'
+        };
+        
+        // Si le flag est présent, ouvrir le modal de sélection de date
+        if (query.showDateSelector === 'true') {
+          // Par défaut, utiliser la date du jour
+          selectedDateForRecipe.value = dayjs().format('YYYY-MM-DD');
+          showDateSelectorModal.value = true;
+        } else if (query.date) {
+          // Si une date est spécifiée directement, utiliser cette date
+          const dateToUse = query.date;
+          addRecipeToDay(pendingRecipeForDate.value, dateToUse);
+          
+          // Définir le jour actif pour afficher la recette ajoutée
+          const dayIndex = weekDays.value.findIndex(day => day.date === dateToUse);
+          if (dayIndex !== -1) {
+            currentDayIndex.value = dayIndex;
+          }
+        }
+      }
+    };
+
+
+    const confirmDateSelection = () => {
+      if (pendingRecipeForDate.value && selectedDateForRecipe.value) {
+        addRecipeToDay(pendingRecipeForDate.value, selectedDateForRecipe.value);
+        
+        // Définir le jour actif pour afficher la recette ajoutée
+        const dayIndex = weekDays.value.findIndex(day => day.date === selectedDateForRecipe.value);
+        if (dayIndex !== -1) {
+          currentDayIndex.value = dayIndex;
+        }
+        
+        // Fermer le modal et réinitialiser
+        showDateSelectorModal.value = false;
+        pendingRecipeForDate.value = null;
+      }
+    };
+
+    const toggleAllItems = () => {
+      allChecked.value = !allChecked.value;
+      weekDays.value.forEach(day => {
+        day.meals.forEach(meal => {
+          meal.checked = allChecked.value;
+        });
+      });
+    };
+
     const showToast = (message, type = 'success') => {
       // Effacer le timeout précédent s'il existe
       if (toast.value.timeout) {
@@ -755,6 +1437,8 @@ export default {
         }, 3000)
       };
     };
+
+    watch(() => route.query, handleRecipeFromRoute, { immediate: true });
 
     return {
       startDate,
@@ -784,7 +1468,7 @@ export default {
       formatDay,
       formatDate,
       formatFullDate,
-      formatCookTime,
+      formatperformTime,
       isToday,
       openRecipeSelector,
       closeRecipeSelector,
@@ -794,43 +1478,59 @@ export default {
       openRecipeDetails,
       loadMealPlan,
       debouncedSearch,
-      getMealTypeClass,
-      formatWeekRange,
-      formatDay,
-      showDateSelector,
-      pendingRecipe,
       openDateSelector,
       selectDate,
-      formatDate
+      showDateSelector,
+      pendingRecipe,
+      getMealTypeClassesSober,
+      getMealTypeIcon,
+      getMealTypeLabel,
+      getMealTypeBackgroundClassSober,
+      currentDayIndex,
+      previousDay,
+      nextDay,
+      toggleAllItems,
+      allChecked,
+      showDateSelectorModal,
+      pendingRecipeForDate,
+      selectedDateForRecipe,
+      confirmDateSelection,
+      dayjs,
+      servingsPerPerson,
+      showServingsModal,
+      openServingsSelector,
+      confirmGenerateList,
+      generateShoppingList
     };
   }
 };
 </script>
 
 <style scoped>
-/* Assurer que les conteneurs de repas gèrent correctement l'overflow */
-.truncate {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-/* Animation pour la liste de repas */
+/* Transition pour l'ajout et la suppression des repas */
 .meal-list-enter-active,
 .meal-list-leave-active {
   transition: all 0.3s ease;
 }
 .meal-list-enter-from {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: translateY(-10px);
 }
 .meal-list-leave-to {
   opacity: 0;
-  transform: translateX(20px);
+  transform: translateX(10px);
 }
 
-/* Animation pour le toast */
+/* Support pour les textes tronqués sur plusieurs lignes */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Animation pour les toasts */
 @keyframes slideIn {
   from {
     transform: translateY(20px);
@@ -842,7 +1542,114 @@ export default {
   }
 }
 
+/* Assurer que les textes longs sont tronqués correctement */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Animation pour les jours */
+@keyframes highlight {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+}
+
+.highlight-meal {
+  animation: highlight 1.5s ease;
+}
+
+/* Assurer que le contenu reste masqué pendant le chargement */
 [v-cloak] {
   display: none;
+}
+
+/* Améliorer l'apparence des jours sur mobile */
+@media (max-width: 768px) {
+  .grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(80px, 1fr));
+  }
+  
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 1rem;
+    padding-bottom: 8px;
+  }
+  
+  /* Masquer la barre de défilement mais permettre le défilement */
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 6px;
+  }
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
+  
+  /* Style pour les cartes de jours sur mobile */
+  .grid-cols-7 > div {
+    min-width: 110px;
+  }
+}
+/* Ajoutez ces styles à votre section <style scoped> */
+
+/* Styles pour l'affichage mobile vertical */
+@media (max-width: 768px) {
+  /* Style pour les onglets de jours */
+  .grid-cols-7 button {
+    min-width: auto;
+    height: auto;
+  }
+  
+  /* Animations douces pour les changements de jour */
+  .meal-list-enter-active,
+  .meal-list-leave-active {
+    transition: all 0.3s ease;
+  }
+  
+  .meal-list-enter-from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  .meal-list-leave-to {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  
+  /* Style pour les repas */
+  .space-y-3 > * + * {
+    margin-top: 0.75rem;
+  }
+  
+  /* Style pour mettre en évidence le jour actif */
+  .bg-gray-100.border.border-gray-300 {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style pour les boutons */
+  .px-2.py-1.text-xs.border {
+    white-space: nowrap;
+  }
+}
+
+/* Style supplémentaire pour améliorer l'apparence */
+.text-xs.rounded-full svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* S'assurer que les images sont correctement affichées */
+.w-16.h-16 img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 </style>

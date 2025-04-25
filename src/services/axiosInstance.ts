@@ -66,6 +66,20 @@ axiosInstance.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+axiosInstance.setAuthToken = (token) => {
+  if (token) {
+    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  } else {
+    delete axiosInstance.defaults.headers.common['Authorization'];
+  }
+};
+
+// Ajouter un intercepteur pour récupérer le token du localStorage au démarrage
+const token = localStorage.getItem('mealieToken');
+if (token) {
+  axiosInstance.setAuthToken(token);
+};
+
 // Intercepteur pour les réponses avec retry et cache
 axiosInstance.interceptors.response.use((response) => {
   // Stocker la réponse dans le cache si applicable
@@ -136,7 +150,6 @@ axiosInstance.interceptors.response.use((response) => {
 // Méthode pour vider le cache
 axiosInstance.clearCache = () => {
   cacheMap.clear();
-  console.log('[AXIOS] Cache vidé');
 };
 
 // Méthode pour modifier le token d'authentification

@@ -9,7 +9,7 @@ RUN npm install
 COPY . .
 
 # Modifiez axiosInstance.js pour utiliser /api comme baseURL
-RUN sed -i 's|baseURL: .http://192.168.85.50:9000.|baseURL: "/api",|g' src/services/axiosInstance.js
+RUN sed -i 's|baseURL: .http://192.168.85.50:9000.|baseURL: "/api",|g' src/services/axiosInstance.ts
 
 # Construire l'application sans TypeScript
 RUN sed -i 's/vue-tsc -b && vite build/vite build/g' package.json && \

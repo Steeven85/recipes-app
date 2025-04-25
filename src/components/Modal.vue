@@ -1,57 +1,77 @@
 <template>
-    <Teleport to="body">
-      <Transition name="modal">
-        <div v-if="modelValue" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeIfClickOutside">
-          <div class="flex items-center justify-center min-h-screen p-4">
-            <!-- Overlay -->
-            <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50" aria-hidden="true"></div>
+  <Teleport to="body">
+    <Transition name="modal">
+      <div
+        v-if="modelValue"
+        class="fixed inset-0 z-50 overflow-y-auto"
+        @click.self="closeIfClickOutside"
+      >
+        <div class="flex items-center justify-center min-h-screen p-4">
+          <!-- Overlay -->
+          <div
+            class="fixed inset-0 transition-opacity bg-black bg-opacity-50"
+            aria-hidden="true"
+          />
             
-            <!-- Modal panel -->
+          <!-- Modal panel -->
+          <div 
+            :class="[size, roundedClass]"
+            class="relative bg-white dark:bg-emerald-600 overflow-hidden shadow-xl transform transition-all max-w-full"
+            :style="contentStyle"
+            @click.stop
+          >
+            <!-- Header -->
             <div 
-              :class="[size, roundedClass]"
-              class="relative bg-white dark:bg-gray-800 overflow-hidden shadow-xl transform transition-all max-w-full"
-              :style="contentStyle"
-              @click.stop
+              v-if="$slots.header || title" 
+              class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center"
             >
-              <!-- Header -->
-              <div 
-                v-if="$slots.header || title" 
-                class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center"
-              >
-                <slot name="header">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ title }}</h3>
-                </slot>
+              <slot name="header">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ title }}
+                </h3>
+              </slot>
                 
-                <button 
-                  v-if="closable" 
-                  @click="close" 
-                  class="text-gray-400 hover:text-gray-500 focus:outline-none"
-                  aria-label="Fermer"
-                >
-                  <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              
-              <!-- Body -->
-              <div :class="bodyClass">
-                <slot></slot>
-              </div>
-              
-              <!-- Footer -->
-              <div 
-                v-if="$slots.footer" 
-                class="px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+              <button 
+                v-if="closable" 
+                class="text-gray-400 hover:text-gray-500 focus:outline-none" 
+                aria-label="Fermer"
+                @click="close"
               >
-                <slot name="footer"></slot>
-              </div>
+                <svg
+                  class="h-6 w-6"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+              
+            <!-- Body -->
+            <div :class="bodyClass">
+              <slot />
+            </div>
+              
+            <!-- Footer -->
+            <div 
+              v-if="$slots.footer" 
+              class="px-6 py-4 border-t border-gray-200 dark:border-gray-700"
+            >
+              <slot name="footer" />
             </div>
           </div>
         </div>
-      </Transition>
-    </Teleport>
-  </template>
+      </div>
+    </Transition>
+  </Teleport>
+</template>
   
   <script>
   import { computed, watch, onMounted, onBeforeUnmount } from 'vue';

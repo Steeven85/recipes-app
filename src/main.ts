@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
-import router from './router';
+import router from '@/router/index';
 import './index.css'; // Styles globaux (inclut Tailwind CSS)
 
 // Imports de composants globaux
@@ -9,8 +9,8 @@ import Spinner from './components/Spinner.vue';
 import ToastContainer from './components/ToastContainer.vue'; 
 
 // Import de services
-import { useRecipeStore } from './stores/recipeStore';
-import axiosInstance from './services/axiosInstance';
+import { useRecipeStore } from '@/stores/recipeStore';
+import axiosInstance from '@/services/axiosInstance';
 
 // Créer l'instance de Pinia
 const pinia = createPinia();
