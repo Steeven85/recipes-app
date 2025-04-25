@@ -24,19 +24,22 @@
           <nav class="flex space-x-4 mr-4">
             <router-link 
               to="/" 
-              class="px-3 py-2 rounded-md text-sm font-medium hover:bg-orange-100 hover:text-orange-700 transition-colors duration-200"
+              class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              :class="$route.path === '/' ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-100 hover:text-emerald-700'"
             >
               Recettes
             </router-link>
             <router-link 
               to="/planner" 
-              class="px-3 py-2 rounded-md text-sm font-medium hover:bg-orange-100 hover:text-orange-700 transition-colors duration-200"
+              class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              :class="$route.path === '/planner' ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-100 hover:text-emerald-700'"
             >
               Planning
             </router-link>
             <router-link 
               to="/shopping" 
-              class="px-3 py-2 rounded-md text-sm font-medium hover:bg-orange-100 hover:text-orange-700 transition-colors duration-200"
+              class="px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              :class="$route.path === '/shopping' ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-100 hover:text-emerald-700'"
             >
               Courses
             </router-link>
