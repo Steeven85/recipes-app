@@ -7,6 +7,7 @@
         class="p-6"
       >
         <div class="flex justify-between items-center mb-4">
+<<<<<<< HEAD
           <h2 class="text-xl font-semibold text-gray-800">
             Ajouter une recette
           </h2>
@@ -27,6 +28,12 @@
                 stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
+=======
+          <h2 class="text-xl font-semibold text-gray-800">Ajouter une recette</h2>
+          <button @click="close" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
@@ -37,6 +44,7 @@
               class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
               @click="chooseImportMethod('url')"
             >
+<<<<<<< HEAD
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 text-emerald-600"
@@ -50,6 +58,10 @@
                   stroke-width="2"
                   d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                 />
+=======
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               </svg>
               <span class="font-medium">Importer depuis une URL</span>
             </button>
@@ -58,6 +70,7 @@
               class="flex items-center justify-center gap-2 p-4 border border-gray-300 rounded-lg hover:bg-gray-50"
               @click="chooseImportMethod('manual')"
             >
+<<<<<<< HEAD
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-6 w-6 text-emerald-600"
@@ -71,6 +84,10 @@
                   stroke-width="2"
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 />
+=======
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               </svg>
               <span class="font-medium">Créer manuellement</span>
             </button>
@@ -84,6 +101,7 @@
         class="p-6"
       >
         <div class="flex justify-between items-center mb-4">
+<<<<<<< HEAD
           <h2 class="text-xl font-semibold text-gray-800">
             Importer depuis une URL
           </h2>
@@ -104,6 +122,12 @@
                 stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
+=======
+          <h2 class="text-xl font-semibold text-gray-800">Importer depuis une URL</h2>
+          <button @click="close" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
@@ -187,6 +211,31 @@
             </div>
           </div>
 
+          <!-- Affichage du statut de l'importation -->
+          <div v-if="loading" class="mb-4">
+            <div class="flex items-center text-emerald-700">
+              <svg class="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{{ importStatus }}</span>
+            </div>
+            
+            <!-- Explication du processus d'importation -->
+            <div class="mt-3 bg-emerald-50 rounded-lg p-4 text-sm">
+              <h3 class="font-medium text-emerald-800 mb-2">Améliorations de l'importation</h3>
+              <p class="text-gray-700 mb-2">
+                Notre système analyse automatiquement les ingrédients de la recette pour vous offrir une expérience optimale :
+              </p>
+              <ul class="list-disc pl-5 text-gray-700">
+                <li>Identification précise des quantités</li>
+                <li>Reconnaissance des unités de mesure</li>
+                <li>Liaison automatique avec les ingrédients de votre base de données</li>
+                <li>Séparation des notes et instructions spécifiques</li>
+              </ul>
+            </div>
+          </div>
+
           <div class="flex justify-end space-x-2">
             <button
               type="button"
@@ -236,6 +285,7 @@
         class="p-6"
       >
         <div class="flex justify-between items-center mb-4">
+<<<<<<< HEAD
           <h2 class="text-xl font-semibold text-gray-800">
             Créer une nouvelle recette
           </h2>
@@ -256,6 +306,12 @@
                 stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
+=======
+          <h2 class="text-xl font-semibold text-gray-800">Créer une nouvelle recette</h2>
+          <button @click="close" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
@@ -333,6 +389,7 @@
         class="p-6"
       >
         <div class="flex justify-between items-center mb-4">
+<<<<<<< HEAD
           <h2 class="text-xl font-semibold text-gray-800">
             Modifier "{{ recipe.name }}"
           </h2>
@@ -353,6 +410,12 @@
                 stroke-width="2"
                 d="M6 18L18 6M6 6l12 12"
               />
+=======
+          <h2 class="text-xl font-semibold text-gray-800">Modifier "{{ recipe.name }}"</h2>
+          <button @click="close" class="text-gray-500 hover:text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
@@ -384,6 +447,7 @@
               @click="triggerFileInput"
             >
               <template v-if="!imagePreview">
+<<<<<<< HEAD
                 <p class="text-gray-400">
                   Glissez-déposez une image ici,<br>ou cliquez pour sélectionner un fichier
                 </p>
@@ -402,6 +466,20 @@
                 class="absolute inset-0 opacity-0"
                 @change="handleImageUpload"
               >
+=======
+                <p class="text-gray-400">Glissez-déposez une image ici,<br>ou cliquez pour sélectionner un fichier</p>
+              </template>
+              <template v-else>
+                <img :src="imagePreview" alt="Aperçu de l'image" class="mx-auto h-32 w-32 object-cover rounded" />
+              </template>
+              <input 
+                type="file" 
+                accept="image/*" 
+                class="absolute inset-0 opacity-0"
+                ref="fileInput"
+                @change="handleImageUpload"
+              />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
         
             <!-- Option pour importer via URL -->
@@ -411,20 +489,32 @@
                 type="text" 
                 placeholder="Saisissez l'URL de l'image" 
                 class="border p-2 rounded w-full"
+<<<<<<< HEAD
               >
               <button 
                 type="button"
                 class="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
                 @click="loadImageFromUrl"
+=======
+              />
+              <button 
+                type="button"
+                @click="loadImageFromUrl"
+                class="mt-2 bg-blue-500 text-white px-4 py-2 rounded"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               >
                 Charger l'image depuis l'URL
               </button>
             </div>
         
+<<<<<<< HEAD
             <div
               v-if="imageFile"
               class="mt-1 text-sm text-gray-500"
             >
+=======
+            <div class="mt-1 text-sm text-gray-500" v-if="imageFile">
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               Fichier sélectionné : {{ imageFile.name }}
             </div>
           </div>
@@ -441,7 +531,11 @@
               rows="3"
               placeholder="Décrivez votre recette"
               class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+<<<<<<< HEAD
             />
+=======
+            ></textarea>
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           </div>
 
           <!-- Temps et portions -->
@@ -458,7 +552,11 @@
                 min="0"
                 placeholder="20"
                 class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+<<<<<<< HEAD
               >
+=======
+              />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             <div>
               <label
@@ -472,7 +570,11 @@
                 min="0"
                 placeholder="30"
                 class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+<<<<<<< HEAD
               >
+=======
+              />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             <div>
               <label
@@ -486,7 +588,11 @@
                 min="0"
                 placeholder="50"
                 class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+<<<<<<< HEAD
               >
+=======
+              />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
             <div>
               <label
@@ -500,7 +606,11 @@
                 min="1"
                 placeholder="4"
                 class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+<<<<<<< HEAD
               >
+=======
+              />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </div>
           </div>
 
@@ -514,6 +624,10 @@
                 type="button"
                 class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
                 @click="addNewIngredient"
+<<<<<<< HEAD
+=======
+                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -533,6 +647,7 @@
               </button>
             </div>
             
+<<<<<<< HEAD
             <div
               v-if="loadingIngredients"
               class="text-center py-4"
@@ -556,6 +671,12 @@
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
+=======
+            <div v-if="loadingIngredients" class="text-center py-4">
+              <svg class="animate-spin h-6 w-6 text-emerald-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               </svg>
               <p class="mt-2 text-sm text-gray-500">
                 Chargement des ingrédients...
@@ -613,6 +734,11 @@
                     <div class="relative">
                       <input 
                         v-model="ingredient.foodInput"
+<<<<<<< HEAD
+=======
+                        @input="ingredient.food = null"
+                        @focus="openFoodDropdown(index)" 
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                         placeholder="Ingrédient"
                         class="w-full border border-gray-300 rounded p-2" 
                         @input="ingredient.food = null"
@@ -627,6 +753,7 @@
                           :key="food.id" 
                           class="p-2 hover:bg-gray-100 cursor-pointer"
                           @mousedown.prevent="selectFood(index, food)"
+<<<<<<< HEAD
                         >
                           {{ food.name }}
                         </div>
@@ -634,6 +761,13 @@
                           v-if="filteredFoods(ingredient.foodInput).length === 0"
                           class="p-3 text-gray-500 text-center"
                         >
+=======
+                          class="p-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          {{ food.name }}
+                        </div>
+                        <div v-if="filteredFoods(ingredient.foodInput).length === 0" class="p-3 text-gray-500 text-center">
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                           Aucun ingrédient trouvé
                         </div>
                       </div>
@@ -695,6 +829,10 @@
                 type="button"
                 class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
                 @click="addNewInstruction"
+<<<<<<< HEAD
+=======
+                class="px-2 py-1 bg-emerald-100 rounded-md hover:bg-emerald-200 text-emerald-700 text-sm flex items-center"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -714,11 +852,15 @@
               </button>
             </div>
             
+<<<<<<< HEAD
             <div
               v-for="(instruction, index) in recipe.recipeInstructions"
               :key="`ins-${index}`"
               class="mb-3"
             >
+=======
+            <div v-for="(instruction, index) in recipe.recipeInstructions" :key="`ins-${index}`" class="mb-3">
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
                 <div class="flex justify-between items-center mb-2">
                   <div class="font-semibold text-emerald-600">
@@ -792,9 +934,15 @@
                   v-model="instruction.summary" 
                   class="w-full mb-2 border border-emerald-500 rounded p-2 text-gray-700"
                   placeholder="Résumé de l'étape (optionnel)"
+<<<<<<< HEAD
                 >
 
                 <!-- Champ pour le texte complet de l'instruction -->
+=======
+                />
+
+                 <!-- Champ pour le texte complet de l'instruction -->
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 <textarea 
                   v-model="instruction.text" 
                   class="w-full border border-emerald-500 rounded p-2 text-gray-700"
@@ -993,7 +1141,12 @@
                 class="flex-grow border rounded-lg px-3 py-2 mr-2"
               >
               <button 
+<<<<<<< HEAD
                 class="bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700" 
+=======
+                @click="addNewCategory" 
+                class="bg-emerald-600 text-white px-3 py-2 rounded-lg hover:bg-emerald-700"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                 :disabled="!newCategoryName.trim()"
                 @click="addNewCategory"
               >
@@ -1032,6 +1185,10 @@
             Annuler
           </button>
           <button
+<<<<<<< HEAD
+=======
+            @click="saveRecipe"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center"
             :disabled="loading"
             @click="saveRecipe"
@@ -1265,7 +1422,13 @@ export default {
       
       try {
         const perPage = 1000; // Nombre d'éléments par page
+<<<<<<< HEAD
                
+=======
+        
+        console.log(`Chargement de la page ${currentFoodsPage.value} d'ingrédients avec requête: "${query}"`);
+        
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         const response = await referenceService.getFoods({
           page: currentFoodsPage.value,
           perPage: perPage,
