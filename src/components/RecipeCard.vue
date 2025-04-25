@@ -35,6 +35,7 @@
         {{ recipe.name }}
       </h3>
       
+<<<<<<< HEAD
       <div
         v-if="recipe.prepTime || recipe.performTime"
         class="flex items-center text-sm text-gray-600 mb-3"
@@ -52,6 +53,11 @@
             stroke-width="2"
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
+=======
+      <div class="flex items-center text-sm text-gray-600 mb-3" v-if="recipe.prepTime || recipe.performTime">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         </svg>
         <span>{{ formatperformTime(recipe) }}</span>
       </div>
@@ -104,10 +110,15 @@
           </button>
           
           <button 
+<<<<<<< HEAD
+=======
+            @click.stop="$emit('plan', recipe)"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             class="p-2 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-600"
             title="Ajouter au planning"
             @click.stop="$emit('plan', recipe)"
           >
+<<<<<<< HEAD
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5"
@@ -121,6 +132,10 @@
                 stroke-width="2"
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
+=======
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             </svg>
           </button>
         </div>
@@ -131,7 +146,11 @@
 
 <script>
 import { ref, computed } from 'vue';
+<<<<<<< HEAD
 import { recipeService, referenceService } from '@/services/api';
+=======
+import { recipeService, referenceService } from '../services/api';
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 import { useRecipeStore } from '../stores/recipeStore';
 
 export default {

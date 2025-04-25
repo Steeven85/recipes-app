@@ -52,6 +52,7 @@
                   <div class="flex items-center justify-center">
                     <input 
                       id="keep-checked-items" 
+<<<<<<< HEAD
                       v-model="keepCheckedItemsOnClear" 
                       type="checkbox"
                       class="h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
@@ -60,12 +61,20 @@
                       for="keep-checked-items"
                       class="ml-2 block text-sm text-gray-700"
                     >
+=======
+                      type="checkbox" 
+                      v-model="keepCheckedItemsOnClear"
+                      class="h-4 w-4 text-emerald-600 border-gray-300 rounded"
+                    />
+                    <label for="keep-checked-items" class="ml-2 block text-sm text-gray-700">
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                       Conserver les articles déjà cochés
                     </label>
                   </div>
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
             <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3">
               <button 
                 type="button"
@@ -82,10 +91,27 @@
                 Annuler
               </button>
             </div>
+=======
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button 
+              @click="clearShoppingList"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Purger la liste
+            </button>
+            <button 
+              @click="showClearConfirmation = false"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Annuler
+            </button>
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
           </div>
         </div>
       </div>
 
+<<<<<<< HEAD
       <!-- Header with animated card effect -->
       <div class="mb-6 bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
         <div class="px-4 py-5 sm:px-6 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white">
@@ -129,6 +155,227 @@
                       stroke-width="2"
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     />
+=======
+    <!-- En-tête avec contrôles adaptés au mobile -->
+    <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Liste de Courses</h1>
+      
+      <!-- Contrôles version mobile (empilés verticalement) -->
+      <div class="md:hidden space-y-2">
+        <!-- Vue par catégorie / recette (boutons plus grands) -->
+        <div class="border rounded-lg overflow-hidden w-full">
+          <button 
+            @click="viewMode = 'category'"
+            :class="[
+              'px-4 py-3 w-1/2 font-medium',
+              viewMode === 'category' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+            ]"
+          >
+            <span class="flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              Catégories
+            </span>
+          </button>
+          <button 
+            @click="viewMode = 'recipe'"
+            :class="[
+              'px-4 py-3 w-1/2 font-medium',
+              viewMode === 'recipe' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+            ]"
+          >
+            <span class="flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Recettes
+            </span>
+          </button>
+        </div>
+        
+        <!-- Barre d'actions (flex horizontal) -->
+        <div class="flex space-x-2">
+          <button 
+            @click="toggleCompletedItems"
+            class="flex-1 px-4 py-3 border rounded-lg flex items-center justify-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            {{ showCompleted ? 'Masquer les articles cochés' : 'Afficher les articles cochés' }}
+          </button>
+          
+          <button 
+            v-if="items.length > 0"
+            @click="showClearConfirmation = true"
+            class="flex-1 px-4 py-3 border rounded-lg bg-red-50 text-red-700 flex items-center justify-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Purger
+          </button>
+        </div>
+      </div>
+      
+      <!-- Contrôles version desktop (flex horizontal) -->
+      <div class="hidden md:flex md:space-x-2">
+        <!-- Vue par catégorie / recette -->
+        <div class="border rounded-lg overflow-hidden">
+          <button 
+            @click="viewMode = 'category'"
+            :class="[
+              'px-4 py-2 border-r',
+              viewMode === 'category' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            Par catégorie
+          </button>
+          <button 
+            @click="viewMode = 'recipe'"
+            :class="[
+              'px-4 py-2',
+              viewMode === 'recipe' ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
+            ]"
+          >
+            Par recette
+          </button>
+        </div>
+        <button 
+          @click="toggleCompletedItems"
+          class="px-4 py-2 border rounded-lg hover:bg-gray-50 flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          {{ showCompleted ? 'Masquer complétés' : 'Afficher complétés' }}
+        </button>
+        <button 
+          v-if="items.length > 0"
+          @click="showClearConfirmation = true"
+          class="px-4 py-2 border rounded-lg bg-red-50 hover:bg-red-100 text-red-700 flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Purger la liste
+        </button>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-4 md:p-6">
+      <!-- État de chargement -->
+      <div v-if="loading" class="flex justify-center py-12">
+        <svg class="animate-spin h-10 w-10 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      
+      <!-- État d'erreur -->
+      <div v-else-if="error" class="text-center py-8">
+        <div class="text-red-500 mb-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <p class="text-lg font-medium">Erreur lors du chargement de la liste</p>
+        <p class="text-gray-500 mb-4">{{ errorMessage }}</p>
+        <button 
+          @click="loadShoppingList"
+          class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+        >
+          Réessayer
+        </button>
+      </div>
+      
+      <!-- Contenu principal -->
+      <div v-else>
+        <!-- Liste vide -->
+        <div v-if="items.length === 0" class="text-center py-12">
+          <p class="text-gray-500">Votre liste de courses est vide.</p>
+          <div class="flex flex-col items-center gap-2 mt-4">
+            <button 
+              @click="generateShoppingList"
+              class="px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 w-full md:w-auto"
+            >
+              Générer depuis le planning
+            </button>
+          </div>
+        </div>
+        
+        <!-- Vue par catégorie -->
+        <div v-else-if="viewMode === 'category'" class="mt-2">
+          <div v-for="(groupItems, category) in groupedItems" :key="category" class="mb-6">
+            <h3 class="font-medium text-lg mb-2 text-gray-700 border-b pb-1">{{ category }}</h3>
+            
+            <div v-for="item in filteredItemsByCategory(category)" :key="item.id" class="py-3 border-b">
+              <!-- Version mobile (flex-col) -->
+              <div class="md:hidden flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                  <input 
+                    type="checkbox" 
+                    :checked="item.checked"
+                    @change="toggleItem(item)"
+                    class="h-6 w-6 text-emerald-600 rounded"
+                  />
+                </div>
+                
+                <div class="ml-3 flex-grow">
+                  <div class="flex justify-between mb-1">
+                    <p :class="{'line-through text-gray-400': item.checked}" class="font-medium">
+                      {{ getFoodName(item.food) || item.name }}
+                    </p>
+                    
+                    <button @click="removeItem(item.id)" class="text-red-500 p-1 -mt-1 -mr-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div class="flex justify-between items-center">
+                    <p class="text-sm text-gray-500">
+                      {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                    </p>
+                    
+                    <!-- Badge de recette -->
+                    <div v-if="item.recipeId" class="px-2 py-1 text-xs bg-gray-100 rounded text-gray-600">
+                      {{ getRecipeName(item.recipeId) }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Version desktop (flex-row) -->
+              <div class="hidden md:flex md:items-center">
+                <input 
+                  type="checkbox" 
+                  :checked="item.checked"
+                  @change="toggleItem(item)"
+                  class="h-5 w-5 text-emerald-600 rounded"
+                />
+                
+                <div class="ml-3 flex-grow">
+                  <p :class="{'line-through text-gray-400': item.checked}">
+                    {{ getFoodName(item.food) || item.name }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                  </p>
+                </div>
+                
+                <!-- Afficher la recette source si disponible -->
+                <div v-if="item.recipeId" class="mr-2 px-2 py-1 text-xs bg-gray-100 rounded text-gray-600">
+                  {{ getRecipeName(item.recipeId) }}
+                </div>
+                
+                <button @click="removeItem(item.id)" class="text-red-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                   </svg>
                   <span>{{ showCompleted ? 'Masquer cochés' : 'Tout afficher' }}</span>
                 </button>
@@ -440,8 +687,13 @@
                 </p>
                 <p class="mt-3 text-sm md:mt-0 md:ml-6">
                   <button 
+<<<<<<< HEAD
                     class="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600 transition duration-150 ease-in-out flex items-center"
                     @click="generateShoppingList"
+=======
+                    @click="generateShoppingList"
+                    class="px-3 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -449,7 +701,11 @@
                     Générer
                     <span class="sr-only">depuis le planning</span>
                   </button>
+<<<<<<< HEAD
                 </p>
+=======
+                </div>
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
               </div>
             </div>
           </div>
@@ -473,6 +729,7 @@
               </h3>
             </div>
             
+<<<<<<< HEAD
             <!-- Manual items -->
             <transition-group 
               tag="ul" 
@@ -502,6 +759,23 @@
                       :class="{'line-through text-gray-400': item.checked, 'text-gray-800': !item.checked}"
                       class="font-medium transition-colors duration-200"
                     >
+=======
+            <div v-for="item in filteredItemsWithoutRecipe" :key="item.id" class="py-3 border-b">
+              <!-- Version mobile (flex-col) -->
+              <div class="md:hidden flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                  <input 
+                    type="checkbox" 
+                    :checked="item.checked"
+                    @change="toggleItem(item)"
+                    class="h-6 w-6 text-emerald-600 rounded"
+                  />
+                </div>
+                
+                <div class="ml-3 flex-grow">
+                  <div class="flex justify-between mb-1">
+                    <p :class="{'line-through text-gray-400': item.checked}" class="font-medium">
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
                       {{ getFoodName(item.food) || item.name }}
                     </p>
                     <p class="text-sm text-gray-500">
@@ -616,10 +890,114 @@
                       </svg>
                     </button>
                   </div>
+<<<<<<< HEAD
                 </li>
               </transition-group>
             </div>
           </transition-group>
+=======
+                  
+                  <p class="text-sm text-gray-500">
+                    {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Version desktop (flex-row) -->
+              <div class="hidden md:flex md:items-center">
+                <input 
+                  type="checkbox" 
+                  :checked="item.checked"
+                  @change="toggleItem(item)"
+                  class="h-5 w-5 text-emerald-600 rounded"
+                />
+                
+                <div class="ml-3 flex-grow">
+                  <p :class="{'line-through text-gray-400': item.checked}">
+                    {{ getFoodName(item.food) || item.name }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                  </p>
+                </div>
+                
+                <button @click="removeItem(item.id)" class="text-red-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Items groupés par recette -->
+          <div v-for="(recipeItems, recipeId) in groupedByRecipe" :key="recipeId" class="mb-6">
+            <h3 class="font-medium text-lg mb-2 text-gray-700 border-b pb-1 flex flex-col md:flex-row md:items-center">
+              <span>{{ getRecipeName(recipeId) }}</span>
+              <!-- Badge pour indiquer le nombre d'items -->
+              <span class="mt-1 md:mt-0 md:ml-2 px-2 py-1 text-xs bg-emerald-100 text-emerald-800 rounded-full inline-block">
+                {{ filterItemsByRecipe(recipeId).length }} ingrédient(s)
+              </span>
+            </h3>
+            
+            <div v-for="item in filterItemsByRecipe(recipeId)" :key="item.id" class="py-3 border-b">
+              <!-- Version mobile (flex-col) -->
+              <div class="md:hidden flex items-start">
+                <div class="flex-shrink-0 mt-1">
+                  <input 
+                    type="checkbox" 
+                    :checked="item.checked"
+                    @change="toggleItem(item)"
+                    class="h-6 w-6 text-emerald-600 rounded"
+                  />
+                </div>
+                
+                <div class="ml-3 flex-grow">
+                  <div class="flex justify-between mb-1">
+                    <p :class="{'line-through text-gray-400': item.checked}" class="font-medium">
+                      {{ getFoodName(item.food) || item.name }}
+                    </p>
+                    
+                    <button @click="removeItem(item.id)" class="text-red-500 p-1 -mt-1 -mr-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <p class="text-sm text-gray-500">
+                    {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                  </p>
+                </div>
+              </div>
+              
+              <!-- Version desktop (flex-row) -->
+              <div class="hidden md:flex md:items-center">
+                <input 
+                  type="checkbox" 
+                  :checked="item.checked"
+                  @change="toggleItem(item)"
+                  class="h-5 w-5 text-emerald-600 rounded"
+                  />
+                
+                <div class="ml-3 flex-grow">
+                  <p :class="{'line-through text-gray-400': item.checked}">
+                    {{ getFoodName(item.food) || item.name }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ item.quantity }} {{ getUnitDisplay(item.unit) }}
+                  </p>
+                </div>
+                
+                <button @click="removeItem(item.id)" class="text-red-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         </div>
         
         <!-- Add item form -->
@@ -706,8 +1084,12 @@
             
             <button 
               type="submit"
+<<<<<<< HEAD
               :disabled="formLoading"
               class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50"
+=======
+              class="w-full bg-emerald-600 text-white py-3 rounded-lg hover:bg-emerald-700 text-base font-medium"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             >
               <svg 
                 v-if="formLoading" 
@@ -809,8 +1191,12 @@
             
             <button 
               type="submit"
+<<<<<<< HEAD
               :disabled="formLoading"
               class="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50"
+=======
+              class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
             >
               <svg 
                 v-if="formLoading" 
@@ -909,6 +1295,7 @@
 <script>
 import { ref, computed, onMounted, h } from 'vue';
 import { useRouter } from 'vue-router';
+<<<<<<< HEAD
 import { shoppingService, recipeService, referenceService } from '@/services/api';
 import axiosInstance from '@/services/axiosInstance';
 
@@ -954,6 +1341,10 @@ const CategoryIcon = {
     return createSvgIcon(iconPaths[this.category] || defaultPath);
   }
 };
+=======
+import { shoppingService, recipeService } from '../services/api';
+import axiosInstance from '../services/axiosInstance';
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
 
 export default {
   name: 'ShoppingList',
@@ -994,9 +1385,64 @@ export default {
       note: ''
     });
     
+<<<<<<< HEAD
     // ======== Données calculées ========
     // Grouper les aliments par catégorie
     const groupedFoods = computed(() => {
+=======
+    // Fonction pour utiliser des données de test en cas d'erreur
+    const useMockData = (forceTestData = false) => {
+      // Si forceTestData est vrai, on utilise toujours les données de test
+      // Sinon, on ne les utilise qu'en mode développement et en cas d'erreur
+      if (!forceTestData && process.env.NODE_ENV !== 'development') return;
+      
+      const mockItems = [
+        { id: '1', name: 'Pommes', quantity: 6, unit: 'unité', checked: false, recipeId: 'recipe-1' },
+        { id: '2', name: 'Lait', quantity: 1, unit: 'L', checked: false, recipeId: 'recipe-1' },
+        { id: '3', name: 'Pain', quantity: 2, unit: 'unité', checked: true },
+        { id: '4', name: 'Poulet', quantity: 500, unit: 'g', checked: false, recipeId: 'recipe-2' },
+        { id: '5', name: 'Pâtes', quantity: 1, unit: 'kg', checked: false, recipeId: 'recipe-2' },
+        { id: '6', name: 'Chocolat', quantity: 200, unit: 'g', checked: false },
+        { id: '7', name: 'Tomates', quantity: 4, unit: 'unité', checked: false, recipeId: 'recipe-3' },
+        { id: '8', name: 'Basilic', quantity: 1, unit: 'botte', checked: false, recipeId: 'recipe-3' },
+        { id: '9', name: 'Mozzarella', quantity: 1, unit: 'unité', checked: false, recipeId: 'recipe-3' }
+      ];
+      
+      items.value = mockItems;
+      
+      // Ajouter des recettes de test
+      recipes.value = {
+        'recipe-1': { name: 'Tarte aux pommes', description: 'Délicieuse tarte aux pommes maison' },
+        'recipe-2': { name: 'Poulet aux pâtes', description: 'Un plat simple et rapide' },
+        'recipe-3': { name: 'Salade Caprese', description: 'Salade italienne avec tomate et mozzarella' }
+      };
+      
+      console.log('Utilisation de données de test avec recettes');
+    };
+    
+    const toast = ref({
+      show: false,
+      message: '',
+      type: 'success',
+      timeout: null
+    });
+
+    const determineCategory = (itemName) => {
+      if (!itemName) return 'Divers';
+      
+      const lowerName = itemName.toLowerCase();
+      
+      for (const [category, keywords] of Object.entries(categoryKeywords)) {
+        if (keywords.some(keyword => lowerName.includes(keyword))) {
+          return category;
+        }
+      }
+      
+      return 'Divers';
+    };
+
+    const groupedItems = computed(() => {
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
       const grouped = {};
       
       foods.value.forEach(food => {
@@ -1557,18 +2003,28 @@ export default {
       }
     };
     
+<<<<<<< HEAD
     // Générer la liste depuis le planning de repas
+=======
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     const generateShoppingList = async () => {
       loading.value = true;
       
       try {
+<<<<<<< HEAD
         // 1. Récupérer les recettes du planning
+=======
+        console.log('Génération de la liste de courses depuis le planning...');
+        
+        // 1. Récupérer les identifiants des recettes du planning
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         const today = new Date();
         const startDate = formatDate(today);
         const endDate = new Date(today);
         endDate.setDate(today.getDate() + 7);
         const formattedEndDate = formatDate(endDate);
         
+<<<<<<< HEAD
         // Appeler le service pour générer la liste
         await shoppingService.generateShoppingListFromMealPlan(startDate, formattedEndDate);
         
@@ -1586,6 +2042,56 @@ export default {
           });
         }
         
+=======
+        const mealPlanResponse = await recipeService.getMealPlan(startDate, formattedEndDate);
+        
+        const recipeIds = new Set();
+        if (mealPlanResponse.data && mealPlanResponse.data.items) {
+          mealPlanResponse.data.items.forEach(meal => {
+            if (meal.recipe && meal.recipe.id) {
+              recipeIds.add(meal.recipe.id);
+            }
+          });
+        }
+        
+        if (recipeIds.size === 0) {
+          throw new Error('Aucune recette trouvée dans le planning pour générer la liste');
+        }
+        
+        // 2. Récupérer la liste de courses principale
+        const listResponse = await shoppingService.getMainShoppingList();
+        const mainList = listResponse.data.items?.[0];
+        
+        if (!mainList || !mainList.id) {
+          throw new Error('Aucune liste de courses valide trouvée');
+        }
+        
+        // 3. Pour chaque recette, ajouter à la liste de courses
+        const recipePromises = Array.from(recipeIds).map(recipeId => {
+          // Utiliser le format exact attendu par l'API
+          return axiosInstance.post(`/households/shopping/lists/${mainList.id}/recipe`, [{
+            recipeId: recipeId,
+            recipeIncrementQuantity: 1,
+            recipeIngredients: [] // L'API extraira les ingrédients de la recette
+          }]);
+        });
+        
+        await Promise.all(recipePromises);
+        
+        // 4. Recharger la liste de courses
+        await loadShoppingList();
+        
+      } catch (error) {
+        console.error('Erreur lors de la génération de la liste', error);
+        
+        if (error.response) {
+          console.error('Détails de l\'erreur API:', {
+            status: error.response.status,
+            data: error.response.data
+          });
+        }
+        
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
         error.value = true;
         errorMessage.value = error.message || 'Impossible de générer la liste de courses.';
         showToast('Erreur lors de la génération de la liste', 'error');
@@ -1601,6 +2107,7 @@ export default {
       const day = String(date.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
+<<<<<<< HEAD
     
     // Initialisation
     onMounted(async () => {
@@ -1608,6 +2115,22 @@ export default {
     });
     
     // Exposer les données et méthodes au template
+=======
+
+    // Fonction pour afficher des notifications
+    const showToast = (message, type = 'success') => {
+      // Si cette fonction n'existe pas déjà dans votre composant, ajoutez-la
+      console.log(`Toast: ${message} (${type})`);
+      // Ici, vous pourriez implémenter une notification visuelle
+      // Exemple simple avec alert:
+      if (type === 'error') {
+        alert(`Erreur: ${message}`);
+      } else {
+        alert(message);
+      }
+    };
+
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     return {
       // État
       items,
@@ -1648,11 +2171,21 @@ export default {
       toggleCompletedItems,
       loadShoppingList,
       generateShoppingList,
+<<<<<<< HEAD
       clearShoppingList,
       closeToast,
       
       // Navigation
       router
+=======
+      router,
+      getFoodName,
+      getUnitDisplay,
+      getRecipeName,
+      showClearConfirmation,
+      keepCheckedItemsOnClear,
+      clearShoppingList
+>>>>>>> 53c7b4ed70d3c00647a31fbe10100d13d2c3f7ed
     };
   }
 }
